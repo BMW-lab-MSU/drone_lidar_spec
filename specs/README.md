@@ -19,8 +19,8 @@ This project generates spectrograms from MATLAB `.mat` files. The input `.mat` f
 ```bash
 python gen_spec.py mat_files --output_folder spectrograms
 ```
-# mat_files is the input folder containing your .mat files.
-# spectrograms is the folder where the spectrograms will be saved.
-# If not specified, it defaults to ./spectrograms.
+### mat_files is the input folder containing your .mat files.
+### spectrograms is the folder where the spectrograms will be saved.
+### If not specified, it defaults to ./spectrograms.
 
 # Enjoy generating your spectrograms! 🎉📈
