@@ -25,14 +25,14 @@ There are two ways to generate spectrograms: with labels and without labels. Thi
 To generate spectrograms with labels:
 
 ```bash
-python gen_spec_labeled.py mat_files --output_folder path/to/output/folder
+python gen_spec_labeled.py mat_files/FOLDERHERE --output_folder path/to/output/folder
 ```
 #### Without Labels
 
 To generate spectrograms without labels:
 
 ```bash
-python gen_spec_raw.py mat_files --output_folder path/to/output/folder
+python gen_spec_raw.py mat_files/FOLDERHERE --output_folder path/to/output/folder
 ```
 
 ## Notes
