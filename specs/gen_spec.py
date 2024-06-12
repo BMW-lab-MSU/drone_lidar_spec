@@ -43,7 +43,12 @@ def main():
     args = parser.parse_args()
 
     input_folder = args.input_folder
-    output_folder = args.output_folder or os.path.join('.', 'spectrograms')
+    
+    # Extract the last part of the input folder path
+    last_part_of_input_folder = os.path.basename(os.path.normpath(input_folder))
+
+    # Construct the output folder path
+    output_folder = args.output_folder or os.path.join('.', 'spectrograms', last_part_of_input_folder)
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)

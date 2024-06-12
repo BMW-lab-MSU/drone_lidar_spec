@@ -21,7 +21,7 @@
 ## Run 'man sbatch' for more information on the options above.
 
 # Create directories for SLURM output and error files if they do not exist
-mkdir -p slurm_out slurm_err
+mkdir -p out err
 
 ### Replace the below with modules and commands
 module load CUDA/11.1.1-GCC-10.2.0 
