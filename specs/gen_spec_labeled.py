@@ -23,14 +23,11 @@ def create_spectrogram(mat_file_path, output_folder):
     # Generate the spectrogram
     plt.figure(figsize=(10, 6))
     plt.imshow(data_array, aspect='auto', origin='lower', cmap='viridis')
-    plt.colorbar(label='Intensity')
-    plt.xlabel('Time')
-    plt.ylabel('Frequency')
-    plt.title(f'Spectrogram of {base_name}')
+    plt.axis('off')  # Turn off axes
 
     # Save the spectrogram to an image file
     output_image_path = os.path.join(output_folder, base_name + '_spectrogram.png')
-    plt.savefig(output_image_path)
+    plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
     plt.close()
 
     print(f"Spectrogram saved to {output_image_path}")
