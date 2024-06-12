@@ -32,7 +32,7 @@ nvcc --version
 # Ensure that the Singularity/Apptainer image and script are in your working directory
 # Run the Singularity/Apptainer container with GPU support
 apptainer exec --nv mmdet_img.sif python mmdetection/demo/image_demo.py \
-    mmdetection/custom_imgs mmdetection/configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
+    mmdetection/demo/demo.jpg mmdetection/configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
     --weights mmdetection/checkpoints/rtmdet_s_8xb32-300e_coco.pth \
     --out-dir outputs
 

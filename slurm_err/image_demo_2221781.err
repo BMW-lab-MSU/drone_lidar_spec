@@ -1,0 +1,14 @@
+Loading CUDA/11.1.1-GCC-10.2.0
+  Loading requirement: GCCcore/10.2.0 zlib/1.2.11-GCCcore-10.2.0
+    binutils/2.35-GCCcore-10.2.0 GCC/10.2.0 CUDAcore/11.1.1
+/opt/conda/lib/python3.7/site-packages/mmengine/visualization/visualizer.py:196: UserWarning: Failed to add <class 'mmengine.visualization.vis_backend.LocalVisBackend'>, please provide the `save_dir` argument.
+  warnings.warn(f'Failed to add {vis_backend.__class__}, '
+/opt/conda/lib/python3.7/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448265233/work/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+/opt/conda/lib/python3.7/site-packages/torch/_tensor.py:575: UserWarning: floor_divide is deprecated, and will be removed in a future version of pytorch. It currently rounds toward 0 (like the 'trunc' function NOT 'floor'). This results in incorrect rounding for negative values.
+To keep the current behavior, use torch.div(a, b, rounding_mode='trunc'), or for actual floor division, use torch.div(a, b, rounding_mode='floor'). (Triggered internally at  /opt/conda/conda-bld/pytorch_1623448265233/work/aten/src/ATen/native/BinaryOps.cpp:467.)
+  return torch.floor_divide(self, other)
+/opt/conda/lib/python3.7/site-packages/mmengine/visualization/visualizer.py:762: UserWarning: Warning: The bbox is out of bounds, the drawn bbox may not be in the image
+  ' the drawn bbox may not be in the image', UserWarning)
+/opt/conda/lib/python3.7/site-packages/mmengine/visualization/visualizer.py:833: UserWarning: Warning: The polygon is out of bounds, the drawn polygon may not be in the image
+  ' the drawn polygon may not be in the image', UserWarning)
