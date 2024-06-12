@@ -45,7 +45,7 @@ def main():
     last_part_of_input_folder = os.path.basename(os.path.normpath(input_folder))
 
     # Construct the output folder path
-    output_folder = args.output_folder or os.path.join('.', 'spectrograms', last_part_of_input_folder)
+    output_folder = args.output_folder or os.path.join('.', 'spectrograms', 'raw', last_part_of_input_folder)
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)

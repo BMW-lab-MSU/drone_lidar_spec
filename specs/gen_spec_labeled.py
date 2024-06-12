@@ -23,11 +23,14 @@ def create_spectrogram(mat_file_path, output_folder):
     # Generate the spectrogram
     plt.figure(figsize=(10, 6))
     plt.imshow(data_array, aspect='auto', origin='lower', cmap='viridis')
-    plt.axis('off')  # Turn off axes
+    plt.colorbar(label='Intensity')
+    plt.xlabel('Time')
+    plt.ylabel('Frequency')
+    plt.title(f'Spectrogram of {base_name}')
 
     # Save the spectrogram to an image file
     output_image_path = os.path.join(output_folder, base_name + '_spectrogram.png')
-    plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
+    plt.savefig(output_image_path)
     plt.close()
 
     print(f"Spectrogram saved to {output_image_path}")
@@ -40,12 +43,11 @@ def main():
     args = parser.parse_args()
 
     input_folder = args.input_folder
-    
+
     # Extract the last part of the input folder path
     last_part_of_input_folder = os.path.basename(os.path.normpath(input_folder))
 
-    # Construct the output folder path
-    output_folder = args.output_folder or os.path.join('.', 'spectrograms', last_part_of_input_folder)
+    output_folder = args.output_folder or os.path.join('.', 'spectrograms', 'labeled', last_part_of_input_folder)
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
