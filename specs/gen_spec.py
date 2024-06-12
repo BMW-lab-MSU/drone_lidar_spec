@@ -17,16 +17,19 @@ def create_spectrogram(mat_file_path, output_folder):
     # Extract the main data array
     data_array = full_data[0, 0][0]
 
+    # Get the base name of the file (without directory and extension)
+    base_name = os.path.splitext(os.path.basename(mat_file_path))[0]
+
     # Generate the spectrogram
     plt.figure(figsize=(10, 6))
     plt.imshow(data_array, aspect='auto', origin='lower', cmap='viridis')
     plt.colorbar(label='Intensity')
     plt.xlabel('Time')
     plt.ylabel('Frequency')
-    plt.title('Spectrogram')
+    plt.title(f'Spectrogram of {base_name}')
 
     # Save the spectrogram to an image file
-    output_image_path = os.path.join(output_folder, os.path.splitext(os.path.basename(mat_file_path))[0] + '_spectrogram.png')
+    output_image_path = os.path.join(output_folder, base_name + '_spectrogram.png')
     plt.savefig(output_image_path)
     plt.close()
 
