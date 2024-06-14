@@ -5,6 +5,22 @@ import matplotlib.pyplot as plt
 import os
 import argparse
 
+def parse_filename(filename):
+    """Extract details from the filename."""
+    base_name = os.path.splitext(os.path.basename(filename))[0]
+    parts = base_name.split('-')
+    if len(parts) != 9:
+        return None
+    
+    details = {
+        'drone_name': f"{parts[0]}-{parts[1]}",
+        'time_stamp': f"{parts[2]}-{parts[3]}-{parts[4]}",
+        'tilt_angle': parts[6].replace('tilt', ''),
+        'propeller': parts[7],
+        'throttle': parts[8]
+    }
+    return details
+
 def create_spectrogram(file_path, output_folder, with_labels):
     file_extension = os.path.splitext(file_path)[1].lower()
 
@@ -24,14 +40,27 @@ def create_spectrogram(file_path, output_folder, with_labels):
     elif file_extension in ['.h5', '.hdf5']:
         # Load the HDF5 file
         with h5py.File(file_path, 'r') as hdf5_file:
-            # Extract the 'full_data' dataset
-            if 'full_data' not in hdf5_file:
-                print(f"No 'full_data' dataset found in {file_path}. Skipping...")
+            # Extract the 'data' dataset
+            if 'data' not in hdf5_file:
+                print(f"No 'data' group found in {file_path}. Skipping...")
+                return
+
+            data_group = hdf5_file['data']
+            if 'data' not in data_group:
+                print(f"No 'data/data' dataset found in {file_path}. Skipping...")
                 return
             
-            full_data = hdf5_file['full_data']
-            # Assuming 'full_data' is a 2D array, if it's 3D or other, modify accordingly
-            data_array = np.array(full_data)
+            data = data_group['data'][:]
+            
+            # Convert to a NumPy array
+            data_array = np.array(data)
+            
+            # If the data is 3D, we need to select a slice to generate a 2D spectrogram
+            if len(data_array.shape) == 3:
+                data_array = data_array[0, :, :]  # Using the first frame for the spectrogram
+            elif len(data_array.shape) != 2:
+                print(f"Unexpected data shape {data_array.shape} in {file_path}. Skipping...")
+                return
 
     else:
         print(f"Unsupported file extension {file_extension}. Skipping {file_path}...")
@@ -39,6 +68,9 @@ def create_spectrogram(file_path, output_folder, with_labels):
 
     # Get the base name of the file (without directory and extension)
     base_name = os.path.splitext(os.path.basename(file_path))[0]
+
+    # Parse the filename for details
+    details = parse_filename(file_path)
 
     # Generate the spectrogram
     plt.figure(figsize=(10, 6))
@@ -49,6 +81,15 @@ def create_spectrogram(file_path, output_folder, with_labels):
         plt.xlabel('Time')
         plt.ylabel('Frequency')
         plt.title(f'Spectrogram of {base_name}')
+
+        if details and file_extension in ['.h5', '.hdf5']:
+            text_str = (f"Drone Name: {details['drone_name']}\n"
+                        f"Time Stamp: {details['time_stamp']}\n"
+                        f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                        f"Propeller: {details['propeller']}\n"
+                        f"Throttle: {details['throttle']}")
+            plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+
     else:
         plt.axis('off')  # Turn off axes
 
