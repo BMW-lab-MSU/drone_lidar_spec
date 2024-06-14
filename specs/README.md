@@ -1,6 +1,6 @@
 # Spectrogram Generator 📊🎶
 
-This project generates spectrograms from MATLAB `.mat` files. The input `.mat` files are stored in a directory named `mat_files`, and the generated spectrograms are saved in a directory named `spectrograms`.
+This project generates spectrograms from MATLAB `.mat` files or HDF5 `.h5` files. The input files are stored in a directory named `input_files`, and the generated spectrograms are saved in a directory named `spectrograms`.
 
 ## Contents
 
@@ -12,36 +12,35 @@ This project generates spectrograms from MATLAB `.mat` files. The input `.mat` f
 
 ## How to Use 🚀
 
-There are two ways to generate spectrograms: with labels and without labels. This is done by running either `gen_spec_labeled.py` or `gen_spec_raw.py`.
-
+You can generate spectrograms either with labels or without labels by using a single script and specifying the desired option through a command-line argument.
 
 ### Running the Script
 
-1. **Place your `.mat` files in the `mat_files` directory.**
-2. **Run the appropriate script to generate spectrograms.**
+1. **Place your `.mat` or `.h5` files in the `input_files` directory.**
+2. **Run the script to generate spectrograms, specifying whether to include labels.**
 
 #### With Labels
 
 To generate spectrograms with labels:
 
 ```bash
-python gen_spec_labeled.py mat_files/FOLDERHERE --output_folder path/to/output/folder
+python gen_spec.py input_files/FOLDERHERE --output_folder path/to/output/folder --with_labels
 ```
 #### Without Labels
 
 To generate spectrograms without labels:
 
 ```bash
-python gen_spec_raw.py mat_files/FOLDERHERE --output_folder path/to/output/folder
+python gen_spec.py mat_files/FOLDERHERE --output_folder path/to/output/folder
 ```
 
 ## Notes
 
-`mat_files` is the input folder containing your `.mat` files.
+`input_files` is the input folder containing your `.mat` or `.h5` files.
 
 `spectrograms/labeled` or `spectrograms/raw` are the folders where the spectrograms will be saved.
 
-The `--output_folder` argument is optional, and will automatically save it properly by default
+The `--output_folder` argument is optional. If not specified, the script will automatically save the spectrograms in the appropriate folder based on the presence of labels.
 
 ## Directory Structure 📁
 
