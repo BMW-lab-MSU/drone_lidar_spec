@@ -72,15 +72,23 @@ def create_spectrogram(file_path, output_folder, with_labels):
     # Parse the filename for details
     details = parse_filename(file_path)
 
-    # Generate the spectrogram
+    # Parameters for the spectrogram
+    NFFT = 256  # Number of data points used in each block for the FFT
+    Fs = 1e5    # Sampling frequency
+    noverlap = 128  # Overlap between segments
+
+    # Transpose the data array to flip the axes
+    data_array_transposed = data_array.T
+
+    # Generate the spectrogram with transposed data
     plt.figure(figsize=(10, 6))
-    plt.specgram(data_array.flatten(), NFFT=256, Fs=1e6, noverlap=128, cmap='viridis')
+    Pxx, freqs, bins, im = plt.specgram(data_array_transposed.flatten(), NFFT=NFFT, Fs=Fs, noverlap=noverlap, cmap='viridis')
 
     plt.colorbar(label='Intensity')
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
-    plt.gca().invert_yaxis()
-
+    plt.ylim(0,1500) #Limit frequency range to 0-1500 Hz
+    
     if with_labels:
         plt.title(f'Spectrogram of {base_name}')
         if details:
