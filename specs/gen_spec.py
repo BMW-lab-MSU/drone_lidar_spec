@@ -1,9 +1,9 @@
-import scipy.io
-import h5py
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import scipy.io
+import h5py
 import argparse
+import os
 
 def parse_filename(filename):
     """Extract details from the filename."""
@@ -74,22 +74,22 @@ def create_spectrogram(file_path, output_folder, with_labels):
 
     # Generate the spectrogram
     plt.figure(figsize=(10, 6))
-    plt.imshow(data_array, aspect='auto', origin='lower', cmap='viridis')
+    plt.specgram(data_array.flatten(), NFFT=256, Fs=1e6, noverlap=128, cmap='viridis')
+
+    plt.colorbar(label='Intensity')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Frequency (Hz)')
+    plt.gca().invert_yaxis()
 
     if with_labels:
-        plt.colorbar(label='Intensity')
-        plt.xlabel('Time')
-        plt.ylabel('Frequency')
         plt.title(f'Spectrogram of {base_name}')
-
-        if details and file_extension in ['.h5', '.hdf5']:
+        if details:
             text_str = (f"Drone Name: {details['drone_name']}\n"
                         f"Time Stamp: {details['time_stamp']}\n"
                         f"Tilt Angle: {details['tilt_angle']} degrees\n"
                         f"Propeller: {details['propeller']}\n"
                         f"Throttle: {details['throttle']}")
             plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-
     else:
         plt.axis('off')  # Turn off axes
 
