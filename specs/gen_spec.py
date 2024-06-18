@@ -87,7 +87,7 @@ def create_spectrogram(file_path, output_folder, with_labels):
     plt.colorbar(label='Intensity')
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
-    plt.ylim(0,1500) #Limit frequency range to 0-1500 Hz
+    #plt.ylim(0,1500) #Limit frequency range to 0-1500 Hz
     
     if with_labels:
         plt.title(f'Spectrogram of {base_name}')

@@ -16,7 +16,7 @@ You can generate spectrograms either with labels or without labels by using a si
 
 ### Running the Script
 
-1. **Place your `.mat` or `.h5` files in the `input_files` directory.**
+1. **Place your `.mat` or `.h5` files in the `mat_files` or `hdf5_files` directory respectively.**
 2. **Run the script to generate spectrograms, specifying whether to include labels.**
 
 #### With Labels
@@ -24,19 +24,17 @@ You can generate spectrograms either with labels or without labels by using a si
 To generate spectrograms with labels:
 
 ```bash
-python gen_spec.py input_files/FOLDERHERE --output_folder path/to/output/folder --with_labels
+python gen_spec.py path/to/input/folder --output_folder path/to/output/folder --with_labels
 ```
 #### Without Labels
 
 To generate spectrograms without labels:
 
 ```bash
-python gen_spec.py mat_files/FOLDERHERE --output_folder path/to/output/folder
+python gen_spec.py path/to/input/folder --output_folder path/to/output/folder
 ```
 
 ## Notes
-
-`input_files` is the input folder containing your `.mat` or `.h5` files.
 
 `spectrograms/labeled` or `spectrograms/raw` are the folders where the spectrograms will be saved.
 
