@@ -74,11 +74,22 @@ def create_spectrogram(file_path, output_folder, with_labels):
 
     # Parameters for the spectrogram
     NFFT = 256  # Number of data points used in each block for the FFT
-    Fs = 1e5    # Sampling frequency
+    Fs = 1e5    # Sampling frequency, must compute - can get from timestamps
     noverlap = 128  # Overlap between segments
 
     # Transpose the data array to flip the axes
     data_array_transposed = data_array.T
+    # Need spec for each and every row from the time domain
+    #Instead of flattening, make spectrogram for each row (each row from time domain plot)
+    # Must know which rows have drones 
+    #eyeball the original image 
+    # each range bin gets spectrogram
+    # 256 range bins
+    # most will be nothing, must find the range bins with the drone
+    # Flattening wasnt the move, must find the right range bin
+    # Current spectrograms dont really make sense
+    # Need to narrow down which range bins have the drone
+    # Save which range bins have the drone
 
     # Generate the spectrogram with transposed data
     plt.figure(figsize=(10, 6))
