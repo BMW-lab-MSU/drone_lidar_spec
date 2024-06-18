@@ -21,7 +21,7 @@ def parse_filename(filename):
     }
     return details
 
-def create_spectrogram(file_path, output_folder, with_labels):
+def create_spectrogram(file_path, output_folder, with_labels, range_bins):
     file_extension = os.path.splitext(file_path)[1].lower()
 
     if file_extension == '.mat':
@@ -74,60 +74,56 @@ def create_spectrogram(file_path, output_folder, with_labels):
 
     # Parameters for the spectrogram
     NFFT = 256  # Number of data points used in each block for the FFT
-    Fs = 1e5    # Sampling frequency, must compute - can get from timestamps
-    noverlap = 128  # Overlap between segments
+    pad_to = 1024
+    Fs = 1e4    # Sampling frequency, must compute - can get from timestamps
+    noverlap = NFFT * 3/4  # Overlap between segments
 
-    # Transpose the data array to flip the axes
-    data_array_transposed = data_array.T
-    # Need spec for each and every row from the time domain
-    #Instead of flattening, make spectrogram for each row (each row from time domain plot)
-    # Must know which rows have drones 
-    #eyeball the original image 
-    # each range bin gets spectrogram
-    # 256 range bins
-    # most will be nothing, must find the range bins with the drone
-    # Flattening wasnt the move, must find the right range bin
-    # Current spectrograms dont really make sense
-    # Need to narrow down which range bins have the drone
-    # Save which range bins have the drone
+    for range_bin in range_bins:
+        if range_bin < 0 or range_bin >= data_array.shape[0]:
+            print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
+            continue
+        
+        data_array_transposed = data_array[range_bin, :]
+        data_array_transposed = data_array_transposed
+        
+        plt.figure(figsize=(10, 6))
+        Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=Fs, noverlap=noverlap, cmap='viridis')
 
-    # Generate the spectrogram with transposed data
-    plt.figure(figsize=(10, 6))
-    Pxx, freqs, bins, im = plt.specgram(data_array_transposed.flatten(), NFFT=NFFT, Fs=Fs, noverlap=noverlap, cmap='viridis')
+        plt.colorbar(label='Intensity')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Frequency (Hz)')
+        plt.ylim(0, 1500) #Limit to show only signals from 0 to 1500
+        #plt.xlim(0, 0.25) # Limit to show only signals from 0 to 0.25 seconds
+        
+        if with_labels:
+            plt.title(f'Spectrogram of {base_name} - Range Bin {range_bin}')
+            if details:
+                text_str = (f"Drone Name: {details['drone_name']}\n"
+                            f"Time Stamp: {details['time_stamp']}\n"
+                            f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                            f"Propeller: {details['propeller']}\n"
+                            f"Throttle: {details['throttle']}")
+                plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+        else:
+            plt.axis('off')  # Turn off axes
 
-    plt.colorbar(label='Intensity')
-    plt.xlabel('Time (s)')
-    plt.ylabel('Frequency (Hz)')
-    #plt.ylim(0,1500) #Limit frequency range to 0-1500 Hz
-    
-    if with_labels:
-        plt.title(f'Spectrogram of {base_name}')
-        if details:
-            text_str = (f"Drone Name: {details['drone_name']}\n"
-                        f"Time Stamp: {details['time_stamp']}\n"
-                        f"Tilt Angle: {details['tilt_angle']} degrees\n"
-                        f"Propeller: {details['propeller']}\n"
-                        f"Throttle: {details['throttle']}")
-            plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-    else:
-        plt.axis('off')  # Turn off axes
+        # Save the spectrogram to an image file
+        output_image_path = os.path.join(output_folder, f"{base_name}_spectrogram_range_bin_{range_bin}.png")
+        if with_labels:
+            plt.savefig(output_image_path)
+        else:
+            plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
+        
+        plt.close()
 
-    # Save the spectrogram to an image file
-    output_image_path = os.path.join(output_folder, base_name + '_spectrogram.png')
-    if with_labels:
-        plt.savefig(output_image_path)
-    else:
-        plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
-    
-    plt.close()
-
-    print(f"Spectrogram saved to {output_image_path}")
+        print(f"Spectrogram for range bin {range_bin} saved to {output_image_path}")
 
 def main():
     parser = argparse.ArgumentParser(description="Generate spectrograms from .mat or HDF5 files in a specified folder.")
     parser.add_argument('input_folder', type=str, help="Path to the folder containing .mat or HDF5 files.")
     parser.add_argument('--output_folder', type=str, default=None, help="Path to the output folder where spectrograms will be saved. Default is './spectrograms'.")
     parser.add_argument('--with_labels', action='store_true', help="Include labels in the spectrograms.")
+    parser.add_argument('--range_bins', type=str, default="0", help="Specify a single range bin or a range of range bins (e.g., 120 or 120-130).")
 
     args = parser.parse_args()
 
@@ -145,11 +141,18 @@ def main():
     # Create the output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
+    # Parse range bins
+    if '-' in args.range_bins:
+        start, end = map(int, args.range_bins.split('-'))
+        range_bins = list(range(start, end + 1))
+    else:
+        range_bins = [int(args.range_bins)]
+
     # Loop through all files in the input folder
     for filename in os.listdir(input_folder):
         file_path = os.path.join(input_folder, filename)
         if filename.endswith('.mat') or filename.endswith('.h5') or filename.endswith('.hdf5'):
-            create_spectrogram(file_path, output_folder, args.with_labels)
+            create_spectrogram(file_path, output_folder, args.with_labels, range_bins)
 
 if __name__ == "__main__":
     main()
