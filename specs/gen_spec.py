@@ -51,6 +51,8 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
                 return
             
             data = data_group['data'][:]
+            timestamps = hdf5_file['data/timestamps'][:]
+            timestamps = timestamps / 1e9  # Assuming timestamps are in nanoseconds
             
             # Convert to a NumPy array
             data_array = np.array(data)
@@ -75,8 +77,9 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
     # Parameters for the spectrogram
     NFFT = 256  # Number of data points used in each block for the FFT
     pad_to = 1024
-    Fs = 1e4    # Sampling frequency, must compute - can get from timestamps
-    noverlap = NFFT * 3/4  # Overlap between segments
+    sampling_period = np.mean(np.diff(timestamps[0,:]))
+    sampling_freq =  1 / sampling_period
+    noverlap = int(NFFT * 3/4)  # Overlap between segments
 
     for range_bin in range_bins:
         if range_bin < 0 or range_bin >= data_array.shape[0]:
@@ -84,10 +87,9 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
             continue
         
         data_array_transposed = data_array[range_bin, :]
-        data_array_transposed = data_array_transposed
         
         plt.figure(figsize=(10, 6))
-        Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=Fs, noverlap=noverlap, cmap='viridis')
+        Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
 
         plt.colorbar(label='Intensity')
         plt.xlabel('Time (s)')
@@ -97,18 +99,43 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
         
         if with_labels:
             plt.title(f'Spectrogram of {base_name} - Range Bin {range_bin}')
-            if details:
-                text_str = (f"Drone Name: {details['drone_name']}\n"
-                            f"Time Stamp: {details['time_stamp']}\n"
-                            f"Tilt Angle: {details['tilt_angle']} degrees\n"
-                            f"Propeller: {details['propeller']}\n"
-                            f"Throttle: {details['throttle']}")
-                plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+            # Label propeller
+            propeller_mapping = {
+                'fr': 'front_right',
+                'br': 'back_right',
+                'fl': 'front_left',
+                'bl': 'back_left'
+            }
+            propeller = propeller_mapping.get(details['propeller'], '')
+            print(f"Propeller: {propeller}")  # Debug print to check propeller value
+            if propeller:
+                # Find ground truth frequency
+                hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
+                print(f"HDF5 path: {hdf5_path}")  # Debug print to check HDF5 path
+                if hdf5_path in hdf5_file:
+                    exp_freq = hdf5_file[hdf5_path][:]
+                    print(f"exp_freq array: {exp_freq}")  # Print the whole array for debugging
+                    exp_freq_first = exp_freq[0]
+                    print(f"First value of exp_freq: {exp_freq_first}")  # Print the first value
+                else:
+                    print(f"Path {hdf5_path} not found in {file_path}.")
+                    exp_freq_first = "N/A"
+
+                if details:
+                    text_str = (f"Drone Name: {details['drone_name']}\n"
+                                f"Time Stamp: {details['time_stamp']}\n"
+                                f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                                f"Propeller: {propeller}\n"
+                                f"Throttle: {details['throttle']}\n"
+                                f"Expected Frequency: {exp_freq_first}")
+                    plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+            else:
+                print(f"Unknown propeller: {details['propeller']}")
         else:
             plt.axis('off')  # Turn off axes
 
         # Save the spectrogram to an image file
-        output_image_path = os.path.join(output_folder, f"{base_name}_spectrogram_range_bin_{range_bin}.png")
+        output_image_path = os.path.join(output_folder, f"{base_name}.png")
         if with_labels:
             plt.savefig(output_image_path)
         else:
