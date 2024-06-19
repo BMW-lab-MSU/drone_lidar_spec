@@ -64,86 +64,73 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
                 print(f"Unexpected data shape {data_array.shape} in {file_path}. Skipping...")
                 return
 
-    else:
-        print(f"Unsupported file extension {file_extension}. Skipping {file_path}...")
-        return
+            # Get the base name of the file (without directory and extension)
+            base_name = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Get the base name of the file (without directory and extension)
-    base_name = os.path.splitext(os.path.basename(file_path))[0]
+            # Parse the filename for details
+            details = parse_filename(file_path)
 
-    # Parse the filename for details
-    details = parse_filename(file_path)
+            # Parameters for the spectrogram
+            NFFT = 256  # Number of data points used in each block for the FFT
+            pad_to = 1024
+            sampling_period = np.mean(np.diff(timestamps[0,:]))
+            sampling_freq =  1 / sampling_period
+            noverlap = int(NFFT * 3/4)  # Overlap between segments
 
-    # Parameters for the spectrogram
-    NFFT = 256  # Number of data points used in each block for the FFT
-    pad_to = 1024
-    sampling_period = np.mean(np.diff(timestamps[0,:]))
-    sampling_freq =  1 / sampling_period
-    noverlap = int(NFFT * 3/4)  # Overlap between segments
+            for range_bin in range_bins:
+                if range_bin < 0 or range_bin >= data_array.shape[0]:
+                    print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
+                    continue
 
-    for range_bin in range_bins:
-        if range_bin < 0 or range_bin >= data_array.shape[0]:
-            print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
-            continue
-        
-        data_array_transposed = data_array[range_bin, :]
-        
-        plt.figure(figsize=(10, 6))
-        Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                data_array_transposed = data_array[range_bin, :]
 
-        plt.colorbar(label='Intensity')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Frequency (Hz)')
-        plt.ylim(0, 1500) #Limit to show only signals from 0 to 1500
-        #plt.xlim(0, 0.25) # Limit to show only signals from 0 to 0.25 seconds
-        
-        if with_labels:
-            plt.title(f'Spectrogram of {base_name} - Range Bin {range_bin}')
-            # Label propeller
-            propeller_mapping = {
-                'fr': 'front_right',
-                'br': 'back_right',
-                'fl': 'front_left',
-                'bl': 'back_left'
-            }
-            propeller = propeller_mapping.get(details['propeller'], '')
-            print(f"Propeller: {propeller}")  # Debug print to check propeller value
-            if propeller:
-                # Find ground truth frequency
-                hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
-                print(f"HDF5 path: {hdf5_path}")  # Debug print to check HDF5 path
-                if hdf5_path in hdf5_file:
-                    exp_freq = hdf5_file[hdf5_path][:]
-                    print(f"exp_freq array: {exp_freq}")  # Print the whole array for debugging
-                    exp_freq_first = exp_freq[0]
-                    print(f"First value of exp_freq: {exp_freq_first}")  # Print the first value
+                plt.figure(figsize=(10, 6))
+                Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+
+                plt.colorbar(label='Intensity')
+                plt.xlabel('Time (s)')
+                plt.ylabel('Frequency (Hz)')
+                plt.ylim(0, 1500) # Limit to show only signals from 0 to 1500
+                # plt.xlim(0, 0.25) # Limit to show only signals from 0 to 0.25 seconds
+
+                if with_labels:
+                    plt.title(f'Spectrogram of {base_name} - Range Bin {range_bin}')
+                    # Label propeller
+                    propeller_mapping = {
+                        'fr': 'front_right',
+                        'br': 'back_right',
+                        'fl': 'front_left',
+                        'bl': 'back_left'
+                    }
+                    propeller = propeller_mapping.get(details['propeller'], '')
+                    if propeller:
+                        # Find ground truth frequency
+                        hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
+                        with h5py.File(file_path, 'r') as hdf5_file:
+                            exp_freq = hdf5_file[hdf5_path][:]
+                            exp_freq_first = round(exp_freq[0])
+
+                        if details:
+                            text_str = (f"Drone Name: {details['drone_name']}\n"
+                                        f"Time Stamp: {details['time_stamp']}\n"
+                                        f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                                        f"Propeller: {propeller}\n"
+                                        f"Throttle: {details['throttle']}\n"
+                                        f"Expected Frequency: {exp_freq_first}")
+                            plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
                 else:
-                    print(f"Path {hdf5_path} not found in {file_path}.")
-                    exp_freq_first = "N/A"
+                    plt.axis('off')  # Turn off axes
 
-                if details:
-                    text_str = (f"Drone Name: {details['drone_name']}\n"
-                                f"Time Stamp: {details['time_stamp']}\n"
-                                f"Tilt Angle: {details['tilt_angle']} degrees\n"
-                                f"Propeller: {propeller}\n"
-                                f"Throttle: {details['throttle']}\n"
-                                f"Expected Frequency: {exp_freq_first}")
-                    plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-            else:
-                print(f"Unknown propeller: {details['propeller']}")
-        else:
-            plt.axis('off')  # Turn off axes
+                # Save the spectrogram to an image file
+                output_image_path = os.path.join(output_folder, f"{base_name}.png")
+                if with_labels:
+                    plt.savefig(output_image_path)
+                else:
+                    plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
 
-        # Save the spectrogram to an image file
-        output_image_path = os.path.join(output_folder, f"{base_name}.png")
-        if with_labels:
-            plt.savefig(output_image_path)
-        else:
-            plt.savefig(output_image_path, bbox_inches='tight', pad_inches=0)
-        
-        plt.close()
+                plt.close()
 
-        print(f"Spectrogram for range bin {range_bin} saved to {output_image_path}")
+                print(f"Spectrogram for range bin {range_bin} saved to {output_image_path}")
 
 def main():
     parser = argparse.ArgumentParser(description="Generate spectrograms from .mat or HDF5 files in a specified folder.")

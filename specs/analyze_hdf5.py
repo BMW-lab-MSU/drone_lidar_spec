@@ -17,6 +17,19 @@ def analyze_hdf5_file(file_path):
     with h5py.File(file_path, 'r') as hdf5_file:
         print(f"Inspecting structure of {file_path}:")
         inspect_hdf5_group(hdf5_file)
+        
+        # Attempt to access the specific dataset
+        try:
+            dataset_path = 'parameters/prop_frequency/front_right/avg'
+            print(f"Attempting to access dataset at path: {dataset_path}")
+            data = hdf5_file[dataset_path][0]
+            print(f"Dataset '{dataset_path}' contents:\n{data}")
+        except KeyError as e:
+            print(f"KeyError: {e}")
+        except ValueError as e:
+            print(f"ValueError: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze the structure of the first HDF5 file in a specified folder.")
