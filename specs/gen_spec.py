@@ -110,6 +110,9 @@ def create_spectrogram(file_path, output_folder, with_labels, range_bins):
                             exp_freq = hdf5_file[hdf5_path][:]
                             exp_freq_first = round(exp_freq[0])
 
+                        # Add a red marker at the expected frequency
+                        plt.axhline(y=exp_freq_first, color='r', linestyle='--')
+
                         if details:
                             text_str = (f"Drone Name: {details['drone_name']}\n"
                                         f"Time Stamp: {details['time_stamp']}\n"
