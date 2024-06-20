@@ -17,10 +17,6 @@ RUN rm /etc/apt/sources.list.d/cuda.list \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
 
-# (Optional, use Mirror to speed up downloads)
-# RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirrors.aliyun.com\/ubuntu\//g' /etc/apt/sources.list && \
-#    pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
 # Install the required packages, including cifs-utils
 RUN apt-get update \
     && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 cifs-utils \
@@ -39,5 +35,14 @@ RUN conda clean --all \
 
 # Install h5py and scipy
 RUN pip install h5py scipy
+
+# Install the Globus CLI
+RUN pip install --user globus-cli
+
+# Add the pip user bin directory to the PATH environment variable
+ENV PATH=$PATH:/root/.local/bin
+
+# Verify the installation of Globus CLI
+RUN globus --version
 
 WORKDIR /mmdetection
