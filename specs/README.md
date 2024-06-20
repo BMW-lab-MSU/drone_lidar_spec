@@ -7,60 +7,67 @@ This project generates spectrograms from MATLAB `.mat` files or HDF5 `.h5` files
 - [How to Use](#how-to-use)
   - [Running the Script](#running-the-script)
   - [Directory Structure](#directory-structure)
+- [Annotations](#annotations)
+- [Details File](#details-file)
 
 ---
 
 ## How to Use 🚀
 
-You can generate spectrograms either with labels or without labels by using a single script and specifying the desired option through a command-line argument.
+You can generate spectrograms using a single script.
 
 ### Running the Script
 
-1. **Place your `.mat` or `.h5` files in the `mat_files` or `hdf5_files` directory respectively.**
-2. **Run the script to generate spectrograms, specifying whether to include labels.**
+1. **Place your `.mat` or `.h5` files in the `input_files` directory.**
+2. **Run the script to generate spectrograms, specifying the input folder, output folder, range bins, and number of pixels for bounding boxes.**
 
-#### With Labels
+#### Command
 
-To generate spectrograms with labels:
-
-```bash
-python gen_spec.py path/to/input/folder --output_folder path/to/output/folder --with_labels
-```
-#### Without Labels
-
-To generate spectrograms without labels:
+To generate spectrograms:
 
 ```bash
-python gen_spec.py path/to/input/folder --output_folder path/to/output/folder
+python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 10
 ```
-
-## Notes
-
-`spectrograms/labeled` or `spectrograms/raw` are the folders where the spectrograms will be saved.
-
-The `--output_folder` argument is optional. If not specified, the script will automatically save the spectrograms in the appropriate folder based on the presence of labels.
 
 ## Directory Structure 📁
 
 The generated spectrograms will be saved in the following directory structure:
 
+```bash
+spectrograms/
+└── drone_name-timestamp-tiltangle-propeller-throttle
+    ├── annotations.json
+    ├── details.txt
+    ├── Labeled
+    │   ├── spec_labeled_range_bin=x.png
+    │   ├── spec_labeled_range_bin=x+1.png
+    │   └── ... (other range bins)
+    └── Raw
+        ├── spec_raw_range_bin=x.png
+        ├── spec_raw_range_bin=x+1.png
+        └── ... (other range bins)
 ```
-├── gen_spec_labeled.py
-├── gen_spec_raw.py
-├── mat_files
-│   ├── norm360-drone-prop-distance-test140719
-│   └── norm360-drone-prop-distance-test145448
-├── README.md
-└── spectrograms
-    ├── labeled
-    │   ├── norm360-drone-prop-distance-test140719
-    │   └── norm360-drone-prop-distance-test145448
-    └── raw
-        ├── norm360-drone-prop-distance-test140719
-        └── norm360-drone-prop-distance-test145448
-```
 
+## Annotations 📝
 
-# Enjoy generating your spectrograms! 🎉📈
+The `annotations.json` file contains the bounding box annotations in COCO format. It includes the following information for each annotated image:
 
-# TODO: UPDATE THIS WITH --range_bins ARG
+- `image_id`: The ID of the image.
+- `category_id`: The category ID (1 for drone frequency).
+- `bbox`: The bounding box coordinates `[x, y, width, height]`.
+- `area`: The area of the bounding box.
+- `iscrowd`: Specifies whether the annotation is a crowd (always 0 for this case).
+
+## Details File 📄
+
+The `details.txt` file contains metadata about the spectrograms, including:
+
+- `Drone Name`
+- `Time Stamp`
+- `Tilt Angle`
+- `Propeller`
+- `Throttle`
+- `Range Bins`
+- `Expected Frequency` (if available)
+
+## Enjoy generating your spectrograms! 🎉📈

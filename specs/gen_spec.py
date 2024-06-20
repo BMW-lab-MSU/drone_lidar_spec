@@ -119,7 +119,7 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
 def main():
     parser = argparse.ArgumentParser(description="Generate spectrograms from .mat or HDF5 files in a specified folder.")
     parser.add_argument('input_folder', type=str, help="Path to the folder containing .mat or HDF5 files.")
-    parser.add_argument('--n_pixels', type=int, default=10, help="Number of pixels around the ground truth frequency for the bounding box.")
+    parser.add_argument('--n_pixels', type=int, default=30, help="Number of pixels around the ground truth frequency for the bounding box.")
     parser.add_argument('--range_bins', type=str, default="0", help="Specify a single range bin or a range of range bins (e.g., 120 or 120-130).")
     parser.add_argument('--output_folder', type=str, default=None, help="Path to the output folder where spectrograms will be saved. Default is './spectrograms'.")
 
