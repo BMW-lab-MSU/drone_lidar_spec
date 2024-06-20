@@ -3,5 +3,5 @@ time_stamp: 17-26-16
 tilt_angle: 60
 propeller: fr
 throttle: 100
-expected_frequency: 1267
+actual_frequency: 1267
 range bins: [121]
