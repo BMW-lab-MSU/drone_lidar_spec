@@ -5,12 +5,15 @@ What range of tilt angles can frequencies of a drone rotor be identified in spec
 
 ## Directories 📂
 
-### calc_norms
-📐 Calculate normalization values used for detection in backbone preprocessing.
+### scripts
+contains miscellaneous infrequently used scripts
+- calc_norms.py
+    - calculate the normalization values for backbone training
 
 ### det_outputs
 🖼️ Some outputs from random images from COCO using the mmdet inference demo.
 *Note: These will need to be deleted in the final version.*
+# MOVING THIS TO BLACKMORE
 
 ### mmdetection
 📚 The cloned repository of the mmdetection library.
