@@ -100,7 +100,7 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                                 f"Throttle: {details['throttle']}\n"
                                 f"Actual Frequency: {exp_freq_first}")
                     plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-                    details['expected_frequency'] = int(exp_freq_first)
+                    details['actual_frequency'] = int(exp_freq_first)
                 output_image_path_labeled = os.path.join(output_folder, 'Labeled', f"spec_labeled_range_bin={range_bin}.png")
                 plt.savefig(output_image_path_labeled)
                 plt.close()
