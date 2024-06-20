@@ -6,14 +6,14 @@ What range of tilt angles can frequencies of a drone rotor be identified in spec
 ## Directories 📂
 
 ### scripts
-contains miscellaneous infrequently used scripts
-- calc_norms.py
-    - calculate the normalization values for backbone training
+Contains miscellaneous infrequently used scripts.
+
+- **calc_norms.py**
+    - Calculate the normalization values for backbone training.
 
 ### det_outputs
 🖼️ Some outputs from random images from COCO using the mmdet inference demo.
 *Note: These will need to be deleted in the final version.*
-# MOVING THIS TO BLACKMORE
 
 ### mmdetection
 📚 The cloned repository of the mmdetection library.
@@ -23,7 +23,7 @@ Includes a bit of customization necessary to get the inference demo running.
 💻 Stores scripts for running larger scale jobs on Tempest.
 
 ### specs
-📊 Contains code for generating spectrograms.
+📊 Contains code for generating spectrograms. Generates annotations as well. More details can be found in the [specs/README.md](specs/README.md) file.
 
 ## Docker 🐳
 The Docker image is contained here. For use at MSU, the image was converted to an Apptainer image so it could be run on Tempest (MSU HPC).   
