@@ -5,3 +5,4 @@ propeller: fr
 throttle: 100
 actual_frequency: 1258
 range bins: [121]
+bounding box width: 40

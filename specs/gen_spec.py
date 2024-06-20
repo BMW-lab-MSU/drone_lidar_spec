@@ -176,7 +176,7 @@ def main():
             with open(details_file_path, 'w') as details_file:
                 for key, value in details.items():
                     details_file.write(f"{key}: {value}\n")
-                details_file.write(f"range bins: {range_bins}")
+                details_file.write(f"range bins: {range_bins}\n")
                 details_file.write(f"bounding box width: {args.n_pixels}")
 
             print(f"Processed {filename}")
