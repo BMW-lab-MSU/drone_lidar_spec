@@ -1,0 +1,7 @@
+drone_name: stan-fpv
+time_stamp: 17-33-19
+tilt_angle: 90
+propeller: fr
+throttle: 20
+expected_frequency: 307
+range bins: [121]

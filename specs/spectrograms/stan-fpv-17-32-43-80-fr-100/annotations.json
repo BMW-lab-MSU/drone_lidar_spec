@@ -1,0 +1,24 @@
+{
+    "images": [],
+    "annotations": [
+        {
+            "image_id": "stan-fpv-17-32-43-tilt-80-fr-100",
+            "category_id": 1,
+            "bbox": [
+                0,
+                1234,
+                13,
+                60
+            ],
+            "area": 780,
+            "iscrowd": 0
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "drone_frequency",
+            "supercategory": "object"
+        }
+    ]
+}
