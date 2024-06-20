@@ -21,9 +21,9 @@ RUN rm /etc/apt/sources.list.d/cuda.list \
 # RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirrors.aliyun.com\/ubuntu\//g' /etc/apt/sources.list && \
 #    pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-# Install the required packages
+# Install the required packages, including cifs-utils
 RUN apt-get update \
-    && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 \
+    && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 cifs-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
