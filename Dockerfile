@@ -37,12 +37,12 @@ RUN conda clean --all \
 RUN pip install h5py scipy
 
 # Install the Globus CLI
-RUN pip install --user globus-cli
+RUN pip install globus-cli
 
 # Add the pip user bin directory to the PATH environment variable
 ENV PATH=$PATH:/root/.local/bin
 
 # Verify the installation of Globus CLI
-RUN globus --version
+RUN globus --help
 
 WORKDIR /mmdetection
