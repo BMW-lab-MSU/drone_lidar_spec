@@ -10,14 +10,12 @@ def parse_filename(filename):
     """Extract details from the filename."""
     base_name = os.path.splitext(os.path.basename(filename))[0]
     parts = base_name.split('-')
-    if len(parts) != 9:
-        return None
     details = {
-        'drone_name': f"{parts[0]}-{parts[1]}",
-        'time_stamp': f"{parts[2]}-{parts[3]}-{parts[4]}",
-        'tilt_angle': parts[6].replace('tilt', ''),
-        'propeller': parts[7],
-        'throttle': parts[8]
+        'drone_name': '-'.join(parts[:len(parts) - 8 + 1]),
+        'time_stamp': f"{parts[-7]}-{parts[-6]}-{parts[-5]}",
+        'tilt_angle': parts[-3],
+        'propeller': parts[-2],
+        'throttle': parts[-1]
     }
     return details
 

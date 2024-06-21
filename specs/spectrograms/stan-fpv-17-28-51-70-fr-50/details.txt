@@ -1,8 +1,0 @@
-drone_name: stan-fpv
-time_stamp: 17-28-51
-tilt_angle: 70
-propeller: fr
-throttle: 50
-actual_frequency: 660
-range bins: [121]
-bounding box width: 40

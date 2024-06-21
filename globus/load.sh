@@ -116,3 +116,14 @@ do
         sleep 60
     fi
 done
+
+# Rename all instances of "tilt" to "-tilt" except those already containing "-tilt"
+find "$DESTINATION_DIRECTORY_PATH" -type f -name '*tilt*' | grep -v -- '-tilt' | while read FILE; do
+    DIR=$(dirname "$FILE")
+    BASENAME=$(basename "$FILE")
+    NEWNAME="${BASENAME//tilt/-tilt}"
+    if [ "$BASENAME" != "$NEWNAME" ]; then
+        mv "$FILE" "$DIR/$NEWNAME"
+        echo "Renamed $FILE to $DIR/$NEWNAME"
+    fi
+done
