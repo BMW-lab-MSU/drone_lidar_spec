@@ -6,3 +6,8 @@
 
 # Secrets
 .env
+
+#Ignore all subdirectories in specs
+#h5 files
+#spectrogram outputs
+/specs/*/
