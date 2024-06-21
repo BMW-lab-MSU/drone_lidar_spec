@@ -3,3 +3,6 @@
 
 # Ignore all .sif files
 *.sif
+
+# Secrets
+.env
