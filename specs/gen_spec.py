@@ -64,7 +64,8 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 plt.colorbar(label='Intensity')
                 plt.xlabel('Time (s)')
                 plt.ylabel('Frequency (Hz)')
-                plt.ylim(0, 1500)
+                ylim = 1500
+                plt.ylim(0, ylim)
                 propeller_mapping = {
                     'fr': 'front_right',
                     'br': 'back_right',
@@ -109,6 +110,7 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 # Plot the raw spectrogram without bounding box
                 plt.figure(figsize=(10, 6))
                 plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                plt.ylim(0, ylim)
                 plt.axis('off')
                 plt.gca().xaxis.set_visible(False)
                 plt.gca().yaxis.set_visible(False)
