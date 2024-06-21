@@ -25,6 +25,9 @@ Includes a bit of customization necessary to get the inference demo running.
 ### specs
 📊 Contains code for generating spectrograms. Generates annotations as well. More details can be found in the [specs/README.md](specs/README.md) file.
 
+### globus
+🌐 Contains scripts for transferring files using the Globus CLI.
+
 ## Docker 🐳
 The Docker image is contained here. For use at MSU, the image was converted to an Apptainer image so it could be run on Tempest (MSU HPC).   
 *Note: The Apptainer container (.sif) is not included as the file is too large.*
