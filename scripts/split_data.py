@@ -1,3 +1,25 @@
+"""
+This script is designed to split a dataset of HDF5 files into training, validation, and test sets. It takes in a directory
+containing the raw data files and splits them according to specified percentages. The split files are saved in an output 
+directory, which can be specified by the user or will default to a directory named 'splits' in the same parent directory 
+as the input data.
+
+Usage:
+    python split_data.py --data_dir /path/to/raw/data --output_dir /path/to/output/folder --train_split 70 --val_split 15 --test_split 15
+
+Arguments:
+    --data_dir:       (Required) Directory where raw data is stored.
+    --output_dir:     (Optional) Output directory (create one if left blank). Defaults to 'splits' in the parent directory of data_dir.
+    --train_split:    (Required) Percentage of data for training set.
+    --val_split:      (Optional) Percentage of data for validation set. Defaults to 0 if not provided.
+    --test_split:     (Required) Percentage of data for test set.
+
+Note:
+    The sum of train_split, val_split, and test_split must equal 100.
+"""
+
+# Optional todo: modify this to support cross fold validation and split correctly
+
 import argparse
 import os
 import shutil
