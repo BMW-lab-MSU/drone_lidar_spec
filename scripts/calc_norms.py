@@ -1,38 +1,17 @@
-# Spectrogram Image Normalization Calculator 📊🎶
-#
-# This script calculates the mean and standard deviation for each color channel (Red, Green, Blue) of spectrogram images in a directory.
-# These values are essential for normalizing your images for transfer learning with models like those in mmdetection.
-#
-# ## Usage 🛠️
-# 1. Save the script as `calculate_mean_std.py`.
-# 2. Run the script with the directory of your spectrogram images:
-#    ```bash
-#    python calculate_mean_std.py /path/to/your/spectrogram_images
-#    ```
-#
-# ## Output:
-# The script prints the mean and standard deviation for each color channel:
-#    ```bash
-#    Means: (mean_r, mean_g, mean_b)
-#    Standard Deviations: (std_r, std_g, std_b)
-#    ```
-#
-# ## Example 🔍
-#    ```bash
-#    python calculate_mean_std.py ./spectrograms
-#    ```
-#    Output:
-#    ```bash
-#    Means: (120.34, 115.67, 123.45)
-#    Standard Deviations: (60.21, 59.78, 61.34)
-#    ```
-#
-# ## Notes 📝
-# - Ensure your images are in color (RGB).
-# - The script reads images in BGR format (OpenCV convention).
-# - Processing time depends on the number and size of images.
-#
-# Happy normalizing! 🎉
+"""
+This script calculates the mean and standard deviation of the pixel values for all images in a specified directory.
+It reads images in color (BGR format), extracts pixel values for each channel (Red, Green, and Blue), and computes
+the mean and standard deviation for each channel.
+
+Usage:
+    python script_name.py <image_directory>
+
+Arguments:
+    <image_directory>: Directory containing the images.
+
+Output:
+    Prints the mean and standard deviation of the pixel values for each color channel (Red, Green, Blue).
+"""
 
 import os
 import sys
