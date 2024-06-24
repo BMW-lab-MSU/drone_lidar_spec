@@ -3,7 +3,7 @@ import os
 import shutil
 import h5py
 import numpy as np
-import pandas as pd
+import logging
 
 def parse_args():
     # Set up argument parser
@@ -21,25 +21,36 @@ def validate_splits(train_split, val_split, test_split):
     if total != 100:
         raise ValueError('Sum of train, val, and test splits must be 100')
 
-def create_output_folders(output_dir, prop_combos):
-    # Create output directory if it doesn't exist
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    # Create train, val, test directories and subdirectories for each prop combo
+def create_output_folders(output_dir):
+    # Delete the output directory if it exists
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    # Create output directory
+    os.makedirs(output_dir)
+    # Create train, val, test directories
     for prop in ['train', 'val', 'test']:
         os.makedirs(os.path.join(output_dir, prop), exist_ok=True)
-        for combo in prop_combos:
-            os.makedirs(os.path.join(output_dir, prop, combo), exist_ok=True)
 
 def get_unique_combos(files):
     # Get unique combinations of n_blades and size from the files
     combos = set()
     for file in files:
         with h5py.File(file, 'r') as f:
-            n_blades = f.attrs['n_blades']
-            size = f.attrs['size']
+            n_blades = int(f['parameters/n_blades'][()])
+            size = str(f['parameters/prop_size'][()], 'utf-8')
             combos.add(f'{n_blades}_{size}')
     return combos
+
+def filter_files_by_combo(files, combo):
+    # Filter files by their property combinations
+    filtered_files = []
+    for file in files:
+        with h5py.File(file, 'r') as f:
+            n_blades = int(f['parameters/n_blades'][()])
+            size = str(f['parameters/prop_size'][()], 'utf-8')
+            if f'{n_blades}_{size}' == combo:
+                filtered_files.append(file)
+    return filtered_files
 
 def split_data(files, train_split, val_split, test_split):
     # Randomly shuffle and split the files according to the specified splits
@@ -59,33 +70,53 @@ def main():
     
     # Set output directory to a default if not provided
     if args.output_dir is None:
-        args.output_dir = os.path.join(args.data_dir, 'split_data')
+        base_output_dir = os.path.dirname(os.path.abspath(args.data_dir))
+        args.output_dir = os.path.join(base_output_dir, 'splits')
     
     # List all HDF5 files in the data directory
-    h5_files = [os.path.join(args.data_dir, f) for f in os.listdir(args.data_dir) if f.endswith('.h5')]
+    h5_files = [os.path.join(args.data_dir, f) for f in os.listdir(args.data_dir) if f.endswith('.hdf5')]
     
     # Get unique property combinations from the HDF5 files
     prop_combos = get_unique_combos(h5_files)
     # Create output folders for each property combination
-    create_output_folders(args.output_dir, prop_combos)
+    create_output_folders(args.output_dir)
+    
+    # Initialize logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+    # Initialize file counters
+    train_counter = 0
+    val_counter = 0
+    test_counter = 0
     
     # Process each property combination
     for combo in prop_combos:
         # Get files that match the current property combination
-        combo_files = [f for f in h5_files if f'{h5py.File(f, "r").attrs["n_blades"]}_{h5py.File(f, "r").attrs["size"]}' == combo]
+        combo_files = filter_files_by_combo(h5_files, combo)
         # Split files into train, val, and test sets
         train_files, val_files, test_files = split_data(combo_files, args.train_split, args.val_split, args.test_split)
         
-        # Copy files to their respective directories
+        # Copy files to their respective directories and log progress
         for file in train_files:
-            shutil.copy(file, os.path.join(args.output_dir, 'train', combo))
+            shutil.copy(file, os.path.join(args.output_dir, 'train'))
+            train_counter += 1
+            if train_counter % 50 == 0:
+                logging.info(f'{train_counter} files copied to train folder')
+
         for file in val_files:
-            shutil.copy(file, os.path.join(args.output_dir, 'val', combo))
+            shutil.copy(file, os.path.join(args.output_dir, 'val'))
+            val_counter += 1
+            if val_counter % 50 == 0:
+                logging.info(f'{val_counter} files copied to val folder')
+
         for file in test_files:
-            shutil.copy(file, os.path.join(args.output_dir, 'test', combo))
+            shutil.copy(file, os.path.join(args.output_dir, 'test'))
+            test_counter += 1
+            if test_counter % 50 == 0:
+                logging.info(f'{test_counter} files copied to test folder')
     
     # Print completion message
-    print(f"Data split completed. Output saved in {args.output_dir}")
+    logging.info(f"Data split completed. Output saved in {args.output_dir}")
 
 if __name__ == "__main__":
     main()
