@@ -13,11 +13,19 @@ def parse_filename(filename):
     details = {
         'drone_name': '-'.join(parts[:len(parts) - 8 + 1]),
         'time_stamp': f"{parts[-7]}-{parts[-6]}-{parts[-5]}",
-        'tilt_angle': parts[-3],
+        'tilt_angle': parts[-3],  # Placeholder, will be updated from the HDF5 file
         'propeller': parts[-2],
         'throttle': parts[-1]
     }
     return details
+
+def read_tilt_angle(file_path):
+    """Read the tilt angle from the HDF5 file."""
+    with h5py.File(file_path, 'r') as hdf5_file:
+        if 'parameters/tilt' in hdf5_file:
+            tilt_angle = hdf5_file['parameters/tilt'][()]
+            return tilt_angle
+    return None
 
 def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_output, details):
     file_extension = os.path.splitext(file_path)[1].lower()
@@ -62,8 +70,8 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 plt.colorbar(label='Intensity')
                 plt.xlabel('Time (s)')
                 plt.ylabel('Frequency (Hz)')
-                ylim = 1500
-                plt.ylim(0, ylim)
+                #ylim = 1500
+                #plt.ylim(0, ylim)
                 propeller_mapping = {
                     'fr': 'front_right',
                     'br': 'back_right',
@@ -85,7 +93,9 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                         "category_id": 1,
                         "bbox": [int(coord) for coord in bbox],
                         "area": int(bbox[2] * bbox[3]),
-                        "iscrowd": 0
+                        "iscrowd": 0,
+                        "tilt_angle": details['tilt_angle'],  # Include tilt angle in annotation
+                        "actual_frequency": int(exp_freq_first)  # Include ground truth frequency in annotation
                     }
                     coco_output["annotations"].append(annotation)
                     
@@ -108,7 +118,7 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 # Plot the raw spectrogram without bounding box
                 plt.figure(figsize=(10, 6))
                 plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                plt.ylim(0, ylim)
+                #plt.ylim(0, ylim)
                 plt.axis('off')
                 plt.gca().xaxis.set_visible(False)
                 plt.gca().yaxis.set_visible(False)
@@ -140,6 +150,12 @@ def main():
             details = parse_filename(filename)
             if not details:
                 continue
+            
+            # Update tilt angle from the HDF5 file
+            tilt_angle = read_tilt_angle(file_path)
+            if tilt_angle is not None:
+                details['tilt_angle'] = int(tilt_angle)
+            
             drone_folder = f"{details['drone_name']}-{details['time_stamp']}-{details['tilt_angle']}-{details['propeller']}-{details['throttle']}"
             drone_output_folder = os.path.join(output_folder, drone_folder)
             labeled_folder = os.path.join(drone_output_folder, 'Labeled')
