@@ -5,6 +5,7 @@ import h5py
 import os
 import json
 import argparse
+from PIL import Image
 
 def parse_filename(filename):
     """Extract details from the filename."""
@@ -27,24 +28,24 @@ def read_tilt_angle(file_path):
             return tilt_angle
     return None
 
-def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_output, details):
+def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
         mat_file = scipy.io.loadmat(file_path)
         full_data = mat_file.get('full_data')
         if full_data is None:
             print(f"No 'full_data' key found in {file_path}. Skipping...")
-            return
+            return dimensions, image_id
         data_array = full_data[0, 0][0]
     elif file_extension in ['.h5', '.hdf5']:
         with h5py.File(file_path, 'r') as hdf5_file:
             if 'data' not in hdf5_file:
                 print(f"No 'data' group found in {file_path}. Skipping...")
-                return
+                return dimensions, image_id
             data_group = hdf5_file['data']
             if 'data' not in data_group:
                 print(f"No 'data/data' dataset found in {file_path}. Skipping...")
-                return
+                return dimensions, image_id
             data = data_group['data'][:]
             timestamps = hdf5_file['data/timestamps'][:]
             timestamps = timestamps / 1e9
@@ -53,7 +54,7 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 data_array = data_array[0, :, :]
             elif len(data_array.shape) != 2:
                 print(f"Unexpected data shape {data_array.shape} in {file_path}. Skipping...")
-                return
+                return dimensions, image_id
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             NFFT = 256
             pad_to = 1024
@@ -70,8 +71,6 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                 plt.colorbar(label='Intensity')
                 plt.xlabel('Time (s)')
                 plt.ylabel('Frequency (Hz)')
-                #ylim = 1500
-                #plt.ylim(0, ylim)
                 propeller_mapping = {
                     'fr': 'front_right',
                     'br': 'back_right',
@@ -89,13 +88,12 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                     bbox_height = 2 * n_pixels
                     bbox = [0, int(bbox_y), len(bins), int(bbox_height)]
                     annotation = {
-                        "image_id": base_name,
+                        "id": len(coco_output["annotations"]) + 1,
+                        "image_id": image_id,
                         "category_id": 1,
                         "bbox": [int(coord) for coord in bbox],
                         "area": int(bbox[2] * bbox[3]),
-                        "iscrowd": 0,
-                        "tilt_angle": details['tilt_angle'],  # Include tilt angle in annotation
-                        "actual_frequency": int(exp_freq_first)  # Include ground truth frequency in annotation
+                        "iscrowd": 0
                     }
                     coco_output["annotations"].append(annotation)
                     
@@ -111,21 +109,36 @@ def create_spectrogram(file_path, output_folder, range_bins, n_pixels, coco_outp
                                 f"Range Bin: {range_bin}")
                     plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
                     details['actual_frequency'] = int(exp_freq_first)
-                output_image_path_labeled = os.path.join(output_folder, 'Labeled', f"spec_labeled_range_bin={range_bin}.png")
+                output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}.png")
                 plt.savefig(output_image_path_labeled)
                 plt.close()
                 
                 # Plot the raw spectrogram without bounding box
                 plt.figure(figsize=(10, 6))
                 plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                #plt.ylim(0, ylim)
                 plt.axis('off')
                 plt.gca().xaxis.set_visible(False)
                 plt.gca().yaxis.set_visible(False)
                 plt.gca().set_frame_on(False)
-                output_image_path_raw = os.path.join(output_folder, 'Raw', f"spec_raw_range_bin={range_bin}.png")
+                output_image_path_raw = os.path.join(raw_folder, f"{base_name}_range_bin={range_bin}.png")
                 plt.savefig(output_image_path_raw, bbox_inches='tight', pad_inches=0)
                 plt.close()
+            
+                if dimensions is None:
+                    img = Image.open(output_image_path_raw)
+                    dimensions = img.size
+                
+                # Add image information to COCO output
+                image_info = {
+                    "id": image_id,
+                    "file_name": os.path.basename(output_image_path_labeled),
+                    "height": dimensions[1],
+                    "width": dimensions[0]
+                }
+                coco_output["images"].append(image_info)
+                image_id += 1
+            
+    return dimensions, image_id
 
 def main():
     parser = argparse.ArgumentParser(description="Generate spectrograms from .mat or HDF5 files in a specified folder.")
@@ -143,6 +156,21 @@ def main():
         range_bins = list(range(start, end + 1))
     else:
         range_bins = [int(args.range_bins)]
+
+    all_annotations = {
+        "images": [],
+        "annotations": [],
+        "categories": [
+            {
+                "id": 1,
+                "name": "drone_frequency",
+                "supercategory": "object"
+            }
+        ]
+    }
+    
+    dimensions = None
+    image_id = 1
 
     for filename in os.listdir(input_folder):
         file_path = os.path.join(input_folder, filename)
@@ -163,40 +191,24 @@ def main():
             os.makedirs(labeled_folder, exist_ok=True)
             os.makedirs(raw_folder, exist_ok=True)
 
+            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id)
+
             # Write details.txt
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
             with open(details_file_path, 'w') as details_file:
                 for key, value in details.items():
-                    details_file.write(f"{key}: {value}\n")
+                    if key != 'actual_frequency':
+                        details_file.write(f"{key}: {value}\n")
                 details_file.write(f"Range Bins: {args.range_bins}\n")
-
-            coco_output = {
-                "images": [],
-                "annotations": [],
-                "categories": [
-                    {
-                        "id": 1,
-                        "name": "drone_frequency",
-                        "supercategory": "object"
-                    }
-                ]
-            }
-
-            create_spectrogram(file_path, drone_output_folder, range_bins, args.n_pixels, coco_output, details)
-
-            # Write annotations.json
-            coco_file_path = os.path.join(drone_output_folder, 'annotations.json')
-            with open(coco_file_path, 'w') as coco_file:
-                json.dump(coco_output, coco_file, indent=4)
-
-            # Write updated details.txt with expected frequency
-            with open(details_file_path, 'w') as details_file:
-                for key, value in details.items():
-                    details_file.write(f"{key}: {value}\n")
-                details_file.write(f"range bins: {range_bins}\n")
-                details_file.write(f"bounding box width: {args.n_pixels}")
+                if 'actual_frequency' in details:
+                    details_file.write(f"Actual Frequency: {details['actual_frequency']}\n")
 
             print(f"Processed {filename}")
+
+    # Write combined annotations.json
+    combined_coco_file_path = os.path.join(output_folder, 'annotations.json')
+    with open(combined_coco_file_path, 'w') as coco_file:
+        json.dump(all_annotations, coco_file, indent=4)
 
 if __name__ == "__main__":
     main()
