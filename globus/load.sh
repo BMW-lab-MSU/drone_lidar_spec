@@ -113,7 +113,7 @@ do
     else
         echo "Transfer in progress... Checking again in 60 seconds."
         echo "Feel free to cancel this script if necessary, the transfer can be monitored with 'globus task list'"
-        echo "---------------------------------------------------------------------------------------------------"
+        echo "----------------------------------------------------------------------------------------------------"
         sleep 60
     fi
 done
