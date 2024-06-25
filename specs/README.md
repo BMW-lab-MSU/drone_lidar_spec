@@ -43,8 +43,8 @@ The generated spectrograms will be saved in the following directory structure:
 
 ```bash
 spectrograms/
+├── annotations.json
 └── drone_name-timestamp-tiltangle-propeller-throttle
-    ├── annotations.json
     ├── details.txt
     ├── Labeled
     │   ├── spec_labeled_range_bin=x.png
@@ -58,8 +58,9 @@ spectrograms/
 
 ## Annotations 📝
 
-The `annotations.json` file contains the bounding box annotations in COCO format. It includes the following information for each annotated image:
+The `annotations.json` file contains the bounding box annotations for all the processed images in COCO format. It is saved in the `spectrograms` folder and includes the following information for each annotated image:
 
+- `id`: The unique identifier for the annotation.
 - `image_id`: The ID of the image.
 - `category_id`: The category ID (1 for drone frequency).
 - `bbox`: The bounding box coordinates `[x, y, width, height]`.
@@ -68,7 +69,7 @@ The `annotations.json` file contains the bounding box annotations in COCO format
 
 ## Details File 📄
 
-The `details.txt` file contains metadata about the spectrograms, including:
+The `details.txt` file in each subdirectory contains metadata about the spectrograms, including:
 
 - `Drone Name`
 - `Time Stamp`
@@ -76,6 +77,8 @@ The `details.txt` file contains metadata about the spectrograms, including:
 - `Propeller`
 - `Throttle`
 - `Range Bins`
-- `Expected Frequency` (if available)
+- `Expected Frequency`
+- `Fill Factor`
 
 ## Enjoy generating your spectrograms! 🎉📈
+
