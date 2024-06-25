@@ -28,6 +28,14 @@ def read_tilt_angle(file_path):
             return tilt_angle
     return None
 
+def read_fill_factor(file_path):
+    """Read the fill factor from the HDF5 file."""
+    with h5py.File(file_path, 'r') as hdf5_file:
+        if 'parameters/fill_factor' in hdf5_file:
+            fill_factor = hdf5_file['parameters/fill_factor'][()]
+            return fill_factor
+    return None
+
 def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
@@ -100,12 +108,14 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                     # Plot the labeled spectrogram with bounding box in orange
                     plt.axhline(y=exp_freq_first, color='r', linestyle='--')
                     plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
+                    fill_factor = read_fill_factor(file_path)
                     text_str = (f"Drone Name: {details['drone_name']}\n"
                                 f"Time Stamp: {details['time_stamp']}\n"
                                 f"Tilt Angle: {details['tilt_angle']} degrees\n"
                                 f"Propeller: {propeller}\n"
                                 f"Throttle: {details['throttle']}\n"
                                 f"Actual Frequency: {exp_freq_first}\n"
+                                f"Fill Factor: {fill_factor}\n"
                                 f"Range Bin: {range_bin}")
                     plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
                     details['actual_frequency'] = int(exp_freq_first)
