@@ -5,11 +5,17 @@ What range of tilt angles can frequencies of a drone rotor be identified in spec
 
 ## Directories 📂
 
-### scripts
-Contains miscellaneous infrequently used scripts.
+### 📜 Scripts
+This directory contains a collection of miscellaneous scripts that are crucial for specific data processing and model training tasks.
 
-- **calc_norms.py**
-    - Calculate the normalization values for backbone training.
+- **calc_norms.py** 🧮
+    - Calculates normalization values for consistent input scaling across the dataset.
+    
+- **split_data.py** 🔀
+    - Splits HDF5 files into training, validation, and test sets, ensuring balanced data distribution.
+
+### 📁 configs
+🛠️ Stores custom configuration files for mmdet models, facilitating specific adaptations or optimizations needed for the project.
 
 ### det_outputs
 🖼️ Some outputs from random images from COCO using the mmdet inference demo.
