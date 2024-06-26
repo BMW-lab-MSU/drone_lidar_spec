@@ -56,6 +56,14 @@ spectrograms/
         └── ... (other range bins)
 ```
 
+## Organization
+
+To move the raw images into training, testing, and validation splits for model training, run
+
+```bash
+./organize_imgs.sh
+```
+
 ## Annotations 📝
 
 The `annotations.json` file contains the bounding box annotations for all the processed images in COCO format. It is saved in the `spectrograms` folder and includes the following information for each annotated image:
