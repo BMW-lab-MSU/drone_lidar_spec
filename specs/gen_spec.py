@@ -6,6 +6,7 @@ import os
 import json
 import argparse
 from PIL import Image
+from scipy.signal import butter, filtfilt
 
 def parse_filename(filename):
     """Extract details from the filename."""
@@ -36,7 +37,15 @@ def read_fill_factor(file_path):
             return fill_factor
     return None
 
-def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id):
+def high_pass_filter(data, cutoff, fs, order=1):
+    """Apply a high-pass filter to the data."""
+    nyquist = 0.5 * fs
+    normal_cutoff = cutoff / nyquist
+    b, a = butter(order, normal_cutoff, btype='high', analog=False)
+    y = filtfilt(b, a, data)
+    return y
+
+def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
         mat_file = scipy.io.loadmat(file_path)
@@ -69,11 +78,18 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
             sampling_period = np.mean(np.diff(timestamps[0,:]))
             sampling_freq =  1 / sampling_period
             noverlap = int(NFFT * 3/4)
+            cutoff_frequency = 50  # Hz
+
             for range_bin in range_bins:
                 if range_bin < 0 or range_bin >= data_array.shape[0]:
                     print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
                     continue
                 data_array_transposed = data_array[range_bin, :]
+                
+                # Apply high-pass filter if order is specified
+                if filter_order:
+                    data_array_transposed = high_pass_filter(data_array_transposed, cutoff_frequency, sampling_freq, filter_order)
+
                 plt.figure(figsize=(10, 6))
                 Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
                 plt.colorbar(label='Intensity')
@@ -156,6 +172,7 @@ def main():
     parser.add_argument('--n_pixels', type=int, default=40, help="Number of pixels around the ground truth frequency for the bounding box.")
     parser.add_argument('--range_bins', type=str, default="0", help="Specify a single range bin or a range of range bins (e.g., 120 or 120-130).")
     parser.add_argument('--output_folder', type=str, default=None, help="Path to the output folder where spectrograms will be saved. Default is './spectrograms'.")
+    parser.add_argument('--filter_order', type=int, help="Order of the high-pass filter. If not specified, the filter will not be applied.")
 
     args = parser.parse_args()
     input_folder = args.input_folder
@@ -201,7 +218,7 @@ def main():
             os.makedirs(labeled_folder, exist_ok=True)
             os.makedirs(raw_folder, exist_ok=True)
 
-            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id)
+            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order)
 
             # Write details.txt
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
