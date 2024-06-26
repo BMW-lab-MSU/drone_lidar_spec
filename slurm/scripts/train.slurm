@@ -1,12 +1,16 @@
 #!/bin/bash
-#SBATCH --job-name=faster_rcnn_training
-#SBATCH --output=faster_rcnn_training.out
-#SBATCH --error=faster_rcnn_training.err
-#SBATCH --time=4:00:00  # Requesting 4 hours
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:2  # Requesting 2 GPUs
-#SBATCH --mem=32G
-#SBATCH --cpus-per-task=4  # Requesting 4 CPUs (2 workers per GPU)
+
+#SBATCH --account=priority-bradwhitaker # priority account to use
+#SBATCH --job-name=resnext_train      # job name
+#SBATCH --partition=gpupriority         # queue partition to run the job in
+#SBATCH --nodes=1                       # number of nodes to allocate
+#SBATCH --ntasks-per-node=1             # number of descrete tasks - keep at one except for MPI
+#SBATCH --cpus-per-task=4               # number of cores to allocate - do not allocate more than 16 cores per GPU
+#SBATCH --gpus-per-task=2               #  number of GPUs to allocate - all GPUs are currently A40 model
+#SBATCH --mem=32000                     # 2000 MB of Memory allocated - do not allocate more than 128000 MB mem per GPU
+#SBATCH --time=1-04:00:00               # Maximum job run time (d-hh:mm:ss)
+#SBATCH --output=slurm_out/resnext_train_%j.out  # Store output files in slurm_out directory
+#SBATCH --error=slurm_err/resnext_train_%j.err   # Store error files in slurm_err directory
 
 # Load Apptainer module
 module load apptainer
