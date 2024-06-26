@@ -11,3 +11,12 @@
 #h5 files
 #spectrogram outputs
 /specs/*/
+
+#Slurm outputs
+/slurm/err/
+/slurm/out/
+
+#det outputs
+/det_outputs/
+#mmdetection
+/mmdetection/
