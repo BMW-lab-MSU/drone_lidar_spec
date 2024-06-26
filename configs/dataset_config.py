@@ -11,8 +11,8 @@ test_ann_file = data_root + 'test/annotations.json'
 test_img_prefix = data_root + 'test/Raw/'
 
 normalization_values = {
-    'mean': [123.675, 116.28, 103.53],
-    'std': [58.395, 57.12, 57.375]
+    'mean': [44.34, 125.08, 138.27],
+    'std': [26.87, 26.33, 14.68]
 }
 
 data = dict(
