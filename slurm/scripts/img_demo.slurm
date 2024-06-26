@@ -14,8 +14,8 @@
 #SBATCH --gpus-per-task=1               #  number of GPUs to allocate - all GPUs are currently A40 model
 #SBATCH --mem=2000                     # 2000 MB of Memory allocated - do not allocate more than 128000 MB mem per GPU
 #SBATCH --time=1-00:10:00               # Maximum job run time (d-hh:mm:ss)
-#SBATCH --output=slurm_out/image_demo_%j.out  # Store output files in slurm_out directory
-#SBATCH --error=slurm_err/image_demo_%j.err   # Store error files in slurm_err directory
+#SBATCH --output=../out/image_demo_%j.out  # Store output files in slurm_out directory
+#SBATCH --error=../err/image_demo_%j.err   # Store error files in slurm_err directory
 
 
 ## Run 'man sbatch' for more information on the options above.
@@ -29,10 +29,12 @@ module load CUDA/11.1.1-GCC-10.2.0
 echo "You are using CUDA version: " 
 nvcc --version
 
+IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
+
 # Ensure that the Singularity/Apptainer image and script are in your working directory
 # Run the Singularity/Apptainer container with GPU support
-apptainer exec --nv mmdet_img.sif python mmdetection/demo/image_demo.py \
-    mmdetection/demo/demo.jpg mmdetection/configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
-    --weights mmdetection/checkpoints/rtmdet_s_8xb32-300e_coco.pth \
-    --out-dir outputs
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/demo/image_demo.py \
+    /home/d86p233/Desktop/BMW-spec/mmdetection/demo/demo.jpg /home/d86p233/Desktop/BMW-spec/mmdetection/configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
+    --weights /home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/rtmdet_s_8xb32-300e_coco.pth \
+    --out-dir /home/d86p233/Desktop/BMW-spec/det_outputs
 
