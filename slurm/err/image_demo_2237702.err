@@ -1,9 +1,0 @@
-Loading CUDA/11.1.1-GCC-10.2.0
-  Loading requirement: GCCcore/10.2.0 zlib/1.2.11-GCCcore-10.2.0
-    binutils/2.35-GCCcore-10.2.0 GCC/10.2.0 CUDAcore/11.1.1
-Traceback (most recent call last):
-  File "/home/d86p233/Desktop/BMW-spec/mmdetection/demo/image_demo.py", line 63, in <module>
-    from mmdet.apis import DetInferencer
-  File "/mmdetection/mmdet/__init__.py", line 18, in <module>
-    f'MMCV=={mmcv.__version__} is used but incompatible. ' \
-AssertionError: MMCV==2.2.0 is used but incompatible. Please install mmcv>=2.0.0rc4, <2.2.0.
