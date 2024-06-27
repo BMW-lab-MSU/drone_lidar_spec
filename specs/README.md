@@ -26,7 +26,7 @@ You can generate spectrograms using a single script.
 To generate spectrograms:
 
 ```bash
-python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40
+python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40 --filter_order 1
 ```
 
 ### Arguments
@@ -35,6 +35,7 @@ python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder 
 - `--output_folder` (optional): The path to the directory where the spectrograms will be saved. If not specified, the script will save the spectrograms in the `spectrograms` folder.
 - `--range_bins` (required): Specifies the range of bins to process. You can specify a single bin (e.g., `120`) or a range of bins (e.g., `0-10`).
 - `--n_pixels` (optional): The number of pixels around the ground truth frequency for the bounding box. The default value is `40`.
+- `--filter_order` (optional): The order of the high pass filter, if applying a filter. 
 
 
 ## Directory Structure 📁

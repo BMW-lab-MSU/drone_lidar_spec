@@ -15,6 +15,7 @@
 #Slurm outputs
 /slurm/err/
 /slurm/out/
+/slurm/scripts/*/
 
 #det outputs
 /det_outputs/
