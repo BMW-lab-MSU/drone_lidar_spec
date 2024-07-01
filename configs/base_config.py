@@ -1,7 +1,12 @@
-from mmdetection.custom_registry import MY_MODELS
-
 model = dict(
     type='FasterRCNN',
+    data_preprocessor=dict(
+        type='BaseDataPreprocessor',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        bgr_to_rgb=True,
+        pad_size_divisor=32
+    ),
     backbone=dict(
         type='ResNeXt',
         depth=101,
@@ -31,7 +36,8 @@ model = dict(
             target_stds=[1.0, 1.0, 1.0, 1.0]
         ),
         loss_cls=dict(
-            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0
+        ),
         loss_bbox=dict(type='L1Loss', loss_weight=1.0)
     ),
     roi_head=dict(
@@ -122,7 +128,6 @@ model = dict(
     )
 )
 
-# Optimizer
 optimizer = dict(
     type='SGD',
     lr=0.01,
@@ -133,7 +138,6 @@ optimizer = dict(
     )
 )
 
-# Learning Rate Scheduler
 lr_config = dict(
     policy='step',
     warmup='linear',
@@ -143,18 +147,15 @@ lr_config = dict(
     gamma=0.1  # Learning rate decay factor
 )
 
-# Training Runner Configuration
 runner = dict(
     type='EpochBasedRunner',
     max_epochs=12  # Number of epochs to train
 )
 
-# Checkpoint Configuration
 checkpoint_config = dict(
     interval=1  # Interval for saving checkpoints
 )
 
-# Logging Configuration
 log_config = dict(
     interval=50,  # Interval for logging
     hooks=[
@@ -163,7 +164,6 @@ log_config = dict(
     ]
 )
 
-# Custom Hooks
 custom_hooks = [
     dict(type='NumClassCheckHook'),  # Check if the number of classes matches the dataset
     dict(
@@ -172,31 +172,23 @@ custom_hooks = [
     )
 ]
 
-# Evaluation Configuration
 evaluation = dict(
     interval=1,  # Interval for evaluation
     metric='bbox'  # Metric for evaluation
 )
 
-# Distributed Training Parameters
 dist_params = dict(backend='nccl')
 
-# Logging Level
 log_level = 'INFO'
 
-# Load From (Pretrained Model)
 load_from = None  # Set to checkpoint path if resuming from a specific checkpoint
 
-# Resume From (Checkpoint to Resume From)
 resume_from = None
 
-# Workflow
 workflow = [('train', 1), ('val', 1)]
 
-# Work Directory
 work_dir = './work_dirs/faster_rcnn_resnext101'
 
-# GPU Settings
 gpu_ids = range(0, 2)  # Use GPUs with IDs 0 and 1
 
 dataset_type = 'CocoDataset'
