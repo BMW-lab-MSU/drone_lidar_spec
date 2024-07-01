@@ -1,5 +1,5 @@
 dataset_type = 'CocoDataset'
-data_root = '/home/d86p233/Desktop/BMW-spec/specs/raw_splits/'
+data_root = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/'
 
 train_ann_file = data_root + 'train/annotations.json'
 train_img_prefix = data_root + 'train/Raw/'

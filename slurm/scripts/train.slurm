@@ -17,4 +17,4 @@
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
 
 # Run training script within the Apptainer container
-apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py /home/d86p233/Desktop/BMW-spec/configs/faster_rcnn_resnext101.py
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py /home/d86p233/Desktop/BMW-spec/configs/base_config.py
