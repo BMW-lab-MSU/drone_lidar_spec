@@ -1,21 +1,24 @@
-# Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
 import os.path as osp
-import sys
 
 from mmengine.config import Config, DictAction
-from mmengine.registry import RUNNERS, MODELS
+from mmengine.registry import MODELS, RUNNERS
 from mmengine.runner import Runner
 
-from mmdet.utils import setup_cache_size_limit_of_dynamo
+# Import FasterRCNN and DetDataPreprocessor
 from mmdet.models.detectors import FasterRCNN
-from mmdet.models import DetDataPreprocessor
-from mmengine.registry import MODELS
+from mmdet.models.data_preprocessors import DetDataPreprocessor
+from mmdet.models.backbones import ResNeXt
+from mmdet.models.necks import FPN
 
-# Register FasterRCNN in the mmengine::model registry
-MODELS.register_module(module=FasterRCNN, name='FasterRCNN')
-MODELS.register_module(module=DetDataPreprocessor, name='DetDataPreprocessor')
+# Register FasterRCNN and DetDataPreprocessor in the MODELS registry
+MODELS.register_module(module=FasterRCNN)
+MODELS.register_module(module=DetDataPreprocessor)
+MODELS.register_module(module=ResNeXt)
+MODELS.register_module(module=FPN)
+
+from mmdet.utils import setup_cache_size_limit_of_dynamo
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
@@ -36,18 +39,18 @@ def parse_args():
         type=str,
         const='auto',
         help='If specify checkpoint path, resume from it, while if not '
-        'specify, try to auto resume from the latest checkpoint '
-        'in the work directory.')
+             'specify, try to auto resume from the latest checkpoint '
+             'in the work directory.')
     parser.add_argument(
         '--cfg-options',
         nargs='+',
         action=DictAction,
         help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. If the value to '
-        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-        'Note that the quotation marks are necessary and that no white space '
-        'is allowed.')
+             'in xxx=yyy format will be merged into config file. If the value to '
+             'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
+             'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
+             'Note that the quotation marks are necessary and that no white space '
+             'is allowed.')
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm', 'mpi'],
@@ -55,7 +58,7 @@ def parse_args():
         help='job launcher')
     # When using PyTorch version >= 2.0.0, the `torch.distributed.launch`
     # will pass the `--local-rank` parameter to `tools/train.py` instead
-        # of `--local_rank`.
+    # of `--local_rank`.
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -98,7 +101,7 @@ def main():
                 'base_batch_size' in cfg.auto_scale_lr:
             cfg.auto_scale_lr.enable = True
         else:
-            raise RuntimeError('Can not find "auto_scale_lr" or '
+            raise RuntimeError('Cannot find "auto_scale_lr" or '
                                '"auto_scale_lr.enable" or '
                                '"auto_scale_lr.base_batch_size" in your'
                                ' configuration file.')
@@ -110,10 +113,6 @@ def main():
     elif args.resume is not None:
         cfg.resume = True
         cfg.load_from = args.resume
-
-    # build the model using the standard registry
-    model = MODELS.build(cfg.model)
-    cfg.model = model
 
     # build the runner from config
     if 'runner_type' not in cfg:
