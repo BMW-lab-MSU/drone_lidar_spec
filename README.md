@@ -37,3 +37,7 @@ Includes a bit of customization necessary to get the inference demo running.
 ## Docker 🐳
 The Docker image is contained here. For use at MSU, the image was converted to an Apptainer image so it could be run on Tempest (MSU HPC).   
 *Note: The Apptainer container (.sif) is not included as the file is too large.*
+
+## Attribution
+
+This project includes files from the [mmdetection](https://github.com/open-mmlab/mmdetection) project, which is licensed under the Apache License 2.0. For more information, see the LICENSE-APACHE-2.0 file.

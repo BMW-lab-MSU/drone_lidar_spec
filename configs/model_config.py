@@ -1,13 +1,6 @@
-import os
-import mmdet
-
-# Get the path to the mmdet package
-mmdet_path = os.path.dirname(mmdet.__file__)
-
-# Construct the path to the base config file
-base_config_path = os.path.join(mmdet_path, '../configs/_base_/models/faster_rcnn_r50_fpn.py')
-
-_base_ = [base_config_path]
+_base_ = [
+    'mmdet::_base_/models/faster_rcnn_r50_fpn.py'
+]
 
 model = dict(
     backbone=dict(
