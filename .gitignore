@@ -20,7 +20,7 @@
 #det outputs
 /det_outputs/
 #mmdetection
-/mmdetection/
+#/mmdetection/
 
 /h5s/
 /single_freq_h5s_70_15_15/
