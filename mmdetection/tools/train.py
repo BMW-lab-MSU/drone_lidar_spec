@@ -3,7 +3,7 @@ import os
 import os.path as osp
 
 from mmengine.config import Config, DictAction
-from mmengine.registry import MODELS, RUNNERS
+from mmengine.registry import MODELS, TASK_UTILS, RUNNERS
 from mmengine.runner import Runner
 
 # Import FasterRCNN and DetDataPreprocessor
@@ -11,12 +11,18 @@ from mmdet.models.detectors import FasterRCNN
 from mmdet.models.data_preprocessors import DetDataPreprocessor
 from mmdet.models.backbones import ResNeXt
 from mmdet.models.necks import FPN
+from mmdet.models.dense_heads import RPNHead
+from mmdet.models.roi_heads import StandardRoIHead
+from mmdet.core.bbox.coder import DeltaXYWHBBoxCoder
 
 # Register FasterRCNN and DetDataPreprocessor in the MODELS registry
 MODELS.register_module(module=FasterRCNN)
 MODELS.register_module(module=DetDataPreprocessor)
 MODELS.register_module(module=ResNeXt)
 MODELS.register_module(module=FPN)
+MODELS.register_module(module=RPNHead)
+
+TASK_UTILS.register_module(module=DeltaXYWHBBoxCoder)
 
 from mmdet.utils import setup_cache_size_limit_of_dynamo
 
