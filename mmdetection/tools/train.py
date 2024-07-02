@@ -1,54 +1,14 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
 import os.path as osp
 
 from mmengine.config import Config, DictAction
-from mmengine.registry import MODELS, TASK_UTILS, RUNNERS, HOOKS
+from mmengine.registry import RUNNERS
 from mmengine.runner import Runner
 
-# Import FasterRCNN and DetDataPreprocessor
-from mmdet.models.detectors import FasterRCNN
-from mmdet.models.data_preprocessors import DetDataPreprocessor
-from mmdet.models.backbones import ResNeXt
-from mmdet.models.necks import FPN
-from mmdet.models.dense_heads import RPNHead
-from mmdet.models.roi_heads import StandardRoIHead
-from mmdet.models.losses import CrossEntropyLoss
-from mmdet.models.losses import L1Loss
-from mmdet.models.roi_heads.roi_extractors import SingleRoIExtractor
-from mmdet.models.roi_heads.bbox_heads import Shared2FCBBoxHead
-from mmcv.cnn import Linear
-
-from mmdet.models.task_modules.assigners import MaxIoUAssigner
-from mmdet.models.task_modules.coders import DeltaXYWHBBoxCoder
-from mmdet.models.task_modules import BboxOverlaps2D
-from mmdet.models.task_modules.samplers import RandomSampler
-from mmdet.models.task_modules.prior_generators import AnchorGenerator
-
-from mmdet.engine.hooks import NumClassCheckHook
-
-# Register FasterRCNN and DetDataPreprocessor in the MODELS registry
-MODELS.register_module(module=FasterRCNN)
-MODELS.register_module(module=DetDataPreprocessor)
-MODELS.register_module(module=ResNeXt)
-MODELS.register_module(module=FPN)
-MODELS.register_module(module=RPNHead)
-MODELS.register_module(module=StandardRoIHead)
-MODELS.register_module(module=CrossEntropyLoss)
-MODELS.register_module(module=L1Loss)
-MODELS.register_module(module=SingleRoIExtractor)
-MODELS.register_module(module=Shared2FCBBoxHead)
-MODELS.register_module(module=Linear)
-
-TASK_UTILS.register_module(module=DeltaXYWHBBoxCoder)
-TASK_UTILS.register_module(module=MaxIoUAssigner)
-TASK_UTILS.register_module(module=BboxOverlaps2D)
-TASK_UTILS.register_module(module=RandomSampler)
-TASK_UTILS.register_module(module=AnchorGenerator)
-
-HOOKS.register_module(module=NumClassCheckHook)
-
 from mmdet.utils import setup_cache_size_limit_of_dynamo
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
@@ -69,18 +29,18 @@ def parse_args():
         type=str,
         const='auto',
         help='If specify checkpoint path, resume from it, while if not '
-             'specify, try to auto resume from the latest checkpoint '
-             'in the work directory.')
+        'specify, try to auto resume from the latest checkpoint '
+        'in the work directory.')
     parser.add_argument(
         '--cfg-options',
         nargs='+',
         action=DictAction,
         help='override some settings in the used config, the key-value pair '
-             'in xxx=yyy format will be merged into config file. If the value to '
-             'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-             'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-             'Note that the quotation marks are necessary and that no white space '
-             'is allowed.')
+        'in xxx=yyy format will be merged into config file. If the value to '
+        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
+        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
+        'Note that the quotation marks are necessary and that no white space '
+        'is allowed.')
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm', 'mpi'],
@@ -131,7 +91,7 @@ def main():
                 'base_batch_size' in cfg.auto_scale_lr:
             cfg.auto_scale_lr.enable = True
         else:
-            raise RuntimeError('Cannot find "auto_scale_lr" or '
+            raise RuntimeError('Can not find "auto_scale_lr" or '
                                '"auto_scale_lr.enable" or '
                                '"auto_scale_lr.base_batch_size" in your'
                                ' configuration file.')
