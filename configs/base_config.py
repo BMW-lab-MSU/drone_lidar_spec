@@ -205,23 +205,58 @@ param_scheduler = dict(
 )
 resume_from = None
 train_cfg = dict(
-    type='EpochBasedRunner',
-    max_epochs=12
+    type='EpochBasedTrainLoop',  # Type of training loop
+    max_epochs=12,  # Maximum number of training epochs
+    val_interval=2
 )
 train_dataloader = dict(
     batch_size=2,
+    dataset=dict(
+        type='CocoDataset',
+        ann_file='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/train/annotations.json',
+        img_prefix='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/train/Raw/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Normalize', mean=[44.34, 125.08, 138.27], std=[26.87, 26.33, 14.68]),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
+        ]
+    ),
     shuffle=True,
     num_workers=2,
     pin_memory=True
 )
 val_dataloader = dict(
     batch_size=1,
+    dataset=dict(
+        type='CocoDataset',
+        ann_file='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/val/annotations.json',
+        img_prefix='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/val/Raw/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='Normalize', mean=[44.34, 125.08, 138.27], std=[26.87, 26.33, 14.68]),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img']),
+        ]
+    ),
     shuffle=False,
     num_workers=2,
     pin_memory=True
 )
 test_dataloader = dict(
     batch_size=1,
+    dataset=dict(
+        type='CocoDataset',
+        ann_file='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/annotations.json',
+        img_prefix='/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/Raw/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='Normalize', mean=[44.34, 125.08, 138.27], std=[26.87, 26.33, 14.68]),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img']),
+        ]
+    ),
     shuffle=False,
     num_workers=2,
     pin_memory=True
