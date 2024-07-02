@@ -20,19 +20,22 @@ dataset_type = 'CocoDataset'
 data_root = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/'
 
 # Annotation and image paths
-train_ann_file = data_root + 'train/annotations.json'
-train_img_prefix = data_root + 'train/Raw/'
-
-val_ann_file = data_root + 'val/annotations.json'
-val_img_prefix = data_root + 'val/Raw/'
-
-test_ann_file = data_root + 'test/annotations.json'
-test_img_prefix = data_root + 'test/Raw/'
+train_ann_file = 'train/annotations.json'
+val_ann_file = 'val/annotations.json'
+test_ann_file = 'test/annotations.json'
 
 # Normalization values
 normalization_values = {
     'mean': [44.34, 125.08, 138.27],
     'std': [26.87, 26.33, 14.68]
+}
+
+# Meta information
+metainfo = {
+    'classes': ('drone_frequency', ),  # Adjust the class name
+    'palette': [
+        (220, 20, 60),  # Adjust the color palette as needed
+    ]
 }
 
 # Train dataloader
@@ -41,14 +44,14 @@ train_dataloader = dict(
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
+        data_root=data_root,
+        metainfo=metainfo,
+        data_prefix=dict(img='train/Raw/'),
         ann_file=train_ann_file,
-        img_prefix=train_img_prefix,
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='DefaultFormatBundle'),  # Processes annotations (such as converting to tensor)
-            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),  # Prepares data to feed into the model
+            dict(type='Normalize', **normalization_values, to_rgb=True)
         ]
     )
 )
@@ -59,13 +62,13 @@ val_dataloader = dict(
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
+        data_root=data_root,
+        metainfo=metainfo,
+        data_prefix=dict(img='val/Raw/'),
         ann_file=val_ann_file,
-        img_prefix=val_img_prefix,
         pipeline=[
             dict(type='LoadImageFromFile'),
-            dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='DefaultFormatBundle'),
-            dict(type='Collect', keys=['img']),
+            dict(type='Normalize', **normalization_values, to_rgb=True)
         ]
     )
 )
@@ -76,20 +79,20 @@ test_dataloader = dict(
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
+        data_root=data_root,
+        metainfo=metainfo,
+        data_prefix=dict(img='test/Raw/'),
         ann_file=test_ann_file,
-        img_prefix=test_img_prefix,
         pipeline=[
             dict(type='LoadImageFromFile'),
-            dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='ImageToTensor', keys=['img']),
-            dict(type='Collect', keys=['img']),
+            dict(type='Normalize', **normalization_values, to_rgb=True)
         ]
     )
 )
 
 # Evaluators
-val_evaluator = dict(ann_file=val_ann_file)
-test_evaluator = dict(ann_file=test_ann_file)
+val_evaluator = dict(ann_file=data_root + val_ann_file)
+test_evaluator = dict(ann_file=data_root + test_ann_file)
 
 # Optimizer configuration
 optimizer = dict(
@@ -133,6 +136,4 @@ evaluation = dict(
 )
 
 # Workflow
-# How many epochs to train before validation
-# This specifies to train for 1 then val for 1, every other
 workflow = [('train', 1), ('val', 1)]
