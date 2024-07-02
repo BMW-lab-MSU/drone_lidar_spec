@@ -204,7 +204,7 @@ param_scheduler = dict(
     gamma=0.1
 )
 resume_from = None
-runner = dict(
+train_cfg = dict(
     type='EpochBasedRunner',
     max_epochs=12
 )
@@ -226,6 +226,14 @@ test_dataloader = dict(
     num_workers=2,
     pin_memory=True
 )
+optim_wrapper = dict(
+    optimizer=optimizer,
+    param_scheduler=param_scheduler
+)
+val_cfg = dict(type='ValLoop')
+test_cfg = dict(type='TestLoop')
+val_evaluator = dict(type='CocoEvaluator', metric='bbox')
+test_evaluator = dict(type='CocoEvaluator', metric='bbox')
 test_ann_file = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/annotations.json'
 test_img_prefix = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/Raw/'
 train_ann_file = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/train/annotations.json'
