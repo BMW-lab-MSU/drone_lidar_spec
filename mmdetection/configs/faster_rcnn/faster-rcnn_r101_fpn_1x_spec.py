@@ -5,8 +5,8 @@ model = dict(
         type='ResNeXt',
         depth=101,
         groups=32,
-        base_width=4,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnext101_32x4d')
+        base_width=8,
+        init_cfg=dict(type='Pretrained', checkpoint='/home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/resnext101_32x8d-110c445d.pth')
     ),
     roi_head=dict(
         bbox_head=dict(
