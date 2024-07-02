@@ -5,9 +5,9 @@
 #SBATCH --partition=gpuunsafe         # queue partition to run the job in
 #SBATCH --nodes=1                       # number of nodes to allocate
 #SBATCH --ntasks-per-node=1             # number of descrete tasks - keep at one except for MPI
-#SBATCH --cpus-per-task=4               # number of cores to allocate - do not allocate more than 16 cores per GPU
-#SBATCH --gpus-per-task=2               #  number of GPUs to allocate - all GPUs are currently A40 model
-#SBATCH --mem=32000                     # 2000 MB of Memory allocated - do not allocate more than 128000 MB mem per GPU
+#SBATCH --cpus-per-task=2               # number of cores to allocate - do not allocate more than 16 cores per GPU
+#SBATCH --gpus-per-task=1               #  number of GPUs to allocate - all GPUs are currently A40 model
+#SBATCH --mem=16000                     # 2000 MB of Memory allocated - do not allocate more than 128000 MB mem per GPU
 #SBATCH --time=04:00:00               # Maximum job run time (d-hh:mm:ss)
 #SBATCH --output=../out/resnext_train_%j.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_train_%j.err   # Store error files in slurm_err directory

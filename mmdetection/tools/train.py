@@ -3,7 +3,7 @@ import os
 import os.path as osp
 
 from mmengine.config import Config, DictAction
-from mmengine.registry import MODELS, TASK_UTILS, RUNNERS
+from mmengine.registry import MODELS, TASK_UTILS, RUNNERS, HOOKS
 from mmengine.runner import Runner
 
 # Import FasterRCNN and DetDataPreprocessor
@@ -13,7 +13,19 @@ from mmdet.models.backbones import ResNeXt
 from mmdet.models.necks import FPN
 from mmdet.models.dense_heads import RPNHead
 from mmdet.models.roi_heads import StandardRoIHead
-from mmdet.core.bbox.coder import DeltaXYWHBBoxCoder
+from mmdet.models.losses import CrossEntropyLoss
+from mmdet.models.losses import L1Loss
+from mmdet.models.roi_heads.roi_extractors import SingleRoIExtractor
+from mmdet.models.roi_heads.bbox_heads import Shared2FCBBoxHead
+from mmcv.cnn import Linear
+
+from mmdet.models.task_modules.assigners import MaxIoUAssigner
+from mmdet.models.task_modules.coders import DeltaXYWHBBoxCoder
+from mmdet.models.task_modules import BboxOverlaps2D
+from mmdet.models.task_modules.samplers import RandomSampler
+from mmdet.models.task_modules.prior_generators import AnchorGenerator
+
+from mmdet.engine.hooks import NumClassCheckHook
 
 # Register FasterRCNN and DetDataPreprocessor in the MODELS registry
 MODELS.register_module(module=FasterRCNN)
@@ -21,8 +33,20 @@ MODELS.register_module(module=DetDataPreprocessor)
 MODELS.register_module(module=ResNeXt)
 MODELS.register_module(module=FPN)
 MODELS.register_module(module=RPNHead)
+MODELS.register_module(module=StandardRoIHead)
+MODELS.register_module(module=CrossEntropyLoss)
+MODELS.register_module(module=L1Loss)
+MODELS.register_module(module=SingleRoIExtractor)
+MODELS.register_module(module=Shared2FCBBoxHead)
+MODELS.register_module(module=Linear)
 
 TASK_UTILS.register_module(module=DeltaXYWHBBoxCoder)
+TASK_UTILS.register_module(module=MaxIoUAssigner)
+TASK_UTILS.register_module(module=BboxOverlaps2D)
+TASK_UTILS.register_module(module=RandomSampler)
+TASK_UTILS.register_module(module=AnchorGenerator)
+
+HOOKS.register_module(module=NumClassCheckHook)
 
 from mmdet.utils import setup_cache_size_limit_of_dynamo
 

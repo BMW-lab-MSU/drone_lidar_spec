@@ -1,8 +1,6 @@
 checkpoint_config = dict(interval=1)
 custom_hooks = [
-    dict(type='NumClassCheckHook'),
-    dict(type='UnfreezeLayersHook',
-         unfreeze_schedule={0: 10, 1: 8, 2: 5})
+    dict(type='NumClassCheckHook')
 ]
 
 data = dict(
@@ -200,10 +198,33 @@ optimizer = dict(
         )
     )
 )
+param_scheduler = dict(
+    type='MultiStepLR',
+    milestones=[8, 11],
+    gamma=0.1
+)
 resume_from = None
 runner = dict(
     type='EpochBasedRunner',
     max_epochs=12
+)
+train_dataloader = dict(
+    batch_size=2,
+    shuffle=True,
+    num_workers=2,
+    pin_memory=True
+)
+val_dataloader = dict(
+    batch_size=1,
+    shuffle=False,
+    num_workers=2,
+    pin_memory=True
+)
+test_dataloader = dict(
+    batch_size=1,
+    shuffle=False,
+    num_workers=2,
+    pin_memory=True
 )
 test_ann_file = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/annotations.json'
 test_img_prefix = '/home/d86p233/Desktop/BMW-spec/specs/single_freq_raw_specs/test/Raw/'
