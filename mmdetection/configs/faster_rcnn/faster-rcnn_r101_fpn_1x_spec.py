@@ -24,8 +24,9 @@ train_dataloader = dict(
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', scale=(775, 462)),  # Add resize step with the current size
             dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='PackDetInputs')  # Remove 'keys' argument
+            dict(type='PackDetInputs')
         ]
     )
 )
@@ -42,8 +43,9 @@ val_dataloader = dict(
         data_prefix=dict(img='val/Raw/'),
         pipeline=[
             dict(type='LoadImageFromFile'),
+            dict(type='Resize', scale=(775, 462)),  # Add resize step with the current size
             dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='PackDetInputs')  # Remove 'keys' argument
+            dict(type='PackDetInputs')
         ]
     )
 )
@@ -60,8 +62,9 @@ test_dataloader = dict(
         data_prefix=dict(img='test/Raw/'),
         pipeline=[
             dict(type='LoadImageFromFile'),
+            dict(type='Resize', scale=(775, 462)),  # Add resize step with the current size
             dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='PackDetInputs')  # Remove 'keys' argument
+            dict(type='PackDetInputs')
         ]
     )
 )
