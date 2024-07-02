@@ -13,7 +13,7 @@ normalization_values = {
 
 # Train dataloader
 train_dataloader = dict(
-    batch_size=2,  # Number of images per batch per GPU
+    batch_size=8,  # Number of images per batch per GPU
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
@@ -33,7 +33,7 @@ train_dataloader = dict(
 
 # Validation dataloader
 val_dataloader = dict(
-    batch_size=2,  # Number of images per batch per GPU
+    batch_size=8,  # Number of images per batch per GPU
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
@@ -52,7 +52,7 @@ val_dataloader = dict(
 
 # Test dataloader
 test_dataloader = dict(
-    batch_size=2,  # Number of images per batch per GPU
+    batch_size=8,  # Number of images per batch per GPU
     num_workers=2,  # Number of CPU workers to load data for each GPU
     dataset=dict(
         type=dataset_type,
