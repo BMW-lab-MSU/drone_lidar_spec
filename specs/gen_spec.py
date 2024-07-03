@@ -163,7 +163,10 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                     
                     # Plot the raw spectrogram without bounding box
                     plt.figure(figsize=(10, 6))
-                    plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                    if boost_colors:
+                        plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap, vmin=vmin, vmax=vmax)
+                    else:
+                        plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
                     plt.axis('off')
                     plt.gca().xaxis.set_visible(False)
                     plt.gca().yaxis.set_visible(False)
