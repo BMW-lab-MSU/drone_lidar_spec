@@ -7,13 +7,24 @@ Usage:
     python calc_norms.py <image_directory>
 
 Arguments:
-    <image_directory>: Directory containing the subdirectories train, test, and val.
+    <image_directory>: Directory containing the subdirectories train, test, and val, each containing a Raw subdirectory.
 
 Output:
     Prints the mean and standard deviation of the pixel values for each color channel (Red, Green, Blue).
 
 Note:
     This may take a while to run
+
+Expected Directory Tree:
+.
+├── test
+│   └── Raw
+├── train
+│   └── Raw
+└── val
+    └── Raw
+
+All of the images are stored in Raw subdirectories.
 """
 
 import os
@@ -29,13 +40,13 @@ def calculate_mean_and_std(image_dir):
     subdirs = ['train', 'test', 'val']
 
     for subdir in subdirs:
-        subdir_path = os.path.join(image_dir, subdir)
-        if not os.path.isdir(subdir_path):
-            print(f"Subdirectory {subdir_path} does not exist.")
+        raw_subdir_path = os.path.join(image_dir, subdir, 'Raw')
+        if not os.path.isdir(raw_subdir_path):
+            print(f"Subdirectory {raw_subdir_path} does not exist.")
             continue
 
-        for image_name in os.listdir(subdir_path):
-            image_path = os.path.join(subdir_path, image_name)
+        for image_name in os.listdir(raw_subdir_path):
+            image_path = os.path.join(raw_subdir_path, image_name)
             image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # Read in color (BGR)
 
             if image is None:
@@ -53,10 +64,13 @@ def calculate_mean_and_std(image_dir):
     mean_b = np.mean(pixel_values_b)
     std_b = np.std(pixel_values_b)
 
-    means = (mean_r, mean_g, mean_b)
-    stds = (std_r, std_g, std_b)
+    means_bgr = (mean_b, mean_g, mean_r)
+    stds_bgr = (std_b, std_g, std_r)
+
+    means_rgb = (mean_r, mean_g, mean_b)
+    stds_rgb = (std_r, std_g, std_b)
     
-    return means, stds
+    return means_bgr, stds_bgr, means_rgb, stds_rgb
 
 def main():
     if len(sys.argv) != 2:
@@ -69,13 +83,13 @@ def main():
         print(f"The path {image_directory} is not a valid directory.")
         sys.exit(1)
 
-    means, stds = calculate_mean_and_std(image_directory)
-    means_rounded = [round(mean, 2) for mean in means]
-    stds_rounded = [round(std, 2) for std in stds]
+    means_bgr, stds_bgr, means_rgb, stds_rgb = calculate_mean_and_std(image_directory)
+    means_rounded_rgb = [round(mean, 2) for mean in means_rgb]
+    stds_rounded_rgb = [round(std, 2) for std in stds_rgb]
     
     print(f"normalization_values = {{")
-    print(f"    'mean': {means_rounded},")
-    print(f"    'std': {stds_rounded}")
+    print(f"    'mean': {means_rounded_rgb},")
+    print(f"    'std': {stds_rounded_rgb}")
     print(f"}}")
 
 if __name__ == "__main__":

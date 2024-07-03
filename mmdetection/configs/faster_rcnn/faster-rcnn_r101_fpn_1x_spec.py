@@ -7,8 +7,8 @@ classes = ('drone_frequency', )
 
 # Normalization values
 normalization_values = {
-    'mean': [44.34, 125.08, 138.27],
-    'std': [26.87, 26.33, 14.68]
+    'mean': [128.41, 205.31, 76.05],
+    'std': [52.56, 22.05, 31.79]
 }
 
 # Train dataloader
