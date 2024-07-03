@@ -19,14 +19,14 @@ You can generate spectrograms using a single script.
 ### Running the Script
 
 1. **Place your `.mat` or `.h5` files in the `input_files` directory.**
-2. **Run the script to generate spectrograms, specifying the input folder, output folder, range bins, and number of pixels for bounding boxes.**
+2. **Run the script to generate spectrograms, specifying the input folder, output folder, range bins, number of pixels for bounding boxes, and optional time slices.**
 
 #### Command
 
 To generate spectrograms:
 
 ```bash
-python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40 --filter_order 1
+python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40 --filter_order 1 --time_slices 32
 ```
 
 ### Arguments
@@ -35,8 +35,8 @@ python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder 
 - `--output_folder` (optional): The path to the directory where the spectrograms will be saved. If not specified, the script will save the spectrograms in the `spectrograms` folder.
 - `--range_bins` (required): Specifies the range of bins to process. You can specify a single bin (e.g., `120`) or a range of bins (e.g., `0-10`).
 - `--n_pixels` (optional): The number of pixels around the ground truth frequency for the bounding box. The default value is `40`.
-- `--filter_order` (optional): The order of the high pass filter, if applying a filter. 
-
+- `--filter_order` (optional): The order of the high pass filter, if applying a filter.
+- `--time_slices` (optional): Number of time slices to process (1 to 32). The default value is `1`.
 
 ## Directory Structure 📁
 
@@ -90,4 +90,3 @@ The `details.txt` file in each subdirectory contains metadata about the spectrog
 - `Fill Factor`
 
 ## Enjoy generating your spectrograms! 🎉📈
-

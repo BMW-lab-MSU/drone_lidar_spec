@@ -45,7 +45,7 @@ def high_pass_filter(data, cutoff, fs, order=1):
     y = filtfilt(b, a, data)
     return y
 
-def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order):
+def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order, time_slices):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
         mat_file = scipy.io.loadmat(file_path)
@@ -68,7 +68,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
             timestamps = timestamps / 1e9
             data_array = np.array(data)
             if len(data_array.shape) == 3:
-                data_array = data_array[0, :, :]
+                data_array = data_array[:time_slices, :, :]
             elif len(data_array.shape) != 2:
                 print(f"Unexpected data shape {data_array.shape} in {file_path}. Skipping...")
                 return dimensions, image_id
@@ -81,88 +81,91 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
             cutoff_frequency = 50  # Hz
 
             for range_bin in range_bins:
-                if range_bin < 0 or range_bin >= data_array.shape[0]:
+                if range_bin < 0 or range_bin >= data_array.shape[1]:
                     print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
                     continue
-                data_array_transposed = data_array[range_bin, :]
-                
-                # Apply high-pass filter if order is specified
-                if filter_order:
-                    data_array_transposed = high_pass_filter(data_array_transposed, cutoff_frequency, sampling_freq, filter_order)
 
-                plt.figure(figsize=(10, 6))
-                Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                plt.colorbar(label='Intensity')
-                plt.xlabel('Time (s)')
-                plt.ylabel('Frequency (Hz)')
-                propeller_mapping = {
-                    'fr': 'front_right',
-                    'br': 'back_right',
-                    'fl': 'front_left',
-                    'bl': 'back_left'
-                }
-                propeller = propeller_mapping.get(details['propeller'], '')
-                if propeller:
-                    hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
-                    with h5py.File(file_path, 'r') as hdf5_file:
-                        exp_freq = hdf5_file[hdf5_path][:]
-                        exp_freq_first = round(exp_freq[0])
-                    freq_index = np.abs(freqs - exp_freq_first).argmin()
-                    bbox_y = freqs[freq_index] - n_pixels
-                    bbox_height = 2 * n_pixels
-                    bbox = [0, int(bbox_y), len(bins), int(bbox_height)]
-                    annotation = {
-                        "id": len(coco_output["annotations"]) + 1,
-                        "image_id": image_id,
-                        "category_id": 1,
-                        "bbox": [int(coord) for coord in bbox],
-                        "area": int(bbox[2] * bbox[3]),
-                        "iscrowd": 0
-                    }
-                    coco_output["annotations"].append(annotation)
+                for time_slice in range(time_slices):
+                    data_array_transposed = data_array[time_slice, range_bin, :]
                     
-                    # Plot the labeled spectrogram with bounding box in orange
-                    plt.axhline(y=exp_freq_first, color='r', linestyle='--')
-                    plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
-                    fill_factor = read_fill_factor(file_path)
-                    text_str = (f"Drone Name: {details['drone_name']}\n"
-                                f"Time Stamp: {details['time_stamp']}\n"
-                                f"Tilt Angle: {details['tilt_angle']} degrees\n"
-                                f"Propeller: {propeller}\n"
-                                f"Throttle: {details['throttle']}\n"
-                                f"Actual Frequency: {exp_freq_first}\n"
-                                f"Fill Factor: {fill_factor}\n"
-                                f"Range Bin: {range_bin}")
-                    plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-                    details['actual_frequency'] = int(exp_freq_first)
-                output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}.png")
-                plt.savefig(output_image_path_labeled)
-                plt.close()
+                    # Apply high-pass filter if order is specified
+                    if filter_order:
+                        data_array_transposed = high_pass_filter(data_array_transposed, cutoff_frequency, sampling_freq, filter_order)
+
+                    plt.figure(figsize=(10, 6))
+                    Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                    plt.colorbar(label='Intensity')
+                    plt.xlabel('Time (s)')
+                    plt.ylabel('Frequency (Hz)')
+                    propeller_mapping = {
+                        'fr': 'front_right',
+                        'br': 'back_right',
+                        'fl': 'front_left',
+                        'bl': 'back_left'
+                    }
+                    propeller = propeller_mapping.get(details['propeller'], '')
+                    if propeller:
+                        hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
+                        with h5py.File(file_path, 'r') as hdf5_file:
+                            exp_freq = hdf5_file[hdf5_path][:]
+                            exp_freq_first = round(exp_freq[0])
+                        freq_index = np.abs(freqs - exp_freq_first).argmin()
+                        bbox_y = freqs[freq_index] - n_pixels
+                        bbox_height = 2 * n_pixels
+                        bbox = [0, int(bbox_y), len(bins), int(bbox_height)]
+                        annotation = {
+                            "id": len(coco_output["annotations"]) + 1,
+                            "image_id": image_id,
+                            "category_id": 1,
+                            "bbox": [int(coord) for coord in bbox],
+                            "area": int(bbox[2] * bbox[3]),
+                            "iscrowd": 0
+                        }
+                        coco_output["annotations"].append(annotation)
+                        
+                        # Plot the labeled spectrogram with bounding box in orange
+                        plt.axhline(y=exp_freq_first, color='r', linestyle='--')
+                        plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
+                        fill_factor = read_fill_factor(file_path)
+                        text_str = (f"Drone Name: {details['drone_name']}\n"
+                                    f"Time Stamp: {details['time_stamp']}\n"
+                                    f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                                    f"Propeller: {propeller}\n"
+                                    f"Throttle: {details['throttle']}\n"
+                                    f"Actual Frequency: {exp_freq_first}\n"
+                                    f"Fill Factor: {fill_factor}\n"
+                                    f"Range Bin: {range_bin}\n"
+                                    f"Time Slice: {time_slice+1}")
+                        plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+                        details['actual_frequency'] = int(exp_freq_first)
+                    output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}_time_slice={time_slice+1}.png")
+                    plt.savefig(output_image_path_labeled)
+                    plt.close()
+                    
+                    # Plot the raw spectrogram without bounding box
+                    plt.figure(figsize=(10, 6))
+                    plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                    plt.axis('off')
+                    plt.gca().xaxis.set_visible(False)
+                    plt.gca().yaxis.set_visible(False)
+                    plt.gca().set_frame_on(False)
+                    output_image_path_raw = os.path.join(raw_folder, f"{base_name}_range_bin={range_bin}_time_slice={time_slice+1}.png")
+                    plt.savefig(output_image_path_raw, bbox_inches='tight', pad_inches=0)
+                    plt.close()
                 
-                # Plot the raw spectrogram without bounding box
-                plt.figure(figsize=(10, 6))
-                plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                plt.axis('off')
-                plt.gca().xaxis.set_visible(False)
-                plt.gca().yaxis.set_visible(False)
-                plt.gca().set_frame_on(False)
-                output_image_path_raw = os.path.join(raw_folder, f"{base_name}_range_bin={range_bin}.png")
-                plt.savefig(output_image_path_raw, bbox_inches='tight', pad_inches=0)
-                plt.close()
-            
-                if dimensions is None:
-                    img = Image.open(output_image_path_raw)
-                    dimensions = img.size
-                
-                # Add image information to COCO output
-                image_info = {
-                    "id": image_id,
-                    "file_name": os.path.basename(output_image_path_labeled),
-                    "height": dimensions[1],
-                    "width": dimensions[0]
-                }
-                coco_output["images"].append(image_info)
-                image_id += 1
+                    if dimensions is None:
+                        img = Image.open(output_image_path_raw)
+                        dimensions = img.size
+                    
+                    # Add image information to COCO output
+                    image_info = {
+                        "id": image_id,
+                        "file_name": os.path.basename(output_image_path_labeled),
+                        "height": dimensions[1],
+                        "width": dimensions[0]
+                    }
+                    coco_output["images"].append(image_info)
+                    image_id += 1
             
     return dimensions, image_id
 
@@ -173,6 +176,7 @@ def main():
     parser.add_argument('--range_bins', type=str, default="0", help="Specify a single range bin or a range of range bins (e.g., 120 or 120-130).")
     parser.add_argument('--output_folder', type=str, default=None, help="Path to the output folder where spectrograms will be saved. Default is './spectrograms'.")
     parser.add_argument('--filter_order', type=int, help="Order of the high-pass filter. If not specified, the filter will not be applied.")
+    parser.add_argument('--time_slices', type=int, default=1, help="Number of time slices to process (1 to 32).")
 
     args = parser.parse_args()
     input_folder = args.input_folder
@@ -218,7 +222,7 @@ def main():
             os.makedirs(labeled_folder, exist_ok=True)
             os.makedirs(raw_folder, exist_ok=True)
 
-            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order)
+            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order, args.time_slices)
 
             # Write details.txt
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
