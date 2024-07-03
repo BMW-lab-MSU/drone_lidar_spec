@@ -80,6 +80,9 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
             noverlap = int(NFFT * 3/4)
             cutoff_frequency = 50  # Hz
 
+            fill_factor = read_fill_factor(file_path)
+            exp_freq_first = None
+            
             for range_bin in range_bins:
                 if range_bin < 0 or range_bin >= data_array.shape[1]:
                     print(f"Range bin {range_bin} is out of bounds for file {file_path}. Skipping this range bin.")
@@ -109,6 +112,8 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         with h5py.File(file_path, 'r') as hdf5_file:
                             exp_freq = hdf5_file[hdf5_path][:]
                             exp_freq_time_slice = round(exp_freq[time_slice])
+                            if exp_freq_first is None:
+                                exp_freq_first = exp_freq_time_slice
                         freq_index = np.abs(freqs - exp_freq_time_slice).argmin()
                         bbox_y = freqs[freq_index] - n_pixels
                         bbox_height = 2 * n_pixels
@@ -126,7 +131,6 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         # Plot the labeled spectrogram with bounding box in orange
                         plt.axhline(y=exp_freq_time_slice, color='r', linestyle='--')
                         plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
-                        fill_factor = read_fill_factor(file_path)
                         text_str = (f"Drone Name: {details['drone_name']}\n"
                                     f"Time Stamp: {details['time_stamp']}\n"
                                     f"Tilt Angle: {details['tilt_angle']} degrees\n"
@@ -138,6 +142,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                                     f"Time Slice: {time_slice+1}")
                         plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
                         details['actual_frequency'] = int(exp_freq_time_slice)
+                        details['fill_factor'] = fill_factor  # Add fill factor to details
                     output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}_time_slice={time_slice+1}.png")
                     plt.savefig(output_image_path_labeled)
                     plt.close()
@@ -228,11 +233,11 @@ def main():
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
             with open(details_file_path, 'w') as details_file:
                 for key, value in details.items():
-                    if key != 'actual_frequency':
+                    if key != 'actual_frequency' and key != 'fill_factor':
                         details_file.write(f"{key}: {value}\n")
                 details_file.write(f"Range Bins: {args.range_bins}\n")
-                if 'actual_frequency' in details:
-                    details_file.write(f"Actual Frequency: {details['actual_frequency']}\n")
+                details_file.write(f"Fill Factor: {details['fill_factor']}\n")
+                details_file.write(f"Actual Frequency: {details['actual_frequency']}\n")
 
             print(f"Processed {filename}")
 
