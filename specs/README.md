@@ -29,6 +29,12 @@ To generate spectrograms:
 python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40 --filter_order 1 --time_slices 32
 ```
 
+To boost the color intensity in the spectrograms, add the `--boost_colors` flag:
+
+```bash
+python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder --range_bins 0-10 --n_pixels 40 --filter_order 1 --time_slices 32 --boost_colors
+```
+
 ### Arguments
 
 - `/path/to/input/folder` (required): The path to the directory containing your `.mat` or `.h5` files.
@@ -37,6 +43,7 @@ python gen_spec.py /path/to/input/folder --output_folder /path/to/output/folder 
 - `--n_pixels` (optional): The number of pixels around the ground truth frequency for the bounding box. The default value is `40`.
 - `--filter_order` (optional): The order of the high pass filter, if applying a filter.
 - `--time_slices` (optional): Number of time slices to process (1 to 32). The default value is `1`.
+- `--boost_colors` (optional): Boost the color intensity in the spectrograms. By default, this option is disabled.
 
 ## Directory Structure 📁
 
