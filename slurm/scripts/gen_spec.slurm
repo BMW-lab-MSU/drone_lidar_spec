@@ -11,7 +11,7 @@
 #SBATCH --time=05:00:00                 # Maximum job run time (d-hh:mm:ss)
 #SBATCH --output=../gen_spec_out/gen_spec_%A_%a.out  # Store output files in gen_spec_out directory
 #SBATCH --error=../gen_spec_err/gen_spec_%A_%a.err   # Store error files in gen_spec_err directory
-#SBATCH --array=0-9                     # Adjust this range according to the number of splits
+#SBATCH --array=0-7                     # Adjust this range according to the number of splits
 
 # Define the path to your Apptainer image
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif

@@ -12,10 +12,11 @@
 #spectrogram outputs
 /specs/*/
 
-#Slurm outputs
-/slurm/err/
-/slurm/out/
+# Slurm outputs
+/slurm/*err*
+/slurm/*out*
 /slurm/scripts/*/
+
 
 #det outputs
 /det_outputs/
