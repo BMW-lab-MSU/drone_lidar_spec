@@ -108,8 +108,8 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         hdf5_path = f'parameters/prop_frequency/{propeller}/avg'
                         with h5py.File(file_path, 'r') as hdf5_file:
                             exp_freq = hdf5_file[hdf5_path][:]
-                            exp_freq_first = round(exp_freq[0])
-                        freq_index = np.abs(freqs - exp_freq_first).argmin()
+                            exp_freq_time_slice = round(exp_freq[time_slice])
+                        freq_index = np.abs(freqs - exp_freq_time_slice).argmin()
                         bbox_y = freqs[freq_index] - n_pixels
                         bbox_height = 2 * n_pixels
                         bbox = [0, int(bbox_y), len(bins), int(bbox_height)]
@@ -124,7 +124,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         coco_output["annotations"].append(annotation)
                         
                         # Plot the labeled spectrogram with bounding box in orange
-                        plt.axhline(y=exp_freq_first, color='r', linestyle='--')
+                        plt.axhline(y=exp_freq_time_slice, color='r', linestyle='--')
                         plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
                         fill_factor = read_fill_factor(file_path)
                         text_str = (f"Drone Name: {details['drone_name']}\n"
@@ -132,12 +132,12 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                                     f"Tilt Angle: {details['tilt_angle']} degrees\n"
                                     f"Propeller: {propeller}\n"
                                     f"Throttle: {details['throttle']}\n"
-                                    f"Actual Frequency: {exp_freq_first}\n"
+                                    f"Actual Frequency: {exp_freq_time_slice}\n"
                                     f"Fill Factor: {fill_factor}\n"
                                     f"Range Bin: {range_bin}\n"
                                     f"Time Slice: {time_slice+1}")
                         plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
-                        details['actual_frequency'] = int(exp_freq_first)
+                        details['actual_frequency'] = int(exp_freq_time_slice)
                     output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}_time_slice={time_slice+1}.png")
                     plt.savefig(output_image_path_labeled)
                     plt.close()
