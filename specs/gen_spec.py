@@ -45,7 +45,7 @@ def high_pass_filter(data, cutoff, fs, order=1):
     y = filtfilt(b, a, data)
     return y
 
-def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order, time_slices):
+def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order, time_slices, boost_colors):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
         mat_file = scipy.io.loadmat(file_path)
@@ -97,7 +97,21 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
 
                     plt.figure(figsize=(10, 6))
                     Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                    plt.colorbar(label='Intensity')
+                    
+                    if boost_colors:
+                        # Apply logarithmic scale to the spectrogram data and clip to avoid negative infinity
+                        Pxx[Pxx == 0] = 1e-10  # Replace zero values with a small number to avoid log(0)
+                        Pxx_log = 10 * np.log10(Pxx)
+                        
+                        # Calculate vmin and vmax to increase intensity
+                        vmin = np.percentile(Pxx_log, 5)  # 5th percentile
+                        vmax = np.percentile(Pxx_log, 95) # 95th percentile
+                        
+                        plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap, vmin=vmin, vmax=vmax)
+                        plt.colorbar(label='Intensity (dB)')
+                    else:
+                        plt.colorbar(label='Intensity')
+                    
                     plt.xlabel('Time (s)')
                     plt.ylabel('Frequency (Hz)')
                     propeller_mapping = {
@@ -182,6 +196,7 @@ def main():
     parser.add_argument('--output_folder', type=str, default=None, help="Path to the output folder where spectrograms will be saved. Default is './spectrograms'.")
     parser.add_argument('--filter_order', type=int, help="Order of the high-pass filter. If not specified, the filter will not be applied.")
     parser.add_argument('--time_slices', type=int, default=1, help="Number of time slices to process (1 to 32).")
+    parser.add_argument('--boost_colors', action='store_true', help="Boost the color intensity in the spectrograms.")
 
     args = parser.parse_args()
     input_folder = args.input_folder
@@ -227,7 +242,7 @@ def main():
             os.makedirs(labeled_folder, exist_ok=True)
             os.makedirs(raw_folder, exist_ok=True)
 
-            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order, args.time_slices)
+            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order, args.time_slices, args.boost_colors)
 
             # Write details.txt
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
