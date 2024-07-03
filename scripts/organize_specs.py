@@ -8,7 +8,7 @@ import logging
 Organize Spectrograms Script
 
 This script organizes spectrograms into datasets based on the `Fill Factor` value in the `details.txt` file and splits them into train/val/test sets.
-It creates four datasets: one for each `Fill Factor` value ("b'full'", "b'prop only'", "b'partial'") and one that includes all fill factors.
+It creates four datasets: one for each `Fill Factor` value ("full", "prop-only", "partial") and one that includes all fill factors.
 Each dataset is split into 22 images for training, 5 for validation, and 5 for testing from each folder containing 32 images.
 
 Usage:
@@ -16,7 +16,7 @@ Usage:
 """
 
 # Fill Factor categories
-fill_factors = ["b'full'", "b'prop only'", "b'partial'"]
+fill_factors = ["full", "prop-only", "partial"]
 
 def load_details(file_path):
     with open(file_path, 'r') as f:
@@ -33,6 +33,7 @@ def collect_files(input_dir):
             details = load_details(os.path.join(root, 'details.txt'))
             if 'stan-fpv' in details.get('drone_name', ''):
                 fill_factor = details.get('Fill Factor')
+                fill_factor = fill_factor.strip("b'").replace(" ", "-")
                 all_files.append({
                     'root': root,
                     'details': details,
@@ -51,7 +52,7 @@ def copy_files(files, destination_dir, start_index, end_index):
             if moved_images_count % 1000 == 0:
                 logging.info(f"Moved {moved_images_count} images so far.")
 
-def merge_annotations(all_files, destination_dir):
+def merge_annotations(files, destination_dir):
     combined_annotations = {
         "images": [],
         "annotations": [],
@@ -66,19 +67,21 @@ def merge_annotations(all_files, destination_dir):
     image_id_offset = 0
     annotation_id_offset = 0
 
-    for file_info in all_files:
-        with open(os.path.join(file_info['root'], 'annotations.json'), 'r') as f:
-            annotations = json.load(f)
-            for image in annotations['images']:
-                image['id'] += image_id_offset
-            for annotation in annotations['annotations']:
-                annotation['id'] += annotation_id_offset
-                annotation['image_id'] += image_id_offset
+    for file_info in files:
+        annotations_path = os.path.join(os.path.dirname(file_info['root']), 'annotations.json')
+        if os.path.exists(annotations_path):
+            with open(annotations_path, 'r') as f:
+                annotations = json.load(f)
+                for image in annotations['images']:
+                    image['id'] += image_id_offset
+                for annotation in annotations['annotations']:
+                    annotation['id'] += annotation_id_offset
+                    annotation['image_id'] += image_id_offset
 
-            combined_annotations['images'].extend(annotations['images'])
-            combined_annotations['annotations'].extend(annotations['annotations'])
-            image_id_offset += len(annotations['images'])
-            annotation_id_offset += len(annotations['annotations'])
+                combined_annotations['images'].extend(annotations['images'])
+                combined_annotations['annotations'].extend(annotations['annotations'])
+                image_id_offset += len(annotations['images'])
+                annotation_id_offset += len(annotations['annotations'])
 
     with open(os.path.join(destination_dir, 'annotations.json'), 'w') as f:
         json.dump(combined_annotations, f, indent=4)
@@ -90,46 +93,47 @@ def main(input_dir, output_dir):
     logging.info(f"Collected {len(all_files)} valid directories with 'stan-fpv' drone name.")
 
     # Ensure output directories exist
-    for factor in fill_factors + ['all']:
+    for factor in fill_factors:
         for split in ['train', 'val', 'test']:
             os.makedirs(os.path.join(output_dir, factor, split), exist_ok=True)
 
+    # Process each fill factor
     for fill_factor in fill_factors:
         factor_files = [f for f in all_files if f['fill_factor'] == fill_factor]
         logging.info(f"Processing Fill Factor: {fill_factor}, {len(factor_files)} directories found.")
 
-        for file_info in factor_files:
-            train_dir = os.path.join(output_dir, fill_factor, 'train')
-            val_dir = os.path.join(output_dir, fill_factor, 'val')
-            test_dir = os.path.join(output_dir, fill_factor, 'test')
+        for split, (start, end) in zip(['train', 'val', 'test'], [(0, 22), (22, 27), (27, 32)]):
+            split_dir = os.path.join(output_dir, fill_factor, split)
+            copy_files(factor_files, split_dir, start, end)
+            merge_annotations(factor_files[start:end], split_dir)
+            logging.info(f"Copied and merged annotations for {split} split of Fill Factor: {fill_factor}")
 
-            copy_files([file_info], train_dir, 0, 22)
-            copy_files([file_info], val_dir, 22, 27)
-            copy_files([file_info], test_dir, 27, 32)
-            logging.info(f"Copied files from {file_info['root']} to {fill_factor} dataset.")
-
-    # Create the 'all' dataset
+    # Create the 'all' dataset by combining splits from the other three
     for split in ['train', 'val', 'test']:
-        all_files_split = []
-        for fill_factor in fill_factors:
-            split_files = [f for f in all_files if f['fill_factor'] == fill_factor]
-            for file_info in split_files:
-                if split == 'train':
-                    all_files_split.extend([file_info] * 22)
-                elif split == 'val':
-                    all_files_split.extend([file_info] * 5)
-                elif split == 'test':
-                    all_files_split.extend([file_info] * 5)
-
-        all_files_split = all_files_split[:32]  # Ensure each split has exactly 32 images
         split_dir = os.path.join(output_dir, 'all', split)
-        copy_files(all_files_split, split_dir, 0, len(all_files_split))
+        os.makedirs(split_dir, exist_ok=True)
+        for fill_factor in fill_factors:
+            factor_split_dir = os.path.join(output_dir, fill_factor, split)
+            for file_name in os.listdir(factor_split_dir):
+                shutil.copy(os.path.join(factor_split_dir, file_name), os.path.join(split_dir, file_name))
         logging.info(f"Created 'all' dataset split: {split}")
 
-    for fill_factor in fill_factors + ['all']:
-        factor_files = [f for f in all_files if f['fill_factor'] == fill_factor or fill_factor == 'all']
-        merge_annotations(factor_files, os.path.join(output_dir, fill_factor))
-        logging.info(f"Merged annotations for Fill Factor: {fill_factor}")
+    # Merge annotations for 'all' dataset
+    for split in ['train', 'val', 'test']:
+        split_files = []
+        for fill_factor in fill_factors:
+            factor_split_dir = os.path.join(output_dir, fill_factor, split)
+            for root, _, files in os.walk(factor_split_dir):
+                if 'details.txt' in files:
+                    split_files.append({
+                        'root': root,
+                        'details': load_details(os.path.join(root, 'details.txt')),
+                        'fill_factor': fill_factor,
+                        'drone_name': 'stan-fpv'
+                    })
+        split_dir = os.path.join(output_dir, 'all', split)
+        merge_annotations(split_files, split_dir)
+        logging.info(f"Merged annotations for 'all' dataset split: {split}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Organize spectrograms into datasets and split into train/val/test sets.")
