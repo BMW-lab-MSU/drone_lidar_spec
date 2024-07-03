@@ -97,7 +97,17 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
 
                     plt.figure(figsize=(10, 6))
                     Pxx, freqs, bins, im = plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
-                    plt.colorbar(label='Intensity')
+                    
+                    # Apply logarithmic scale to the spectrogram data and clip to avoid negative infinity
+                    Pxx[Pxx == 0] = 1e-10  # Replace zero values with a small number to avoid log(0)
+                    Pxx_log = 10 * np.log10(Pxx)
+                    
+                    # Calculate vmin and vmax to increase intensity
+                    vmin = np.percentile(Pxx_log, 5)  # 5th percentile
+                    vmax = np.percentile(Pxx_log, 95) # 95th percentile
+                    
+                    plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap, vmin=vmin, vmax=vmax)
+                    plt.colorbar(label='Intensity (dB)')
                     plt.xlabel('Time (s)')
                     plt.ylabel('Frequency (Hz)')
                     propeller_mapping = {
@@ -149,7 +159,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                     
                     # Plot the raw spectrogram without bounding box
                     plt.figure(figsize=(10, 6))
-                    plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap)
+                    plt.specgram(data_array_transposed, NFFT=NFFT, Fs=sampling_freq, noverlap=noverlap, vmin=vmin, vmax=vmax)
                     plt.axis('off')
                     plt.gca().xaxis.set_visible(False)
                     plt.gca().yaxis.set_visible(False)
@@ -173,6 +183,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                     image_id += 1
             
     return dimensions, image_id
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate spectrograms from .mat or HDF5 files in a specified folder.")
