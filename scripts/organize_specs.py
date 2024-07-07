@@ -75,13 +75,31 @@ def merge_annotations(files, master_annotations_path):
         ]
     }
 
+    image_id_map = {}
+    annotation_id_map = {}
+    
     for file_info in files:
         annotations_path = os.path.join(os.path.dirname(file_info['root']), 'annotations.json')
+        chunk_number = file_info['chunk_number']
+        base_id = (chunk_number + 1) * 10000
+
         if os.path.exists(annotations_path):
             with open(annotations_path, 'r') as f:
                 annotations = json.load(f)
-                combined_annotations['images'].extend(annotations['images'])
-                combined_annotations['annotations'].extend(annotations['annotations'])
+                for image in annotations['images']:
+                    original_id = image['id']
+                    new_id = original_id + base_id
+                    image['id'] = new_id
+                    image_id_map[original_id] = new_id
+                    combined_annotations['images'].append(image)
+                for annotation in annotations['annotations']:
+                    original_id = annotation['id']
+                    new_id = original_id + base_id
+                    annotation['id'] = new_id
+                    annotation['image_id'] = image_id_map[annotation['image_id']]
+                    if new_id not in annotation_id_map:
+                        annotation_id_map[new_id] = annotation
+                        combined_annotations['annotations'].append(annotation)
 
     os.makedirs(os.path.dirname(master_annotations_path), exist_ok=True)
     with open(master_annotations_path, 'w') as f:
