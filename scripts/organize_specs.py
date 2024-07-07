@@ -3,6 +3,8 @@ import json
 import shutil
 import argparse
 import logging
+import re
+from collections import defaultdict
 
 """
 Organize Spectrograms Script
@@ -36,26 +38,31 @@ def collect_files(input_dir):
                 fill_factor = details.get('Fill Factor')
                 if fill_factor:
                     fill_factor = fill_factor.strip("b'").rstrip("'").replace(" ", "-")
+                    chunk_number = int(re.search(r'split_(\d+)', root).group(1))
                     all_files.append({
                         'root': root,
                         'details': details,
                         'fill_factor': fill_factor,
-                        'drone_name': details['drone_name']
+                        'drone_name': details['drone_name'],
+                        'chunk_number': chunk_number
                     })
     return all_files
 
 def copy_files(src_folder, destination_dir, start_index, end_index):
     moved_images_count = 0
+    image_files = []
     with os.scandir(src_folder) as entries:
         file_list = [entry for entry in entries if entry.is_file() and entry.name.endswith('.png')]
         for entry in file_list[start_index:end_index]:
             shutil.copy(entry.path, os.path.join(destination_dir, entry.name))
+            image_files.append(entry.name)
             moved_images_count += 1
             if moved_images_count % 1000 == 0:
                 logging.info(f"Moved {moved_images_count} images so far from {src_folder}.")
     logging.info(f"Moved {len(file_list[start_index:end_index])} files from {src_folder}")
+    return image_files
 
-def merge_annotations(files, destination_dir):
+def merge_annotations(files, master_annotations_path):
     combined_annotations = {
         "images": [],
         "annotations": [],
@@ -67,27 +74,45 @@ def merge_annotations(files, destination_dir):
             }
         ]
     }
-    image_id_offset = 0
-    annotation_id_offset = 0
 
     for file_info in files:
         annotations_path = os.path.join(os.path.dirname(file_info['root']), 'annotations.json')
         if os.path.exists(annotations_path):
             with open(annotations_path, 'r') as f:
                 annotations = json.load(f)
-                for image in annotations['images']:
-                    image['id'] += image_id_offset
-                for annotation in annotations['annotations']:
-                    annotation['id'] += annotation_id_offset
-                    annotation['image_id'] += image_id_offset
-
                 combined_annotations['images'].extend(annotations['images'])
                 combined_annotations['annotations'].extend(annotations['annotations'])
-                image_id_offset += len(annotations['images'])
-                annotation_id_offset += len(annotations['annotations'])
 
-    with open(os.path.join(destination_dir, 'annotations.json'), 'w') as f:
+    os.makedirs(os.path.dirname(master_annotations_path), exist_ok=True)
+    with open(master_annotations_path, 'w') as f:
         json.dump(combined_annotations, f, indent=4)
+
+def create_lookup_dicts(master_annotations):
+    image_lookup = {}
+    annotation_lookup = defaultdict(list)
+    for image in master_annotations["images"]:
+        image_lookup[image["file_name"]] = image
+    for annotation in master_annotations["annotations"]:
+        annotation_lookup[annotation["image_id"]].append(annotation)
+    return image_lookup, annotation_lookup
+
+def filter_annotations(image_files_set, image_lookup, annotation_lookup):
+    logging.info("Starting to filter annotations.")
+    filtered_annotations = {
+        "images": [],
+        "annotations": [],
+        "categories": []
+    }
+
+    for file_name in image_files_set:
+        if file_name in image_lookup:
+            image = image_lookup[file_name]
+            filtered_annotations["images"].append(image)
+            image_id = image["id"]
+            filtered_annotations["annotations"].extend(annotation_lookup[image_id])
+
+    logging.info(f"Filtered {len(filtered_annotations['images'])} images and {len(filtered_annotations['annotations'])} annotations.")
+    return filtered_annotations
 
 def main(input_dir, output_dir):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -95,12 +120,17 @@ def main(input_dir, output_dir):
     all_files = collect_files(input_dir)
     logging.info(f"Collected {len(all_files)} valid directories with 'stan-fpv' drone name.")
 
+    master_annotations_path = os.path.join(output_dir, 'master_annotations.json')
+    merge_annotations(all_files, master_annotations_path)
+    logging.info(f"Master annotations file created at {master_annotations_path}")
+
     # Ensure output directories exist
     for factor in fill_factors:
         for split in ['train', 'val', 'test']:
             os.makedirs(os.path.join(output_dir, factor, split), exist_ok=True)
 
-    # Process each fill factor
+    # Move all images first and track moved images
+    split_image_files = defaultdict(lambda: defaultdict(list))
     for fill_factor in fill_factors:
         factor_files = [f for f in all_files if f['fill_factor'] == fill_factor]
         logging.info(f"Processing Fill Factor: {fill_factor}, {len(factor_files)} directories found.")
@@ -110,20 +140,37 @@ def main(input_dir, output_dir):
             if os.path.exists(src_folder):
                 # Copy files for train
                 train_dir = os.path.join(output_dir, fill_factor, 'train')
-                copy_files(src_folder, train_dir, 0, 22)
+                split_image_files[fill_factor]['train'].extend(copy_files(src_folder, train_dir, 0, 22))
 
                 # Copy files for val
                 val_dir = os.path.join(output_dir, fill_factor, 'val')
-                copy_files(src_folder, val_dir, 22, 27)
+                split_image_files[fill_factor]['val'].extend(copy_files(src_folder, val_dir, 22, 27))
 
                 # Copy files for test
                 test_dir = os.path.join(output_dir, fill_factor, 'test')
-                copy_files(src_folder, test_dir, 27, 32)
+                split_image_files[fill_factor]['test'].extend(copy_files(src_folder, test_dir, 27, 32))
 
-        for split in ['train', 'val', 'test']:
+    logging.info("All images moved to their respective folders.")
+
+    # Load master annotations once and create lookup dictionaries
+    with open(master_annotations_path, 'r') as f:
+        master_annotations = json.load(f)
+    logging.info("Master annotations loaded.")
+    
+    image_lookup, annotation_lookup = create_lookup_dicts(master_annotations)
+    logging.info("Lookup dictionaries created.")
+
+    # Filter and copy annotations for each split
+    for split in ['train', 'val', 'test']:
+        for fill_factor in fill_factors:
             split_dir = os.path.join(output_dir, fill_factor, split)
-            merge_annotations(factor_files, split_dir)
-            logging.info(f"Copied and merged annotations for {split} split of Fill Factor: {fill_factor}")
+            image_files_set = set(split_image_files[fill_factor][split])
+            logging.info(f"Filtering annotations for {split} split of {fill_factor} fill factor.")
+            filtered_annotations = filter_annotations(image_files_set, image_lookup, annotation_lookup)
+            filtered_annotations["categories"] = master_annotations["categories"]
+            with open(os.path.join(split_dir, 'annotations.json'), 'w') as f:
+                json.dump(filtered_annotations, f, indent=4)
+            logging.info(f"Filtered annotations for {split} split of {fill_factor} fill factor saved.")
 
     # Create the 'all' dataset by combining splits from the other three
     for split in ['train', 'val', 'test']:
@@ -138,22 +185,21 @@ def main(input_dir, output_dir):
                     shutil.copy(src_path, dst_path)
         logging.info(f"Created 'all' dataset split: {split}")
 
-    # Merge annotations for 'all' dataset
+    # Filter annotations for 'all' dataset
     for split in ['train', 'val', 'test']:
-        split_files = []
-        for fill_factor in fill_factors:
-            factor_split_dir = os.path.join(output_dir, fill_factor, split)
-            for root, _, files in os.walk(factor_split_dir):
-                if 'details.txt' in files:
-                    split_files.append({
-                        'root': root,
-                        'details': load_details(os.path.join(root, 'details.txt')),
-                        'fill_factor': fill_factor,
-                        'drone_name': 'stan-fpv'
-                    })
         split_dir = os.path.join(output_dir, 'all', split)
-        merge_annotations(split_files, split_dir)
-        logging.info(f"Merged annotations for 'all' dataset split: {split}")
+        image_files = [f for f in os.listdir(split_dir) if f.endswith('.png')]
+        image_files_set = set(image_files)
+        logging.info(f"Filtering annotations for 'all' dataset split: {split}")
+        filtered_annotations = filter_annotations(image_files_set, image_lookup, annotation_lookup)
+        filtered_annotations["categories"] = master_annotations["categories"]
+        with open(os.path.join(split_dir, 'annotations.json'), 'w') as f:
+            json.dump(filtered_annotations, f, indent=4)
+        logging.info(f"Filtered annotations for 'all' dataset split: {split} saved.")
+
+    # Clean up the master annotations file
+    os.remove(master_annotations_path)
+    logging.info(f"Deleted the master annotations file: {master_annotations_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Organize spectrograms into datasets and split into train/val/test sets.")
