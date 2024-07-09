@@ -25,6 +25,8 @@ DATASET_PATHS=(
     "/home/d86p233/Desktop/BMW-spec/data/all_boosted"
     "/home/d86p233/Desktop/BMW-spec/data/full_boosted"
     "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90_boosted"
 )
 
 # Define the path to your Apptainer image
