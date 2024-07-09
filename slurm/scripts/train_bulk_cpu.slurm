@@ -9,10 +9,11 @@
 #SBATCH --gpus-per-task=1                  # Number of GPUs to allocate - all GPUs are currently A40 model
 #SBATCH --mem=16000                        # Memory allocated - do not allocate more than 128000 MB mem per GPU
 #SBATCH --time=10:00:00                    # Maximum job run time (d-hh:mm:ss)
-#SBATCH --output=../out/resnext_train_%j.out  # Store output files in slurm_out directory
-#SBATCH --error=../err/resnext_train_%j.err   # Store error files in slurm_err directory
+#SBATCH --output=../out/resnext_train_%A_%a.out  # Store output files in slurm_out directory
+#SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
+#SBATCH --array=0-7                        # Array job to run 8 tasks (0 to 7)
 
 # Define an array of dataset paths
 DATASET_PATHS=(
@@ -27,17 +28,21 @@ DATASET_PATHS=(
     "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"
 )
 
-
 # Define the path to your Apptainer image
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
 
-# Load necessary modules (if applicable)
-# module load apptainer
+# Define the base config path and the script to update the config
+BASE_CONFIG_PATH=/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py
+UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_config.py
 
-# Loop through each dataset path and run the training script
-for DATASET_PATH in "${DATASET_PATHS[@]}"; do
-    echo "Training with dataset at ${DATASET_PATH}"
-    apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py \
-        /home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py \
-        --cfg-options data_root=$DATASET_PATH
-done
+# Get the dataset path for the current array task
+DATASET_PATH=${DATASET_PATHS[$SLURM_ARRAY_TASK_ID]}
+
+# Define a unique work directory for each job
+WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$SLURM_ARRAY_TASK_ID
+
+# Run the script to update the config
+apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
+
+# Run the training with the updated config
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py $WORK_DIR/updated_config.py
