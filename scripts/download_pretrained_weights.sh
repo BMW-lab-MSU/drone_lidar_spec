@@ -9,8 +9,8 @@ SAVE_PATH="../mmdetection/checkpoints/resnext101_32x8d-110c445d.pth"
 # Ensure the directory exists
 mkdir -p $(dirname $SAVE_PATH)
 
-# Download the file using wget
-wget $URL -O $SAVE_PATH
+# Download the file using wget with --no-check-certificate
+wget --no-check-certificate $URL -O $SAVE_PATH
 
 # Print a success message
 echo "Model weights downloaded and saved as '$SAVE_PATH'"

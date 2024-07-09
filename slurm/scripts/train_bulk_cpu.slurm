@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=2                  # Number of cores to allocate - do not allocate more than 16 cores per GPU
 #SBATCH --gpus-per-task=1                  # Number of GPUs to allocate - all GPUs are currently A40 model
 #SBATCH --mem=16000                        # Memory allocated - do not allocate more than 128000 MB mem per GPU
-#SBATCH --time=10:00:00                    # Maximum job run time (d-hh:mm:ss)
+#SBATCH --time=11:00:00                    # Maximum job run time (d-hh:mm:ss)
 #SBATCH --output=../out/resnext_train_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
@@ -17,7 +17,6 @@
 
 # Define an array of dataset paths
 DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/data"
     "/home/d86p233/Desktop/BMW-spec/data/partial"
     "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"
     "/home/d86p233/Desktop/BMW-spec/data/full"
