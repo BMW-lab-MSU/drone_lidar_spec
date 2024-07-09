@@ -67,9 +67,11 @@ def create_filtered_dataset(src_root, dest_root, tilt_value):
             os.makedirs(dest_dir)
 
         # Filter images and copy to destination directory
+        filtered_files = []
         for file_name in os.listdir(src_dir):
             if file_name.endswith('.png') and f"tilt-{tilt_value}" in file_name:
                 shutil.copy(os.path.join(src_dir, file_name), dest_dir)
+                filtered_files.append(file_name)
 
         # Filter annotations.json
         src_annotations = os.path.join(src_dir, 'annotations.json')
@@ -79,11 +81,24 @@ def create_filtered_dataset(src_root, dest_root, tilt_value):
             with open(src_annotations, 'r') as f:
                 annotations = json.load(f)
 
-            # Filter annotations to include only relevant images
-            filtered_annotations = {k: v for k, v in annotations.items() if f"tilt-{tilt_value}" in k}
+            # Create a map from file name to image ID
+            image_id_map = {image['file_name']: image['id'] for image in annotations['images'] if image['file_name'] in filtered_files}
+
+            # Filter images to include only relevant images
+            filtered_images = [image for image in annotations['images'] if image['file_name'] in filtered_files]
+
+            # Filter annotations to include only relevant annotations
+            filtered_annotations = [anno for anno in annotations['annotations'] if anno['image_id'] in image_id_map.values()]
+
+            # Create new annotations structure
+            new_annotations = {
+                'images': filtered_images,
+                'annotations': filtered_annotations,
+                'categories': annotations['categories']
+            }
 
             with open(dest_annotations, 'w') as f:
-                json.dump(filtered_annotations, f, indent=4)
+                json.dump(new_annotations, f, indent=4)
 
 def main():
     parser = argparse.ArgumentParser(description="Filter dataset by tilt value and create a new dataset.")
