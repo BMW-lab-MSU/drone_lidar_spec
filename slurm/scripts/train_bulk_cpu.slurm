@@ -16,15 +16,17 @@
 
 # Define an array of dataset paths
 DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted_boosted/all"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted_boosted/full"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted_boosted/partial"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted_boosted/prop-only"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted/all"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted/full"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted/partial"
-    "/home/d86p233/Desktop/BMW-spec/all_specs_sorted/prop-only"
+    "/home/d86p233/Desktop/BMW-spec/data"
+    "/home/d86p233/Desktop/BMW-spec/data/partial"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/full"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only"
+    "/home/d86p233/Desktop/BMW-spec/data/all"
+    "/home/d86p233/Desktop/BMW-spec/data/all_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/full_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"
 )
+
 
 # Define the path to your Apptainer image
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif

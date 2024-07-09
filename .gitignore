@@ -4,6 +4,9 @@
 # Ignore all .sif files
 *.sif
 
+#Ignore all .pth files
+*.pth
+
 # Secrets
 .env
 
@@ -32,6 +35,5 @@
 /all_h5s_chunked/
 /all_spectrograms_chunked/
 /all_spectrograms_chunked_boosted/
-/all_specs_sorted/
-/all_specs_sorted_boosted/
+/data/
 /testing_data/
