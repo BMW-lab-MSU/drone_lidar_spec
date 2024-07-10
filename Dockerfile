@@ -34,7 +34,7 @@ RUN conda clean --all \
     && pip install --no-cache-dir -e .
 
 # Install h5py and scipy
-RUN pip install h5py scipy
+RUN pip install h5py scipy odfpy
 
 # Install the Globus CLI
 RUN pip install globus-cli
