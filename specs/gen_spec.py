@@ -129,11 +129,20 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                             if exp_freq_first is None:
                                 exp_freq_first = exp_freq_time_slice
                         freq_index = np.abs(freqs - exp_freq_time_slice).argmin()
-                        bbox_y = freqs[freq_index] - n_pixels
-                        bbox_height = 2 * n_pixels
-                        bbox = [0, int(bbox_y), len(bins), int(bbox_height)]
+                        freq_range = 1952  # Assuming the frequency range is 0 to 1952 Hz
+                        bbox_y_center = (exp_freq_time_slice / freq_range) * 462
+                        bbox_y = max(0, 462 - (bbox_y_center + 10))
+                        bbox_height = 20
+
+                        # Plot the labeled spectrogram with bounding box in orange
+                        if dimensions is None:
+                            plt.savefig('/tmp/temp_spectrogram.png')
+                            img = Image.open('/tmp/temp_spectrogram.png')
+                            dimensions = img.size
+
+                        bbox = [0, int(bbox_y), dimensions[0], int(bbox_height)]
                         annotation = {
-                            "id": len(coco_output["annotations"]) + 1,
+                            "id": 100000 + image_id,
                             "image_id": image_id,
                             "category_id": 1,
                             "bbox": [int(coord) for coord in bbox],
@@ -142,9 +151,8 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         }
                         coco_output["annotations"].append(annotation)
                         
-                        # Plot the labeled spectrogram with bounding box in orange
                         plt.axhline(y=exp_freq_time_slice, color='r', linestyle='--')
-                        plt.gca().add_patch(plt.Rectangle((0, bbox_y), len(bins), bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
+                        plt.gca().add_patch(plt.Rectangle((0, bbox_y), dimensions[0], bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
                         text_str = (f"Drone Name: {details['drone_name']}\n"
                                     f"Time Stamp: {details['time_stamp']}\n"
                                     f"Tilt Angle: {details['tilt_angle']} degrees\n"
@@ -223,7 +231,7 @@ def main():
         ]
     }
     
-    dimensions = None
+    dimensions = (775, 462)
     image_id = 1
 
     for filename in os.listdir(input_folder):
