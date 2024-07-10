@@ -42,7 +42,7 @@ IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
 
 # Define the base config path and the script to update the config
 BASE_CONFIG_PATH=/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py
-UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_config.py
+UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_train_config.py
 
 # Get the dataset path for the current array task
 DATASET_PATH=${DATASET_PATHS[$SLURM_ARRAY_TASK_ID]}
