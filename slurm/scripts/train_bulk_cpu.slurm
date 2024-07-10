@@ -13,21 +13,28 @@
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
-#SBATCH --array=0-9                        # Array job to run 10 tasks (0 to 9)
+#SBATCH --array=0-15                        # Array job to run 16 tasks (0 to 15)
 
 # Define an array of dataset paths
 DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/data/partial"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"
-    "/home/d86p233/Desktop/BMW-spec/data/full"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only"
     "/home/d86p233/Desktop/BMW-spec/data/all"
+    "/home/d86p233/Desktop/BMW-spec/data/all_SF"
     "/home/d86p233/Desktop/BMW-spec/data/all_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/all_boosted_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/full"
+    "/home/d86p233/Desktop/BMW-spec/data/full_SF"
     "/home/d86p233/Desktop/BMW-spec/data/full_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/full_boosted_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/partial"
+    "/home/d86p233/Desktop/BMW-spec/data/partial_SF"
     "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only"
     "/home/d86p233/Desktop/BMW-spec/data/prop-only-90"
     "/home/d86p233/Desktop/BMW-spec/data/prop-only-90_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"
 )
+
 
 # Define the path to your Apptainer image
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif

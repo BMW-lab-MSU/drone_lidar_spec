@@ -26,10 +26,10 @@ Output:
     Each directory will be split into subdirectories by tilt angle (0, 10, ..., 90), each containing the corresponding images and a new annotations.json file.
 
 Usage:
-    python split_files_by_angle.py <base_path>
+    python organize_test_data.py <base_path>
 
 Example:
-    python split_files_by_angle.py /path/to/testing_data
+    python organize_test_data.py /path/to/testing_data
 """
 
 def split_files_by_angle(base_path):
