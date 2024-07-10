@@ -12,7 +12,6 @@
 #SBATCH --output=../out/resnext_test_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_test_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
-#SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
 #SBATCH --array=0-0                        # Array job to run 16 tasks (0 to 15)
 
 # Define an array of testing dataset paths
@@ -37,4 +36,4 @@ WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$
 apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $TEST_DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
 
 # Run the testing with the updated config
-apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/custom_test.py $WORK_DIR/updated_config.py /home/d86p233/Desktop/BMW-spec/work_dirs/job_2254338/task_13/epoch_12.pth --out $WORK_DIR/results.pkl --select-best-bbox
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/test.py $WORK_DIR/updated_config.py /home/d86p233/Desktop/BMW-spec/work_dirs/job_2254338/task_13/epoch_12.pth --out $WORK_DIR/results.pkl

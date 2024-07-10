@@ -70,7 +70,8 @@ def select_highest_confidence_bbox(results):
     """Custom post-processing to select the highest confidence bbox."""
     processed_results = []
     for result in results:
-        if len(result[0]) > 0:
+        print(f"Processing result: {result}")  # Debugging statement
+        if isinstance(result, list) and len(result) > 0 and isinstance(result[0], np.ndarray):
             max_confidence_idx = np.argmax(result[0][:, 4])  # Get the index of the highest confidence score
             max_confidence_bbox = result[0][max_confidence_idx]  # Select the bbox with the highest confidence score
             processed_results.append([max_confidence_bbox])
@@ -158,13 +159,23 @@ def main():
             DumpDetResults(out_file_path=args.out))
 
     # start testing
-    runner.test()
+    results = runner.test()
 
-    # Get the results
-    results = runner.outputs
+    # Check if results are empty
+    if not results:
+        print("No results collected. Please check the model and dataset.")
+        return
+
+    # Print the type and structure of results for debugging
+    print(f"Type of results: {type(results)}")
+    if isinstance(results, dict):
+        for key, value in results.items():
+            print(f"Key: {key}, Value type: {type(value)}, Value sample: {value[:5] if isinstance(value, list) else value}")
+    elif isinstance(results, list):
+        print(f"First few results: {results[:5]}")
 
     # Apply custom post-processing to select the highest confidence bbox if specified
-    if args.select_best_bbox:
+    if args.select_best_bbox and isinstance(results, list):
         results = select_highest_confidence_bbox(results)
 
     # Save the results
