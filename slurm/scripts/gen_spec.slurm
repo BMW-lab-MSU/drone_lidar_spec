@@ -12,6 +12,8 @@
 #SBATCH --output=../gen_spec_out/gen_spec_%A_%a.out  # Store output files in gen_spec_out directory
 #SBATCH --error=../gen_spec_err/gen_spec_%A_%a.err   # Store error files in gen_spec_err directory
 #SBATCH --array=0-7                     # Adjust this range according to the number of splits
+#SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
+#SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
 
 # DATA CAN BE SPLIT WITH scripts/chunk_data.py
 
