@@ -17,23 +17,24 @@
 
 # Define an array of dataset paths
 DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/data/all"
-    "/home/d86p233/Desktop/BMW-spec/data/all_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/all_boosted"
-    "/home/d86p233/Desktop/BMW-spec/data/all_boosted_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/full"
-    "/home/d86p233/Desktop/BMW-spec/data/full_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/full_boosted"
-    "/home/d86p233/Desktop/BMW-spec/data/full_boosted_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/partial"
-    "/home/d86p233/Desktop/BMW-spec/data/partial_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"
-    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90_boosted"
-    "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"
+    "/home/d86p233/Desktop/BMW-spec/data/all"                  # Task/Model 0: All data
+    "/home/d86p233/Desktop/BMW-spec/data/all_SF"               # Task/Model 1: All data with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/all_boosted"          # Task/Model 2: All data boosted
+    "/home/d86p233/Desktop/BMW-spec/data/all_boosted_SF"       # Task/Model 3: All data boosted with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/full"                 # Task/Model 4: Full data
+    "/home/d86p233/Desktop/BMW-spec/data/full_SF"              # Task/Model 5: Full data with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/full_boosted"         # Task/Model 6: Full data boosted
+    "/home/d86p233/Desktop/BMW-spec/data/full_boosted_SF"      # Task/Model 7: Full data boosted with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/partial"              # Task/Model 8: Partial data
+    "/home/d86p233/Desktop/BMW-spec/data/partial_SF"           # Task/Model 9: Partial data with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted"      # Task/Model 10: Partial data boosted
+    "/home/d86p233/Desktop/BMW-spec/data/partial_boosted_SF"   # Task/Model 11: Partial data boosted with Single Frequency
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only"            # Task/Model 12: Propeller-only data
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90"         # Task/Model 13: Propeller-only data at 90 degrees
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only-90_boosted" # Task/Model 14: Propeller-only data at 90 degrees boosted
+    "/home/d86p233/Desktop/BMW-spec/data/prop-only_boosted"    # Task/Model 15: Propeller-only data boosted
 )
+
 
 
 # Define the path to your Apptainer image
