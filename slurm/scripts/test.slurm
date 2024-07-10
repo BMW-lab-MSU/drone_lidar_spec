@@ -25,7 +25,7 @@ IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
 
 # Define the base config path and the script to update the config
 BASE_CONFIG_PATH=/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py
-UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_config.py
+UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_test_config.py
 
 # Get the testing dataset path for the current array task
 TEST_DATASET_PATH=${TEST_DATASET_PATHS[$SLURM_ARRAY_TASK_ID]}
@@ -37,4 +37,4 @@ WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$
 apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $TEST_DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
 
 # Run the testing with the updated config
-apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/test.py $WORK_DIR/updated_config.py $WORK_DIR/epoch_12.pth --out $WORK_DIR/results.pkl --eval bbox
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/custom_test.py $WORK_DIR/updated_config.py /home/d86p233/Desktop/BMW-spec/work_dirs/job_2254338/task_13/epoch_12.pth --out $WORK_DIR/results.pkl --select-best-bbox
