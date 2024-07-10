@@ -33,8 +33,15 @@
 
 /all_h5s/
 /all_h5s_chunked/
-/all_spectrograms_chunked/
+/all_spectrograms_chunked_noBoost/
 /all_spectrograms_chunked_boosted/
 /data/
 /testing_data/
 /work_dirs/
+/all_test_vis10/
+/all_train_vis10/
+/all_specs_sorted/
+/all_prop_only_15/
+/test_h5_vis/
+/test_vis/
+/test_visualizations/

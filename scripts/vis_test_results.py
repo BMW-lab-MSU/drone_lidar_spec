@@ -36,12 +36,12 @@ def load_annotations(images_dir):
 
     return annotations
 
-def save_image(image_path, bboxes, output_path, bbox_color='g', title='Image'):
+def save_image(image_path, bboxes, output_path, bbox_color, title):
     image = Image.open(image_path)
     fig, ax = plt.subplots(1)
-    ax.imshow(image)
+    ax.imshow(image, cmap='viridis')
     for bbox in bboxes:
-        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=1, edgecolor=bbox_color, facecolor='none')
+        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=2, edgecolor=bbox_color, facecolor='none')
         ax.add_patch(rect)
     plt.title(title)
     plt.axis('off')
@@ -51,19 +51,19 @@ def save_image(image_path, bboxes, output_path, bbox_color='g', title='Image'):
 def save_combined_image(image_path, ground_truths, predictions, output_path):
     image = Image.open(image_path)
     fig, ax = plt.subplots(1)
-    ax.imshow(image)
+    ax.imshow(image, cmap='viridis')
     # Plot ground truth bounding boxes
     for bbox in ground_truths:
-        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=1, edgecolor='g', facecolor='none')
+        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=2, edgecolor='#FFA500', facecolor='none')
         ax.add_patch(rect)
     # Plot predicted bounding boxes and shade overlapping regions
     for bbox in predictions:
-        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=1, edgecolor='r', facecolor='none')
+        rect = patches.Rectangle((bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=2, edgecolor='#FF0000', facecolor='none')
         ax.add_patch(rect)
         overlap = find_overlap(ground_truths, bbox)
         if overlap:
             for ov in overlap:
-                ax.add_patch(patches.Polygon(ov, closed=True, color='r', alpha=0.3))
+                ax.add_patch(patches.Polygon(ov, closed=True, color='#FF00FF', alpha=0.3))
     plt.title('Image with Ground Truth and Predicted Bboxes')
     plt.axis('off')
     plt.savefig(output_path, bbox_inches='tight')
@@ -155,9 +155,9 @@ def main():
         ground_truths = annotations[image_id]['bboxes']
         predictions = image_info['pred_instances']['bboxes'].numpy()
 
-        save_image(image_path, [], os.path.join(output_subdir, 'original.png'), title='Original Image')
-        save_image(image_path, ground_truths, os.path.join(output_subdir, 'ground_truth.png'), bbox_color='g', title='Ground Truth Bboxes')
-        save_image(image_path, predictions, os.path.join(output_subdir, 'predicted.png'), bbox_color='r', title='Predicted Bboxes')
+        save_image(image_path, [], os.path.join(output_subdir, 'original.png'), bbox_color='white', title='Original Image')
+        save_image(image_path, ground_truths, os.path.join(output_subdir, 'ground_truth.png'), bbox_color='#FFA500', title='Ground Truth Bboxes')
+        save_image(image_path, predictions, os.path.join(output_subdir, 'predicted.png'), bbox_color='#FF0000', title='Predicted Bboxes')
         save_combined_image(image_path, ground_truths, predictions, os.path.join(output_subdir, 'combined.png'))
 
 if __name__ == '__main__':
