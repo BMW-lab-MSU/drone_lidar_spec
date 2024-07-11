@@ -31,7 +31,7 @@ config.work_dir = work_dir
 # Update the GPU ID
 config.gpu_ids = [gpu_id]
 
-# Update the normalization method
+# Define normalization values based on the dataset path
 if normalization_method == 'standard':
     if 'noboost' in dataset_path:
         normalization_values = dict(type='Normalize', mean=[117.72, 201.1, 82.63], std=[55.09, 24.4, 33.32], to_rgb=True)
@@ -40,9 +40,11 @@ if normalization_method == 'standard':
 elif normalization_method == 'minmax':
     normalization_values = dict(type='Normalize', mean=[0.0, 0.0, 0.0], std=[1.0/255.0, 1.0/255.0, 1.0/255.0], to_rgb=True)
 
-config.train_pipeline[3] = normalization_values
-config.val_pipeline[3] = normalization_values
-config.test_pipeline[3] = normalization_values
+# Update normalization in the training, validation, and test pipelines
+for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+    for step in pipeline:
+        if step['type'] == 'Normalize':
+            step.update(normalization_values)
 
 # Ensure the work directory exists
 os.makedirs(work_dir, exist_ok=True)

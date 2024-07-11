@@ -17,6 +17,8 @@
 
 # Define an array of dataset paths
 DATASET_PATHS=(
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only-90"
     "/home/d86p233/Desktop/BMW-spec/data/noboost_all"
     "/home/d86p233/Desktop/BMW-spec/data/noboost_all_SF"
     "/home/d86p233/Desktop/BMW-spec/data/boost_all"
@@ -30,8 +32,6 @@ DATASET_PATHS=(
     "/home/d86p233/Desktop/BMW-spec/data/boost_partial"
     "/home/d86p233/Desktop/BMW-spec/data/boost_partial_SF"
     "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only-90"
     "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only"
 )
 
@@ -48,12 +48,12 @@ NORMALIZATION_METHOD=${NORMALIZATION_METHODS[$NORM_METHOD_INDEX]}
 # Extract details from dataset path for descriptive naming
 IFS='/' read -r -a path_parts <<< "$DATASET_PATH"
 DATASET_NAME=${path_parts[-1]}
-BOOST_STATUS=$(echo $DATASET_NAME | grep -oP '(noboost|boost)')
-SF_STATUS=$(echo $DATASET_NAME | grep -oP '(all_SF|full_SF|partial_SF|prop-only)')
-FILL_FACTOR=$(echo $DATASET_NAME | grep -oP '(all|full|partial|prop-only|prop-only-90)')
+BOOST_STATUS=$(echo $DATASET_NAME | grep -q "noboost" && echo "noboost" || echo "boost")
+SF_STATUS=$(echo $DATASET_NAME | grep -oP '(all_SF|full_SF|partial_SF|prop-only)' || echo "")
+FILL_FACTOR=$(echo $DATASET_NAME | grep -oP '(all|full|partial|prop-only|prop-only-90)' || echo "all")
 
 # Create descriptive work directory name
-WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/${BOOST_STATUS}_${SF_STATUS}_${FILL_FACTOR}_${NORMALIZATION_METHOD}"
+WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/task_${SLURM_ARRAY_TASK_ID}"
 
 # Define the path to your Apptainer image
 IMAGE_PATH="/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif"

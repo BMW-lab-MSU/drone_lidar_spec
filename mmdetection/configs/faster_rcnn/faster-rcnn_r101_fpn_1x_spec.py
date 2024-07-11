@@ -83,9 +83,9 @@ model = dict(
         type='RPNHead',
         anchor_generator=dict(
             type='AnchorGenerator',
-            scales=[2.5, 1.25, 0.625, 0.3125],  # Scales for strides 8, 16, 32, 64
-            ratios=[38.75],  # Aspect ratio to reflect the exact size of your bbox (775 / 20)
-            strides=[8, 16, 32, 64]  # Corresponding feature map strides
+            scales=[8, 4, 2, 1, 0.5],  # Updated to 5 scales
+            ratios=[38.75],  # Single aspect ratio
+            strides=[8, 16, 32, 64, 128]  # Corresponding feature map strides
         ),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
