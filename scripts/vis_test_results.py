@@ -1,3 +1,31 @@
+"""
+This script visualizes testing results by overlaying ground truth and predicted bounding boxes on test images.
+
+Purpose:
+---------
+The purpose of this script is to:
+1. Load testing results and annotations.
+2. Visualize and save images with ground truth and predicted bounding boxes.
+3. Compute and print evaluation metrics such as precision and recall.
+
+Usage:
+------
+1. Ensure you have a pickle file containing the results from your model's inference.
+2. Have a directory containing the test images and an 'annotations.json' file with the ground truth annotations in COCO format.
+3. Run the script with the following command:
+   python visualize_results.py --results_file path/to/results.pkl --images_dir path/to/images_dir --output_dir path/to/output_dir
+
+Arguments:
+----------
+--results_file: Path to the output pickle file containing results.
+--images_dir: Path to the directory containing the test images.
+--output_dir: Path to the directory to save the visualized images.
+
+Example:
+--------
+python visualize_results.py --results_file results.pkl --images_dir ./test_images --output_dir ./output_visualizations
+"""
+
 import argparse
 import pickle
 import json
