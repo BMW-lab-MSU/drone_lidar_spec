@@ -78,6 +78,23 @@ model = dict(
         bbox_head=dict(
             num_classes=1
         )
+    ),
+    rpn_head=dict(
+        type='RPNHead',
+        anchor_generator=dict(
+            type='AnchorGenerator',
+            scales=[2.5, 1.25, 0.625, 0.3125],  # Scales for strides 8, 16, 32, 64
+            ratios=[38.75],  # Aspect ratio to reflect the exact size of your bbox (775 / 20)
+            strides=[8, 16, 32, 64]  # Corresponding feature map strides
+        ),
+        bbox_coder=dict(
+            type='DeltaXYWHBBoxCoder',
+            target_means=[.0, .0, .0, .0],
+            target_stds=[1.0, 1.0, 1.0, 1.0]
+        ),
+        loss_cls=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+        loss_bbox=dict(type='L1Loss', loss_weight=1.0)
     )
 )
 
