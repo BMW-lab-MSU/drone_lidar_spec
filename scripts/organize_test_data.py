@@ -93,7 +93,14 @@ def split_files_by_angle(input_base_path, output_base_path):
 
                     new_annotations = {
                         'images': [],
-                        'annotations': []
+                        'annotations': [],
+                        'categories': annotations.get('categories', [
+                            {
+                                "id": 1,
+                                "name": "drone_frequency",
+                                "supercategory": "object"
+                            }
+                        ])
                     }
 
                     for image in annotations['images']:

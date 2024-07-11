@@ -35,5 +35,9 @@ WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$
 # Run the script to update the config with the test dataset path
 apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $TEST_DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
 
+# Define the specific job id and task id variables
+PREV_JOB_ID=2256243
+PREV_TASK_ID=13
+
 # Run the testing with the updated config
-apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/test.py $WORK_DIR/updated_config.py /home/d86p233/Desktop/BMW-spec/work_dirs/job_2254338/task_13/epoch_12.pth --out $WORK_DIR/results.pkl
+apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/test.py $WORK_DIR/updated_config.py /home/d86p233/Desktop/BMW-spec/work_dirs/job_$PREV_JOB_ID/task_$PREV_TASK_ID/epoch_12.pth --out $WORK_DIR/results.pkl
