@@ -1,13 +1,13 @@
 """
-This script calculates the mean and standard deviation of the pixel values for all images in specified subdirectories
-(train, test, val) within a given directory. It reads images in color (BGR format), extracts pixel values for each 
-channel (Red, Green, and Blue), and computes the mean and standard deviation for each channel.
+This script calculates the mean and standard deviation of the pixel values for a random selection of 100 images from
+each specified subdirectory (train, test, val) within a given directory. It reads images in color (BGR format), 
+extracts pixel values for each channel (Red, Green, and Blue), and computes the mean and standard deviation for each channel.
 
 Usage:
     python calc_norms.py <image_directory>
 
 Arguments:
-    <image_directory>: Directory containing the subdirectories train, test, and val, each containing a Raw subdirectory.
+    <image_directory>: Directory containing the subdirectories train, test, and val.
 
 Output:
     Prints the mean and standard deviation of the pixel values for each color channel (Red, Green, Blue).
@@ -18,21 +18,19 @@ Note:
 Expected Directory Tree:
 .
 ├── test
-│   └── Raw
 ├── train
-│   └── Raw
 └── val
-    └── Raw
 
-All of the images are stored in Raw subdirectories.
+All of the images are stored directly within train, test, and val subdirectories.
 """
 
 import os
 import sys
 import numpy as np
 import cv2
+import random
 
-def calculate_mean_and_std(image_dir):
+def calculate_mean_and_std(image_dir, num_images=100):
     pixel_values_r = []
     pixel_values_g = []
     pixel_values_b = []
@@ -40,13 +38,16 @@ def calculate_mean_and_std(image_dir):
     subdirs = ['train', 'test', 'val']
 
     for subdir in subdirs:
-        raw_subdir_path = os.path.join(image_dir, subdir, 'Raw')
-        if not os.path.isdir(raw_subdir_path):
-            print(f"Subdirectory {raw_subdir_path} does not exist.")
+        subdir_path = os.path.join(image_dir, subdir)
+        if not os.path.isdir(subdir_path):
+            print(f"Subdirectory {subdir_path} does not exist.")
             continue
 
-        for image_name in os.listdir(raw_subdir_path):
-            image_path = os.path.join(raw_subdir_path, image_name)
+        all_images = [img for img in os.listdir(subdir_path) if img.endswith('.png')]
+        selected_images = random.sample(all_images, min(num_images, len(all_images)))
+
+        for image_name in selected_images:
+            image_path = os.path.join(subdir_path, image_name)
             image = cv2.imread(image_path, cv2.IMREAD_COLOR)  # Read in color (BGR)
 
             if image is None:
@@ -74,7 +75,7 @@ def calculate_mean_and_std(image_dir):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python script_name.py <image_directory>")
+        print("Usage: python calc_norms.py <image_directory>")
         sys.exit(1)
 
     image_directory = sys.argv[1]
