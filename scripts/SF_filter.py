@@ -88,8 +88,8 @@ def main():
 
     # Folders to be processed
     folders = [
-        'all', 'all_boosted', 'full', 'full_boosted',
-        'partial', 'partial_boosted'
+        'boost_all', 'noboost_all', 'noboost_full', 'boost_full',
+        'noboost_partial', 'boost_partial'
     ]
 
     for folder in folders:
