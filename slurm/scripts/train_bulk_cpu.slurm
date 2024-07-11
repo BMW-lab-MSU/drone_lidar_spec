@@ -8,50 +8,73 @@
 #SBATCH --cpus-per-task=2                  # Number of cores to allocate - do not allocate more than 16 cores per GPU
 #SBATCH --gpus-per-task=1                  # Number of GPUs to allocate - all GPUs are currently A40 model
 #SBATCH --mem=16000                        # Memory allocated - do not allocate more than 128000 MB mem per GPU
-#SBATCH --time=11:00:00                    # Maximum job run time (d-hh:mm:ss)
+#SBATCH --time=8:00:00                    # Maximum job run time (d-hh:mm:ss)
 #SBATCH --output=../out/resnext_train_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
-#SBATCH --array=0-15                        # Array job to run 16 tasks (0 to 15)
+#SBATCH --array=0-31                       # Array job to run 32 tasks (0 to 31)
 
 # Define an array of dataset paths
 DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_all"                 # Task/Model 0: All data
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_all_SF"              # Task/Model 1: All data with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/boost_all"                   # Task/Model 2: All data boosted
-    "/home/d86p233/Desktop/BMW-spec/data/boost_all_SF"                # Task/Model 3: All data boosted with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_full"                # Task/Model 4: Full data
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_full_SF"             # Task/Model 5: Full data with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/boost_full"                  # Task/Model 6: Full data boosted
-    "/home/d86p233/Desktop/BMW-spec/data/boost_full_SF"               # Task/Model 7: Full data boosted with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial"             # Task/Model 8: Partial data
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial_SF"          # Task/Model 9: Partial data with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/boost_partial"               # Task/Model 10: Partial data boosted
-    "/home/d86p233/Desktop/BMW-spec/data/boost_partial_SF"            # Task/Model 11: Partial data boosted with Single Frequency
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only"           # Task/Model 12: Propeller-only data
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90"        # Task/Model 13: Propeller-only data at 90 degrees
-    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only-90"          # Task/Model 14: Propeller-only data at 90 degrees boosted
-    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only"             # Task/Model 15: Propeller-only data boosted
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_all"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_all_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_all"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_all_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_full"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_full_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_full"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_full_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_partial"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_partial_SF"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only"
+    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only-90"
+    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only"
 )
 
+# Define normalization methods
+NORMALIZATION_METHODS=("standard" "minmax")
 
+# Calculate dataset index and normalization method index
+DATASET_INDEX=$((SLURM_ARRAY_TASK_ID / 2))
+NORM_METHOD_INDEX=$((SLURM_ARRAY_TASK_ID % 2))
+
+DATASET_PATH=${DATASET_PATHS[$DATASET_INDEX]}
+NORMALIZATION_METHOD=${NORMALIZATION_METHODS[$NORM_METHOD_INDEX]}
+
+# Extract details from dataset path for descriptive naming
+IFS='/' read -r -a path_parts <<< "$DATASET_PATH"
+DATASET_NAME=${path_parts[-1]}
+BOOST_STATUS=$(echo $DATASET_NAME | grep -oP '(noboost|boost)')
+SF_STATUS=$(echo $DATASET_NAME | grep -oP '(all_SF|full_SF|partial_SF|prop-only)')
+FILL_FACTOR=$(echo $DATASET_NAME | grep -oP '(all|full|partial|prop-only|prop-only-90)')
+
+# Create descriptive work directory name
+WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/${BOOST_STATUS}_${SF_STATUS}_${FILL_FACTOR}_${NORMALIZATION_METHOD}"
 
 # Define the path to your Apptainer image
-IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
+IMAGE_PATH="/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif"
 
 # Define the base config path and the script to update the config
-BASE_CONFIG_PATH=/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py
-UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_train_config.py
+BASE_CONFIG_PATH="/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py"
+UPDATE_SCRIPT_PATH="/home/d86p233/Desktop/BMW-spec/scripts/update_train_config.py"
 
-# Get the dataset path for the current array task
-DATASET_PATH=${DATASET_PATHS[$SLURM_ARRAY_TASK_ID]}
+# Create the work directory if it doesn't exist
+mkdir -p $WORK_DIR
 
-# Define a unique work directory for each job
-WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$SLURM_ARRAY_TASK_ID
+# Create a text file with job details
+JOB_DETAILS="${WORK_DIR}/job_details.txt"
+echo "Dataset Path: ${DATASET_PATH}" > $JOB_DETAILS
+echo "Normalization Method: ${NORMALIZATION_METHOD}" >> $JOB_DETAILS
+echo "Boost Status: ${BOOST_STATUS}" >> $JOB_DETAILS
+echo "Single Frequency Status: ${SF_STATUS}" >> $JOB_DETAILS
+echo "Fill Factor: ${FILL_FACTOR}" >> $JOB_DETAILS
 
 # Run the script to update the config
-apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
+apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID $NORMALIZATION_METHOD
 
 # Run the training with the updated config
 apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py $WORK_DIR/updated_config.py
