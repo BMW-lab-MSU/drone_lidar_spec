@@ -10,7 +10,7 @@ The purpose of this script is to:
 
 Usage:
 ------
-1. Ensure you have a pickle file containing the results from your model's inference.
+1. Ensure you have a pickle file containing the results from your model's inference. This can be generated using the mmdetection test script.
 2. Have a directory containing the test images and an 'annotations.json' file with the ground truth annotations in COCO format.
 3. Run the script with the following command:
    python visualize_results.py --results_file path/to/results.pkl --images_dir path/to/images_dir --output_dir path/to/output_dir
@@ -24,6 +24,29 @@ Arguments:
 Example:
 --------
 python visualize_results.py --results_file results.pkl --images_dir ./test_images --output_dir ./output_visualizations
+
+Example Input Directory Structure:
+----------------------------------
+input_base_path/
+    ├── annotations.json
+    ├── image1.png
+    ├── image2.png
+    └── ... (more image files)
+
+Example Output Directory Structure:
+-----------------------------------
+output_base_path/
+    ├── 1/
+    │   ├── original.png
+    │   ├── ground_truth.png
+    │   ├── predicted.png
+    │   └── combined.png
+    ├── 2/
+    │   ├── original.png
+    │   ├── ground_truth.png
+    │   ├── predicted.png
+    │   └── combined.png
+    └── ... (more subdirectories for each image)
 """
 
 import argparse
