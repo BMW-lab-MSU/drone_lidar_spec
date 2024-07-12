@@ -6,8 +6,7 @@ import os
 config_path = sys.argv[1]
 dataset_path = sys.argv[2]
 work_dir = sys.argv[3]
-gpu_id = int(sys.argv[4])  # Get the GPU ID from the arguments
-normalization_method = sys.argv[5]  # Get the normalization method
+normalization_method = sys.argv[4]  # Get the normalization method
 
 # Load the config file
 config = Config.fromfile(config_path)
@@ -28,8 +27,13 @@ config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
 # Update the work directory
 config.work_dir = work_dir
 
-# Update the GPU ID
-config.gpu_ids = [gpu_id]
+# Remove any GPU settings to ensure flexibility for single or multiple GPUs
+if hasattr(config, 'gpu_ids'):
+    del config.gpu_ids
+
+# Ensure distributed training is properly configured
+if 'launcher' in config:
+    config.launcher = 'slurm'
 
 # Define normalization values based on the dataset path and method
 if normalization_method == 'standard':

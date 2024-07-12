@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --account=group-bradwhitaker       # Priority account to use
-#SBATCH --job-name=resnext_train           # Job name
+#SBATCH --job-name=resnext_train_CPU           # Job name
 #SBATCH --partition=gpuunsafe              # Queue partition to run the job in
 #SBATCH --nodes=1                          # Number of nodes to allocate
 #SBATCH --ntasks-per-node=1                # Number of discrete tasks - keep at one except for MPI
