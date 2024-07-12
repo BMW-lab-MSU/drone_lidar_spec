@@ -12,11 +12,12 @@
 #SBATCH --output=../out/resnext_test_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_test_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
-#SBATCH --array=0-1                        # Array job to run 2 tasks (0 to 1)
+#SBATCH --array=0-3                        # Array job to run 2 tasks (0 to 1)
 
 # Define an array of testing dataset paths
 TEST_DATASET_PATHS=(
-    "/home/d86p233/Desktop/BMW-spec/testing_data/noboost_prop-only/tilt_90"  # Test dataset for Task/Model 0
+    "/home/d86p233/Desktop/BMW-spec/testing_data/noboost_prop-only/tilt_90"
+    "/home/d86p233/Desktop/BMW-spec/testing_data/boost_prop-only/tilt_90"  # Test dataset for Task/Model 0
     # Add other test dataset paths here if needed
 )
 

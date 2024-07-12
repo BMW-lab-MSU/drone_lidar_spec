@@ -34,7 +34,7 @@ if normalization_method == 'standard':
         std = [67.23, 63.18, 38.67]
 elif normalization_method == 'minmax':
     mean = [0.0, 0.0, 0.0]
-    std = [1.0/255.0, 1.0/255.0, 1.0/255.0]
+    std = [255.0, 255.0, 255.0]
 
 # Update normalization values
 normalization_values = {

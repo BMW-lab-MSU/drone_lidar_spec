@@ -13,7 +13,7 @@
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
-#SBATCH --array=0-31                       # Array job to run 32 tasks (0 to 31)
+#SBATCH --array=0-3                        # Array job to run 4 tasks (0 to 3)
 
 # Define an array of dataset paths
 DATASET_PATHS=(
@@ -53,7 +53,7 @@ SF_STATUS=$(echo $DATASET_NAME | grep -oP '(all_SF|full_SF|partial_SF|prop-only)
 FILL_FACTOR=$(echo $DATASET_NAME | grep -oP '(all|full|partial|prop-only|prop-only-90)' || echo "all")
 
 # Create descriptive work directory name
-WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/task_${SLURM_ARRAY_TASK_ID}"
+WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/train_task_${SLURM_ARRAY_TASK_ID}"
 
 # Define the path to your Apptainer image
 IMAGE_PATH="/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif"
