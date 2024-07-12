@@ -12,12 +12,23 @@
 #SBATCH --output=../out/resnext_test_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_test_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
-#SBATCH --array=0-0                        # Array job to run 16 tasks (0 to 15)
+#SBATCH --array=0-1                        # Array job to run 2 tasks (0 to 1)
 
 # Define an array of testing dataset paths
 TEST_DATASET_PATHS=(
     "/home/d86p233/Desktop/BMW-spec/testing_data/noboost_prop-only/tilt_90"  # Test dataset for Task/Model 0
+    # Add other test dataset paths here if needed
 )
+
+# Define normalization methods
+NORMALIZATION_METHODS=("standard" "minmax")
+
+# Calculate dataset index and normalization method index
+DATASET_INDEX=0  # Assuming only one test dataset
+NORM_METHOD_INDEX=$SLURM_ARRAY_TASK_ID
+
+TEST_DATASET_PATH=${TEST_DATASET_PATHS[$DATASET_INDEX]}
+NORMALIZATION_METHOD=${NORMALIZATION_METHODS[$NORM_METHOD_INDEX]}
 
 # Define the path to your Apptainer image
 IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
@@ -26,14 +37,14 @@ IMAGE_PATH=/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif
 BASE_CONFIG_PATH=/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec.py
 UPDATE_SCRIPT_PATH=/home/d86p233/Desktop/BMW-spec/scripts/update_test_config.py
 
-# Get the testing dataset path for the current array task
-TEST_DATASET_PATH=${TEST_DATASET_PATHS[$SLURM_ARRAY_TASK_ID]}
-
 # Define a unique work directory for each job
 WORK_DIR=/home/d86p233/Desktop/BMW-spec/work_dirs/job_$SLURM_ARRAY_JOB_ID/task_$SLURM_ARRAY_TASK_ID
 
+# Create the work directory if it doesn't exist
+mkdir -p $WORK_DIR
+
 # Run the script to update the config with the test dataset path
-apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $TEST_DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID
+apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $TEST_DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID $NORMALIZATION_METHOD
 
 # Define the specific job id and task id variables
 PREV_JOB_ID=2256243
