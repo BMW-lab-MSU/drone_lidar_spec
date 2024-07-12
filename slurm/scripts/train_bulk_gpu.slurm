@@ -56,6 +56,12 @@ echo "NORMALIZATION_METHOD: ${NORMALIZATION_METHOD}"
 # Set CUDA devices
 export CUDA_VISIBLE_DEVICES=0,1
 
+# Set distributed training environment variables
+export MASTER_ADDR=$(hostname)
+export MASTER_PORT=12345
+export WORLD_SIZE=2  # Number of GPUs to use
+export RANK=0
+
 # Run the Python script to update the configuration with the dataset path and normalization method
 apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $NORMALIZATION_METHOD
 
@@ -69,5 +75,5 @@ if torch.cuda.is_available():
         print('GPU', i, 'Name:', torch.cuda.get_device_name(i))
 "
 
-# Run the training script with the updated configuration within the container
-apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py $WORK_DIR/updated_config.py --work-dir=$WORK_DIR --launcher="slurm"
+# Run the distributed training script within the container
+apptainer exec --nv $IMAGE_PATH /home/d86p233/Desktop/BMW-spec/mmdetection/tools/dist_train.sh $WORK_DIR/updated_config.py 2 --work-dir=$WORK_DIR

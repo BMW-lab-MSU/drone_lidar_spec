@@ -32,8 +32,8 @@ if hasattr(config, 'gpu_ids'):
     del config.gpu_ids
 
 # Ensure distributed training is properly configured
-if 'launcher' in config:
-    config.launcher = 'slurm'
+config.dist_params = dict(backend='nccl')
+config.launcher = 'slurm'
 
 # Define normalization values based on the dataset path and method
 if normalization_method == 'standard':
