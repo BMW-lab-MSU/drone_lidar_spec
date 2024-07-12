@@ -38,6 +38,7 @@ val_dataloader = dict(
         data_prefix=dict(img='placeholder/val/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
             dict(type='Resize', scale=(775, 462)),
             dict(type='Normalize', **normalization_values, to_rgb=True),
             dict(type='PackDetInputs')
@@ -56,6 +57,7 @@ test_dataloader = dict(
         data_prefix=dict(img='placeholder/test/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
             dict(type='Resize', scale=(775, 462)),
             dict(type='Normalize', **normalization_values, to_rgb=True),
             dict(type='PackDetInputs')
