@@ -83,7 +83,7 @@ model = dict(
         type='RPNHead',
         anchor_generator=dict(
             type='AnchorGenerator',
-            scales=[8, 4, 2, 1, 0.5],  # Updated to 5 scales
+            scales=[2.5, 1.25, 0.625, 0.3125, 0.15625],  # Scales adjusted to maintain 20px height
             ratios=[38.75],  # Single aspect ratio
             strides=[8, 16, 32, 64, 128]  # Corresponding feature map strides
         ),
