@@ -12,6 +12,7 @@
 #SBATCH --output=../out/resnext_test_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_test_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
+#SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
 #SBATCH --array=0-3                        # Array job to run tasks (0 to 3)
 
 # Define an array of testing dataset paths

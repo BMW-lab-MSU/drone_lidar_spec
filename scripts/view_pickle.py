@@ -12,8 +12,20 @@ def main():
     with open(args.output_file, 'rb') as f:
         results = pickle.load(f)
 
-    # Print the results
-    print(results)
+    # Check for detected bounding boxes
+    detected_images = []
+    for result in results:
+        img_path = result['img_path']
+        bboxes = result['pred_instances']['bboxes']
+        if bboxes.size(0) > 0:
+            detected_images.append(img_path)
+
+    if detected_images:
+        print("Bounding boxes were detected in the following images:")
+        for img in detected_images:
+            print(img)
+    else:
+        print("No bounding boxes were detected in any images.")
 
 if __name__ == '__main__':
     main()
