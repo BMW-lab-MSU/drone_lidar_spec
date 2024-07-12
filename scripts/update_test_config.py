@@ -26,7 +26,7 @@ config.gpu_ids = [gpu_id]
 
 # Define normalization values based on the dataset path and method
 if normalization_method == 'standard':
-    if 'noboost' in dataset_path:
+    if 'noboost' in test_dataset_path:
         mean = [117.72, 201.1, 82.63]
         std = [55.09, 24.4, 33.32]
     else:
