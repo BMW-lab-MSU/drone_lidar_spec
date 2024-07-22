@@ -105,6 +105,27 @@ class BBoxHead(BaseModule):
                         type='Normal', std=0.001, override=dict(name='fc_reg'))
                 ]
 
+        # Add this method inside the BBoxHead class
+    def simple_test_bboxes(self, x, img_metas, proposals, rcnn_test_cfg, rescale=False):
+        """Test only det bboxes without augmentation."""
+        rois = bbox2roi(proposals)
+        bbox_results = self._bbox_forward(x, rois)
+        cls_score = bbox_results['cls_score']
+        bbox_pred = bbox_results['bbox_pred']
+        rois = bbox_results['rois']
+        
+        # Decode the proposals to bounding boxes
+        img_shape = img_metas[0]['img_shape']
+        scale_factor = img_metas[0]['scale_factor']
+        det_bboxes, det_labels = self.get_bboxes(
+            rois, cls_score, bbox_pred, img_shape, scale_factor, rescale=rescale, cfg=rcnn_test_cfg)
+        
+        # Store proposals and their scores in the output
+        proposals = rois[:, 1:].cpu().numpy()  # Remove the batch dimension
+        scores = cls_score.max(dim=1)[0].cpu().numpy()  # Take the max score for each proposal
+
+        return det_bboxes, det_labels, proposals, scores
+
     # TODO: Create a SeasawBBoxHead to simplified logic in BBoxHead
     @property
     def custom_cls_channels(self) -> bool:

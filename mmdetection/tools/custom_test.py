@@ -1,11 +1,10 @@
-# Copyright (c) OpenMMLab. All rights reserved.
+# test_with_proposals.py
+
 import argparse
 import os
 import os.path as osp
 import warnings
 from copy import deepcopy
-import pickle
-import numpy as np
 
 from mmengine import ConfigDict
 from mmengine.config import Config, DictAction
@@ -16,8 +15,8 @@ from mmdet.evaluation import DumpDetResults
 from mmdet.registry import RUNNERS
 from mmdet.utils import setup_cache_size_limit_of_dynamo
 
+from mmdet.custom_hooks import ProposalLoggerHook
 
-# TODO: support fuse_conv_bn and format_only
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
@@ -55,52 +54,28 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--tta', action='store_true')
-    parser.add_argument('--select-best-bbox', action='store_true', default=False, help='select the highest confidence bbox')
-    # When using PyTorch version >= 2.0.0, the `torch.distributed.launch`
-    # will pass the `--local-rank` parameter to `tools/train.py` instead
-        # of `--local_rank`.
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
     return args
 
-
-def select_highest_confidence_bbox(results):
-    """Custom post-processing to select the highest confidence bbox."""
-    processed_results = []
-    for result in results:
-        print(f"Processing result: {result}")  # Debugging statement
-        if isinstance(result, list) and len(result) > 0 and isinstance(result[0], np.ndarray):
-            max_confidence_idx = np.argmax(result[0][:, 4])  # Get the index of the highest confidence score
-            max_confidence_bbox = result[0][max_confidence_idx]  # Select the bbox with the highest confidence score
-            processed_results.append([max_confidence_bbox])
-        else:
-            processed_results.append([np.array([])])  # No detection case
-    return processed_results
-
-
 def main():
     args = parse_args()
 
-    # Reduce the number of repeated compilations and improve
-    # testing speed.
     setup_cache_size_limit_of_dynamo()
 
-    # load config
+    # Load config
     cfg = Config.fromfile(args.config)
     cfg.launcher = args.launcher
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
 
-    # work_dir is determined in this priority: CLI > segment in file > filename
+    # Set work_dir
     if args.work_dir is not None:
-        # update configs according to CLI args if args.work_dir is not None
         cfg.work_dir = args.work_dir
     elif cfg.get('work_dir', None) is None:
-        # use config filename as default work_dir if cfg.work_dir is None
-        cfg.work_dir = osp.join('./work_dirs',
-                                osp.splitext(osp.basename(args.config))[0])
+        cfg.work_dir = osp.join('./work_dirs', osp.splitext(osp.basename(args.config))[0])
 
     cfg.load_from = args.checkpoint
 
@@ -108,17 +83,14 @@ def main():
         cfg = trigger_visualization_hook(cfg, args)
 
     if args.tta:
-
         if 'tta_model' not in cfg:
-            warnings.warn('Cannot find ``tta_model`` in config, '
-                          'we will set it as default.')
+            warnings.warn('Cannot find ``tta_model`` in config, we will set it as default.')
             cfg.tta_model = dict(
                 type='DetTTAModel',
                 tta_cfg=dict(
                     nms=dict(type='nms', iou_threshold=0.5), max_per_img=100))
         if 'tta_pipeline' not in cfg:
-            warnings.warn('Cannot find ``tta_pipeline`` in config, '
-                          'we will set it as default.')
+            warnings.warn('Cannot find ``tta_pipeline`` in config, we will set it as default.')
             test_data_cfg = cfg.test_dataloader.dataset
             while 'dataset' in test_data_cfg:
                 test_data_cfg = test_data_cfg['dataset']
@@ -126,63 +98,29 @@ def main():
             flip_tta = dict(
                 type='TestTimeAug',
                 transforms=[
-                    [
-                        dict(type='RandomFlip', prob=1.),
-                        dict(type='RandomFlip', prob=0.)
-                    ],
-                    [
-                        dict(
-                            type='PackDetInputs',
-                            meta_keys=('img_id', 'img_path', 'ori_shape',
-                                       'img_shape', 'scale_factor', 'flip',
-                                       'flip_direction'))
-                    ],
+                    [dict(type='RandomFlip', prob=1.), dict(type='RandomFlip', prob=0.)],
+                    [dict(type='PackDetInputs', meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape', 'scale_factor', 'flip', 'flip_direction'))],
                 ])
             cfg.tta_pipeline[-1] = flip_tta
         cfg.model = ConfigDict(**cfg.tta_model, module=cfg.model)
         cfg.test_dataloader.dataset.pipeline = cfg.tta_pipeline
 
-    # build the runner from config
+    # Build the runner from config
     if 'runner_type' not in cfg:
-        # build the default runner
         runner = Runner.from_cfg(cfg)
     else:
-        # build customized runner from the registry
-        # if 'runner_type' is set in the cfg
         runner = RUNNERS.build(cfg)
 
-    # add `DumpResults` dummy metric
+    # Add `DumpResults` dummy metric
     if args.out is not None:
-        assert args.out.endswith(('.pkl', '.pickle')), \
-            'The dump file must be a pkl file.'
-        runner.test_evaluator.metrics.append(
-            DumpDetResults(out_file_path=args.out))
+        assert args.out.endswith(('.pkl', '.pickle')), 'The dump file must be a pkl file.'
+        runner.test_evaluator.metrics.append(DumpDetResults(out_file_path=args.out))
 
-    # start testing
-    results = runner.test()
+    # Add the custom ProposalLoggerHook
+    runner.register_hook(ProposalLoggerHook(output_dir=cfg.work_dir))
 
-    # Check if results are empty
-    if not results:
-        print("No results collected. Please check the model and dataset.")
-        return
-
-    # Print the type and structure of results for debugging
-    print(f"Type of results: {type(results)}")
-    if isinstance(results, dict):
-        for key, value in results.items():
-            print(f"Key: {key}, Value type: {type(value)}, Value sample: {value[:5] if isinstance(value, list) else value}")
-    elif isinstance(results, list):
-        print(f"First few results: {results[:5]}")
-
-    # Apply custom post-processing to select the highest confidence bbox if specified
-    if args.select_best_bbox and isinstance(results, list):
-        results = select_highest_confidence_bbox(results)
-
-    # Save the results
-    if args.out is not None:
-        with open(args.out, 'wb') as f:
-            pickle.dump(results, f)
-
+    # Start testing
+    runner.test()
 
 if __name__ == '__main__':
     main()

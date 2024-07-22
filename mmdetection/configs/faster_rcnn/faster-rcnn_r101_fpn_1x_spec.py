@@ -97,6 +97,13 @@ model = dict(
         loss_cls=dict(
             type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
         loss_bbox=dict(type='L1Loss', loss_weight=1.0)
+    ),
+    test_cfg=dict(
+        rcnn=dict(
+            score_thr=0.05,  # Lower the score threshold
+            nms=dict(type='nms', iou_threshold=0.5),  # Adjust IoU threshold for NMS
+            max_per_img=100  # Maximum number of detections per image
+        )
     )
 )
 
