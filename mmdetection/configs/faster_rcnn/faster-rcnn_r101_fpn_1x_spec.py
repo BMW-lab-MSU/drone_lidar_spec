@@ -74,7 +74,16 @@ model = dict(
         depth=101,
         groups=32,
         base_width=8,
-        init_cfg=dict(type='Pretrained', checkpoint='/home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/resnext101_32x8d-110c445d.pth')
+        init_cfg=dict(type='Pretrained', checkpoint='/home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/resnext101_32x8d-110c445d.pth'),
+        out_indices=(0,)  # Only use the first level
+    ),
+    neck=dict(
+        type='FPN',
+        in_channels=[256],  # Match the channels of the first level of the backbone
+        out_channels=256,  # The number of channels produced by the FPN
+        start_level=0,
+        add_extra_convs='on_output',
+        num_outs=1  # Only produce one output level
     ),
     roi_head=dict(
         bbox_head=dict(
@@ -87,7 +96,7 @@ model = dict(
             type='AnchorGenerator',
             scales=[5],  # Single scale
             ratios=[31],  # Aspect ratio to ensure width-to-height ratio of 775/25
-            strides=[5]  # Single stride
+            strides=[5]  # Single stride corresponding to the feature map
         ),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
