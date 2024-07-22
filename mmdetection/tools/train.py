@@ -2,15 +2,13 @@
 import argparse
 import os
 import os.path as osp
-import torch
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
 
 from mmengine.config import Config, DictAction
 from mmengine.registry import RUNNERS
 from mmengine.runner import Runner
 
 from mmdet.utils import setup_cache_size_limit_of_dynamo
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
@@ -58,18 +56,15 @@ def parse_args():
 
     return args
 
+
 def main():
     args = parse_args()
 
-    # Initialize the process group for distributed training
-    dist.init_process_group(backend='nccl')
-    local_rank = int(os.environ['LOCAL_RANK'])
-    torch.cuda.set_device(local_rank)
-
-    # Reduce the number of repeated compilations and improve training speed
+    # Reduce the number of repeated compilations and improve
+    # training speed.
     setup_cache_size_limit_of_dynamo()
 
-    # Load config
+    # load config
     cfg = Config.fromfile(args.config)
     cfg.launcher = args.launcher
     if args.cfg_options is not None:
@@ -77,17 +72,19 @@ def main():
 
     # work_dir is determined in this priority: CLI > segment in file > filename
     if args.work_dir is not None:
+        # update configs according to CLI args if args.work_dir is not None
         cfg.work_dir = args.work_dir
     elif cfg.get('work_dir', None) is None:
+        # use config filename as default work_dir if cfg.work_dir is None
         cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
 
-    # Enable automatic-mixed-precision training
+    # enable automatic-mixed-precision training
     if args.amp is True:
         cfg.optim_wrapper.type = 'AmpOptimWrapper'
         cfg.optim_wrapper.loss_scale = 'dynamic'
 
-    # Enable automatically scaling LR
+    # enable automatically scaling LR
     if args.auto_scale_lr:
         if 'auto_scale_lr' in cfg and \
                 'enable' in cfg.auto_scale_lr and \
@@ -99,7 +96,7 @@ def main():
                                '"auto_scale_lr.base_batch_size" in your'
                                ' configuration file.')
 
-    # Resume is determined in this priority: resume from > auto_resume
+    # resume is determined in this priority: resume from > auto_resume
     if args.resume == 'auto':
         cfg.resume = True
         cfg.load_from = None
@@ -107,23 +104,18 @@ def main():
         cfg.resume = True
         cfg.load_from = args.resume
 
-    # Build the runner from config
+    # build the runner from config
     if 'runner_type' not in cfg:
-        # Build the default runner
+        # build the default runner
         runner = Runner.from_cfg(cfg)
     else:
-        # Build customized runner from the registry
+        # build customized runner from the registry
         # if 'runner_type' is set in the cfg
         runner = RUNNERS.build(cfg)
 
-    # Wrap the model with DDP and set find_unused_parameters=True
-    model = runner.model
-    model = model.cuda(local_rank)
-    model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
-    runner.model = model
-
-    # Start training
+    # start training
     runner.train()
+
 
 if __name__ == '__main__':
     main()
