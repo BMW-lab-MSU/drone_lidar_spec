@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1                         # Number of discrete tasks
 #SBATCH --cpus-per-task=5                  # Number of cores to allocate per task
 #SBATCH --gres=gpu:2                       # Number of GPUs to allocate
-#SBATCH --mem=16000                        # Memory allocated
+#SBATCH --mem=32000                        # Memory allocated
 #SBATCH --time=11:00:00                    # Maximum job run time (d-hh:mm:ss)
 #SBATCH --output=../out/resnext_train_%A_%a.out  # Store output files in slurm_out directory
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory

@@ -13,7 +13,7 @@
 #SBATCH --error=../err/resnext_train_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
-#SBATCH --array=0-3                        # Array job to run 4 tasks (0 to 3)
+#SBATCH --array=0-31                        # Array job to run 4 tasks (0 to 3)
 
 # Define an array of dataset paths
 DATASET_PATHS=(
