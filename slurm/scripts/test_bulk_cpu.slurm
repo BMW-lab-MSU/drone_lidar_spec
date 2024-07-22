@@ -13,26 +13,12 @@
 #SBATCH --error=../err/resnext_test_%A_%a.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
-#SBATCH --array=0-31                        # Array job to run tasks (0 to 3)
+#SBATCH --array=0-3                        # Array job to run tasks (0 to 3)
 
 # Define an array of testing dataset paths
 TEST_DATASET_PATHS=(
     "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90"
     "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only-90"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_all"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_all_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_all"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_all_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_full"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_full_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_full"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_full_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_partial_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_partial"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_partial_SF"
-    "/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only"
-    "/home/d86p233/Desktop/BMW-spec/data/boost_prop-only"
 )
 
 # Define normalization methods
