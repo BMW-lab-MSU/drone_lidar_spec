@@ -1,4 +1,5 @@
-# mmdet/custom_hooks.py
+# proposal_logger_hook.py
+
 import os
 import pickle
 from mmengine.hooks import Hook

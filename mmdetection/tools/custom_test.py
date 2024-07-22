@@ -4,6 +4,7 @@ import argparse
 import os
 import os.path as osp
 import warnings
+import importlib.util
 from copy import deepcopy
 
 from mmengine import ConfigDict
@@ -15,50 +16,39 @@ from mmdet.evaluation import DumpDetResults
 from mmdet.registry import RUNNERS
 from mmdet.utils import setup_cache_size_limit_of_dynamo
 
-from mmdet.custom_hooks import ProposalLoggerHook
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
     parser.add_argument('config', help='test config file path')
     parser.add_argument('checkpoint', help='checkpoint file')
-    parser.add_argument(
-        '--work-dir',
-        help='the directory to save the file containing evaluation metrics')
-    parser.add_argument(
-        '--out',
-        type=str,
-        help='dump predictions to a pickle file for offline evaluation')
-    parser.add_argument(
-        '--show', action='store_true', help='show prediction results')
-    parser.add_argument(
-        '--show-dir',
-        help='directory where painted images will be saved. '
-        'If specified, it will be automatically saved '
-        'to the work_dir/timestamp/show_dir')
-    parser.add_argument(
-        '--wait-time', type=float, default=2, help='the interval of show (s)')
-    parser.add_argument(
-        '--cfg-options',
-        nargs='+',
-        action=DictAction,
-        help='override some settings in the used config, the key-value pair '
-        'in xxx=yyy format will be merged into config file. If the value to '
-        'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
-        'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
-        'Note that the quotation marks are necessary and that no white space '
-        'is allowed.')
-    parser.add_argument(
-        '--launcher',
-        choices=['none', 'pytorch', 'slurm', 'mpi'],
-        default='none',
-        help='job launcher')
+    parser.add_argument('--work-dir', help='the directory to save the file containing evaluation metrics')
+    parser.add_argument('--out', type=str, help='dump predictions to a pickle file for offline evaluation')
+    parser.add_argument('--show', action='store_true', help='show prediction results')
+    parser.add_argument('--show-dir', help='directory where painted images will be saved. '
+                                           'If specified, it will be automatically saved '
+                                           'to the work_dir/timestamp/show_dir')
+    parser.add_argument('--wait-time', type=float, default=2, help='the interval of show (s)')
+    parser.add_argument('--cfg-options', nargs='+', action=DictAction, help='override some settings in the used config, the key-value pair '
+                                                                            'in xxx=yyy format will be merged into config file. If the value to '
+                                                                            'be overwritten is a list, it should be like key="[a,b]" or key=a,b '
+                                                                            'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
+                                                                            'Note that the quotation marks are necessary and that no white space '
+                                                                            'is allowed.')
+    parser.add_argument('--launcher', choices=['none', 'pytorch', 'slurm', 'mpi'], default='none', help='job launcher')
     parser.add_argument('--tta', action='store_true')
     parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
+    parser.add_argument('--hook-path', required=True, help='Path to the custom hook file')
+    parser.add_argument('--hook-class', required=True, help='Name of the custom hook class')
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
     return args
+
+def import_hook(hook_path, hook_class):
+    spec = importlib.util.spec_from_file_location("custom_hook", hook_path)
+    hook_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(hook_module)
+    return getattr(hook_module, hook_class)
 
 def main():
     args = parse_args()
@@ -116,8 +106,9 @@ def main():
         assert args.out.endswith(('.pkl', '.pickle')), 'The dump file must be a pkl file.'
         runner.test_evaluator.metrics.append(DumpDetResults(out_file_path=args.out))
 
-    # Add the custom ProposalLoggerHook
-    runner.register_hook(ProposalLoggerHook(output_dir=cfg.work_dir))
+    # Dynamically import and add the custom hook
+    CustomHook = import_hook(args.hook_path, args.hook_class)
+    runner.register_hook(CustomHook(output_dir=cfg.work_dir))
 
     # Start testing
     runner.test()
