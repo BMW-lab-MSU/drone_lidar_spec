@@ -11,6 +11,10 @@ normalization_method = sys.argv[4]  # Get the normalization method
 # Load the config file
 config = Config.fromfile(config_path)
 
+# Ensure the data object exists
+if not hasattr(config, 'data'):
+    raise AttributeError("The configuration file does not contain a 'data' attribute.")
+
 # Update dataset paths in the config
 config.data.train.data_root = dataset_path
 config.data.val.data_root = dataset_path
@@ -60,10 +64,11 @@ config.model.data_preprocessor.std = std
 # Update normalization in the training, validation, and test pipelines
 norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
 for phase in ['train', 'val', 'test']:
-    pipeline = config.data[phase].pipeline
-    for step in pipeline:
-        if step['type'] == 'Normalize':
-            step.update(norm_values_pipeline)
+    if hasattr(config.data, phase) and hasattr(config.data[phase], 'pipeline'):
+        pipeline = config.data[phase].pipeline
+        for step in pipeline:
+            if step['type'] == 'Normalize':
+                step.update(norm_values_pipeline)
 
 # Update normalization values in the config directly
 config.normalization_values = normalization_values

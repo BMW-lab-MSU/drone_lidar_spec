@@ -18,10 +18,9 @@ import argparse
 import os
 import os.path as osp
 from mmengine.config import Config, DictAction
-from torch.utils.data import Dataset, DataLoader
+from mmengine.dataset import build_dataset, build_dataloader
 import matplotlib.pyplot as plt
 import mmcv
-import torch
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Validate Data Loading in MMDetection')
@@ -31,36 +30,6 @@ def parse_args():
     parser.add_argument('--cfg-options', nargs='+', action=DictAction, help='Override settings in the config file')
     args = parser.parse_args()
     return args
-
-class CustomDataset(Dataset):
-    def __init__(self, ann_file, img_prefix, pipeline):
-        self.ann_file = ann_file
-        self.img_prefix = img_prefix
-        self.pipeline = pipeline
-        self.data_infos = mmcv.load(ann_file)
-
-    def __len__(self):
-        return len(self.data_infos)
-
-    def __getitem__(self, idx):
-        data_info = self.data_infos[idx]
-        img_path = osp.join(self.img_prefix, data_info['filename'])
-        img = mmcv.imread(img_path)
-        gt_bboxes = torch.tensor(data_info['ann']['bboxes'], dtype=torch.float32)
-        gt_labels = torch.tensor(data_info['ann']['labels'], dtype=torch.long)
-        
-        data = {
-            'img': img,
-            'gt_bboxes': gt_bboxes,
-            'gt_labels': gt_labels,
-            'img_metas': {'filename': data_info['filename']}
-        }
-        
-        # Apply pipeline transformations
-        for transform in self.pipeline:
-            data = transform(data)
-        
-        return data
 
 def main():
     args = parse_args()
@@ -73,32 +42,23 @@ def main():
     if args.output_dir is not None and not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 
-    try:
-        val_pipeline = cfg.data.val.pipeline
-        val_ann_file = cfg.data.val.ann_file
-        val_img_prefix = cfg.data.val.img_prefix
-    except AttributeError as e:
-        print(f"Configuration error: {e}")
-        return
-
-    # Build the validation dataset directly
-    val_dataset = CustomDataset(val_ann_file, val_img_prefix, val_pipeline)
-
-    # Create DataLoader manually
-    val_dataloader = DataLoader(
+    # Build the validation dataset and dataloader
+    val_dataset = build_dataset(cfg.data.val)
+    val_dataloader = build_dataloader(
         val_dataset,
-        batch_size=1,
-        shuffle=False,
-        num_workers=1
+        samples_per_gpu=1,
+        workers_per_gpu=1,
+        dist=False,
+        shuffle=False
     )
 
     # Get a batch of data
     for i, data in enumerate(val_dataloader):
         if i >= 5:  # Print only the first 5 samples
             break
-        img = data['img'][0]
-        gt_bboxes = data['gt_bboxes'][0]
-        gt_labels = data['gt_labels'][0]
+        img = data['img'][0].data[0]
+        gt_bboxes = data['gt_bboxes'][0].data[0]
+        gt_labels = data['gt_labels'][0].data[0]
         
         print(f"Image {i+1}:")
         print(f"  Image shape: {img.shape}")
