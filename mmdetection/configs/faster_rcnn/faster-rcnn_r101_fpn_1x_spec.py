@@ -85,9 +85,9 @@ model = dict(
         type='RPNHead',
         anchor_generator=dict(
             type='AnchorGenerator',
-            scales=[2,4,5],  # Scales adjusted to maintain 20px height
-            ratios=[38.75],  # Single aspect ratio
-            strides=[10,5,4]  # Corresponding feature map strides
+            scales=[5],  # Single scale
+            ratios=[31],  # Aspect ratio to ensure width-to-height ratio of 775/25
+            strides=[5]  # Single stride
         ),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
@@ -117,11 +117,9 @@ optimizer = dict(
     )
 )
 
+# Configuration without warmup
 lr_config = dict(
     policy='step',
-    warmup='linear',
-    warmup_iters=500,
-    warmup_ratio=0.001,
     step=[8, 11],
     gamma=0.1
 )
