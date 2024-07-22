@@ -8,15 +8,15 @@ normalization_values = {
     'std': [52.56, 22.05, 31.79]
 }
 
-train_dataloader = dict(
-    batch_size=8,
-    num_workers=2,
-    dataset=dict(
+data = dict(
+    samples_per_gpu=8,
+    workers_per_gpu=2,
+    train=dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
         ann_file='placeholder/train/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/train/'),  # Placeholder to be replaced by cfg-options
+        img_prefix='placeholder/train/',  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -24,18 +24,13 @@ train_dataloader = dict(
             dict(type='Normalize', **normalization_values, to_rgb=True),
             dict(type='PackDetInputs')
         ]
-    )
-)
-
-val_dataloader = dict(
-    batch_size=8,
-    num_workers=2,
-    dataset=dict(
+    ),
+    val=dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
         ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/val/'),  # Placeholder to be replaced by cfg-options
+        img_prefix='placeholder/val/',  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -43,18 +38,13 @@ val_dataloader = dict(
             dict(type='Normalize', **normalization_values, to_rgb=True),
             dict(type='PackDetInputs')
         ]
-    )
-)
-
-test_dataloader = dict(
-    batch_size=8,
-    num_workers=2,
-    dataset=dict(
+    ),
+    test=dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
         ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/test/'),  # Placeholder to be replaced by cfg-options
+        img_prefix='placeholder/test/',  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -65,8 +55,17 @@ test_dataloader = dict(
     )
 )
 
-val_evaluator = dict(ann_file='placeholder/val/annotations.json')  # Placeholder to be replaced by cfg-options
-test_evaluator = dict(ann_file='placeholder/test/annotations.json')  # Placeholder to be replaced by cfg-options
+val_evaluator = dict(
+    type='CocoMetric',
+    ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
+    metric='bbox'
+)
+
+test_evaluator = dict(
+    type='CocoMetric',
+    ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
+    metric='bbox'
+)
 
 model = dict(
     backbone=dict(
