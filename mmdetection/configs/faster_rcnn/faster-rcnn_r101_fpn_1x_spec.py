@@ -85,9 +85,9 @@ model = dict(
         type='RPNHead',
         anchor_generator=dict(
             type='AnchorGenerator',
-            scales=[2.5, 1.25, 0.625, 0.3125, 0.15625],  # Scales adjusted to maintain 20px height
+            scales=[2,4,5],  # Scales adjusted to maintain 20px height
             ratios=[38.75],  # Single aspect ratio
-            strides=[8, 16, 32, 64, 128]  # Corresponding feature map strides
+            strides=[10,5,4]  # Corresponding feature map strides
         ),
         bbox_coder=dict(
             type='DeltaXYWHBBoxCoder',
