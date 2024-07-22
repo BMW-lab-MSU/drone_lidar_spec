@@ -12,9 +12,9 @@ normalization_method = sys.argv[4]  # Get the normalization method
 config = Config.fromfile(config_path)
 
 # Update testing dataset paths in the config
-config.test_dataloader.dataset.data_root = test_dataset_path
-config.test_dataloader.dataset.ann_file = f'{test_dataset_path}/annotations.json'
-config.test_dataloader.dataset.data_prefix.img = test_dataset_path
+config.data.test.data_root = test_dataset_path
+config.data.test.ann_file = f'{test_dataset_path}/annotations.json'
+config.data.test.img_prefix = test_dataset_path
 config.test_evaluator.ann_file = f'{test_dataset_path}/annotations.json'
 
 # Update the work directory
@@ -48,7 +48,8 @@ config.model.data_preprocessor.std = std
 
 # Update normalization in the training, validation, and test pipelines
 norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
-for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+for phase in ['train', 'val', 'test']:
+    pipeline = config.data[phase].pipeline
     for step in pipeline:
         if step['type'] == 'Normalize':
             step.update(norm_values_pipeline)

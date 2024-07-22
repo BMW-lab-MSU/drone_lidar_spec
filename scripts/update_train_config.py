@@ -12,15 +12,15 @@ normalization_method = sys.argv[4]  # Get the normalization method
 config = Config.fromfile(config_path)
 
 # Update dataset paths in the config
-config.train_dataloader.dataset.data_root = dataset_path
-config.val_dataloader.dataset.data_root = dataset_path
-config.test_dataloader.dataset.data_root = dataset_path
-config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations.json'
-config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json'
-config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/'
-config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/'
-config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/'
+config.data.train.data_root = dataset_path
+config.data.val.data_root = dataset_path
+config.data.test.data_root = dataset_path
+config.data.train.ann_file = f'{dataset_path}/train/annotations.json'
+config.data.val.ann_file = f'{dataset_path}/val/annotations.json'
+config.data.test.ann_file = f'{dataset_path}/test/annotations.json'
+config.data.train.img_prefix = f'{dataset_path}/train/'
+config.data.val.img_prefix = f'{dataset_path}/val/'
+config.data.test.img_prefix = f'{dataset_path}/test/'
 config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
 config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
 
@@ -59,7 +59,8 @@ config.model.data_preprocessor.std = std
 
 # Update normalization in the training, validation, and test pipelines
 norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
-for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+for phase in ['train', 'val', 'test']:
+    pipeline = config.data[phase].pipeline
     for step in pipeline:
         if step['type'] == 'Normalize':
             step.update(norm_values_pipeline)
