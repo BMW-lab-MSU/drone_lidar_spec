@@ -8,43 +8,15 @@ normalization_values = {
     'std': [52.56, 22.05, 31.79]
 }
 
-data = dict(
-    samples_per_gpu=8,
-    workers_per_gpu=2,
-    train=dict(
+train_dataloader = dict(
+    batch_size=8,
+    num_workers=2,
+    dataset=dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
         ann_file='placeholder/train/annotations.json',  # Placeholder to be replaced by cfg-options
-        img_prefix='placeholder/train/',  # Placeholder to be replaced by cfg-options
-        pipeline=[
-            dict(type='LoadImageFromFile'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='Resize', scale=(775, 462)),
-            dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='PackDetInputs')
-        ]
-    ),
-    val=dict(
-        type=dataset_type,
-        metainfo=dict(classes=classes),
-        data_root='placeholder',  # Placeholder to be replaced by cfg-options
-        ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
-        img_prefix='placeholder/val/',  # Placeholder to be replaced by cfg-options
-        pipeline=[
-            dict(type='LoadImageFromFile'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='Resize', scale=(775, 462)),
-            dict(type='Normalize', **normalization_values, to_rgb=True),
-            dict(type='PackDetInputs')
-        ]
-    ),
-    test=dict(
-        type=dataset_type,
-        metainfo=dict(classes=classes),
-        data_root='placeholder',  # Placeholder to be replaced by cfg-options
-        ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
-        img_prefix='placeholder/test/',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/train/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -55,17 +27,46 @@ data = dict(
     )
 )
 
-val_evaluator = dict(
-    type='CocoMetric',
-    ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
-    metric='bbox'
+val_dataloader = dict(
+    batch_size=8,
+    num_workers=2,
+    dataset=dict(
+        type=dataset_type,
+        metainfo=dict(classes=classes),
+        data_root='placeholder',  # Placeholder to be replaced by cfg-options
+        ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/val/'),  # Placeholder to be replaced by cfg-options
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', scale=(775, 462)),
+            dict(type='Normalize', **normalization_values, to_rgb=True),
+            dict(type='PackDetInputs')
+        ]
+    )
 )
 
-test_evaluator = dict(
-    type='CocoMetric',
-    ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
-    metric='bbox'
+test_dataloader = dict(
+    batch_size=8,
+    num_workers=2,
+    dataset=dict(
+        type=dataset_type,
+        metainfo=dict(classes=classes),
+        data_root='placeholder',  # Placeholder to be replaced by cfg-options
+        ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/test/'),  # Placeholder to be replaced by cfg-options
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', scale=(775, 462)),
+            dict(type='Normalize', **normalization_values, to_rgb=True),
+            dict(type='PackDetInputs')
+        ]
+    )
 )
+
+val_evaluator = dict(ann_file='placeholder/val/annotations.json')  # Placeholder to be replaced by cfg-options
+test_evaluator = dict(ann_file='placeholder/test/annotations.json')  # Placeholder to be replaced by cfg-options
 
 model = dict(
     backbone=dict(
