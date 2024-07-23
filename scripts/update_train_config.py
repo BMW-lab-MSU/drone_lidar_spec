@@ -2,6 +2,11 @@ import sys
 from mmengine.config import Config
 import os
 import json
+import numpy as np
+from mmengine.registry import DATASETS
+
+# Import the CocoDataset class
+from mmdet.datasets import CocoDataset
 
 def check_annotations(dataset_path, phase):
     annotations_file = os.path.join(dataset_path, phase, 'annotations.json')
@@ -22,6 +27,18 @@ def check_annotations(dataset_path, phase):
         print(f"Success: {phase} dataset contains {num_images} images and {num_annotations} annotations.")
         return True
 
+def debug_dataset_loader(config, phase):
+    try:
+        dataset_cfg = getattr(config.data, phase)
+        dataset = DATASETS.build(dataset_cfg)
+        print(f"Loaded {phase} dataset with {len(dataset)} items.")
+        for i, item in enumerate(dataset):
+            print(f"{phase} dataset item {i}: {item}")
+            if i >= 5:  # Print only first 5 items for brevity
+                break
+    except Exception as e:
+        print(f"Error loading {phase} dataset: {e}")
+
 # Get arguments from the command line
 config_path = sys.argv[1]
 dataset_path = sys.argv[2]
@@ -31,36 +48,36 @@ normalization_method = sys.argv[4]  # Get the normalization method
 # Load the config file
 config = Config.fromfile(config_path)
 
-# Update dataset paths in the data section
+# Check datasets and update paths in the config
 for phase in ['train', 'val', 'test']:
+    if not check_annotations(dataset_path, phase):
+        sys.exit(f"Invalid {phase} dataset. Exiting...")
+
     if hasattr(config.data, phase):
         phase_data = getattr(config.data, phase)
         phase_data.data_root = dataset_path
         phase_data.ann_file = os.path.join(dataset_path, phase, 'annotations.json')
         phase_data.img_prefix = os.path.join(dataset_path, phase)
-        # Print statements for debugging
         print(f"Updated {phase} dataset paths:")
         print(f"  data_root: {phase_data.data_root}")
         print(f"  ann_file: {phase_data.ann_file}")
         print(f"  img_prefix: {phase_data.img_prefix}")
 
-# Ensure that the top-level data_root is also updated if it exists
 if hasattr(config, 'data_root'):
     config.data_root = dataset_path
     print(f"Updated top-level data_root: {config.data_root}")
 
-# Update dataset paths in the dataloaders
+# Update dataloaders
 config.train_dataloader.dataset.data_root = dataset_path
 config.val_dataloader.dataset.data_root = dataset_path
 config.test_dataloader.dataset.data_root = dataset_path
-config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations.json'
-config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json'
-config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/'
-config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/'
-config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/'
+config.train_dataloader.dataset.ann_file = os.path.join(dataset_path, 'train', 'annotations.json')
+config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
+config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
+config.train_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'train')
+config.val_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'val')
+config.test_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'test')
 
-# Print dataloader paths for debugging
 print(f"Updated train dataloader paths:")
 print(f"  data_root: {config.train_dataloader.dataset.data_root}")
 print(f"  ann_file: {config.train_dataloader.dataset.ann_file}")
@@ -74,18 +91,18 @@ print(f"  data_root: {config.test_dataloader.dataset.data_root}")
 print(f"  ann_file: {config.test_dataloader.dataset.ann_file}")
 print(f"  data_prefix.img: {config.test_dataloader.dataset.data_prefix.img}")
 
-# Update evaluator paths
-config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
+# Update evaluators
+config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
+config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
 
-# Update the work directory
+# Update work directory
 config.work_dir = work_dir
 
-# Remove any GPU settings to ensure flexibility for single or multiple GPUs
+# Remove GPU settings to ensure flexibility for single or multiple GPUs
 if hasattr(config, 'gpu_ids'):
     del config.gpu_ids
 
-# Ensure distributed training is properly configured
+# Configure distributed training
 config.dist_params = dict(backend='nccl')
 config.launcher = 'slurm'
 
@@ -118,13 +135,6 @@ for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader
         if step['type'] == 'Normalize':
             step.update(norm_values_pipeline)
 
-# Update normalization in the data section pipelines
-for phase in ['train', 'val', 'test']:
-    phase_data = getattr(config.data, phase)
-    for step in phase_data.pipeline:
-        if step['type'] == 'Normalize':
-            step.update(norm_values_pipeline)
-
 # Update normalization values in the config directly
 config.normalization_values = normalization_values
 
@@ -137,24 +147,8 @@ print(config.pretty_text)
 # Save the updated config
 config.dump(f'{work_dir}/updated_config.py')
 
-# Function to verify dataset content
-def verify_dataset_content(dataset_path, phase):
-    img_dir = os.path.join(dataset_path, phase)
-    annotations_file = os.path.join(img_dir, 'annotations.json')
-    if not os.path.exists(annotations_file):
-        print(f"Annotations file for {phase} not found: {annotations_file}")
-        return False
-    with open(annotations_file, 'r') as f:
-        data = json.load(f)
-    images = data.get('images', [])
-    if len(images) == 0:
-        print(f"No images found in the annotations for {phase}.")
-        return False
-    else:
-        print(f"Found {len(images)} images in the annotations for {phase}.")
-    return True
-
-# Verify the dataset content for train, val, and test
-for phase in ['train', 'val', 'test']:
-    if not verify_dataset_content(dataset_path, phase):
-        print(f"Error: {phase} dataset verification failed.")
+# Debug dataset loading
+print("\nDebugging dataset loading:")
+debug_dataset_loader(config, 'train')
+debug_dataset_loader(config, 'val')
+debug_dataset_loader(config, 'test')
