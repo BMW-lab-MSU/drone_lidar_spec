@@ -43,24 +43,50 @@ normalization_method = sys.argv[4]  # Get the normalization method
 # Load the config file
 config = Config.fromfile(config_path)
 
-# Update dataset paths in the config
-config.train_dataloader.dataset.data_root = dataset_path
+# Print initial configuration for debugging
+print("Initial train_dataloader.dataset configuration:")
+print(config.train_dataloader.dataset)
+print("Initial val_dataloader.dataset configuration:")
+print(config.val_dataloader.dataset)
+print("Initial test_dataloader.dataset configuration:")
+print(config.test_dataloader.dataset)
+
+# Access nested dataset for train_dataloader if it's a RepeatDataset
+train_dataset = config.train_dataloader.dataset
+if train_dataset.type == 'RepeatDataset':
+    train_dataset = train_dataset.dataset
+
+# Update dataset paths in the config using os.path.join to avoid double slashes
+config.data_root = dataset_path
+train_dataset.data_root = dataset_path
 config.val_dataloader.dataset.data_root = dataset_path
 config.test_dataloader.dataset.data_root = dataset_path
-config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations.json'
-config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json'
+
+train_dataset.ann_file = os.path.join(dataset_path, 'train', 'annotations.json')
+config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
+config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
 
 # Check and update data_prefix if it exists within the dataset dictionary
-if 'data_prefix' in config.train_dataloader.dataset:
-    config.train_dataloader.dataset.data_prefix['img'] = f'{dataset_path}/train/'
-if 'data_prefix' in config.val_dataloader.dataset:
-    config.val_dataloader.dataset.data_prefix['img'] = f'{dataset_path}/val/'
-if 'data_prefix' in config.test_dataloader.dataset:
-    config.test_dataloader.dataset.data_prefix['img'] = f'{dataset_path}/test/'
+if 'data_prefix' in train_dataset:
+    print("FOUND TRAIN DATA PREFIX")
+    train_dataset.data_prefix['img'] = os.path.join(dataset_path, 'train')
+else:
+    print("TRAIN DATA PREFIX NOT FOUND")
 
-config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
+if 'data_prefix' in config.val_dataloader.dataset:
+    print("FOUND VAL DATA PREFIX")
+    config.val_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'val')
+else:
+    print("VAL DATA PREFIX NOT FOUND")
+
+if 'data_prefix' in config.test_dataloader.dataset:
+    print("FOUND TEST DATA PREFIX")
+    config.test_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'test')
+else:
+    print("TEST DATA PREFIX NOT FOUND")
+
+config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
+config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
 
 # Update the work directory
 config.work_dir = work_dir
@@ -97,7 +123,7 @@ config.model.data_preprocessor.std = std
 
 # Update normalization in the training, validation, and test pipelines
 norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
-for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+for pipeline in [train_dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
     for step in pipeline:
         if step['type'] == 'Normalize':
             step.update(norm_values_pipeline)
@@ -109,7 +135,14 @@ config.normalization_values = normalization_values
 os.makedirs(work_dir, exist_ok=True)
 
 # Print the final configuration for debugging
+print("Updated train_dataloader.dataset configuration:")
+print(config.train_dataloader.dataset)
+print("Updated val_dataloader.dataset configuration:")
+print(config.val_dataloader.dataset)
+print("Updated test_dataloader.dataset configuration:")
+print(config.test_dataloader.dataset)
+
 print(config.pretty_text)
 
 # Save the updated config
-config.dump(f'{work_dir}/updated_config.py')
+config.dump(os.path.join(work_dir, 'updated_config.py'))
