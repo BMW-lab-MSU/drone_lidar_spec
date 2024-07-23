@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --account=group-bradwhitaker       # Priority account to use
-#SBATCH --job-name=resnext_train_CPU           # Job name
+#SBATCH --job-name=resnext_train_CPU       # Job name
 #SBATCH --partition=gpuunsafe              # Queue partition to run the job in
 #SBATCH --nodes=1                          # Number of nodes to allocate
 #SBATCH --ntasks-per-node=1                # Number of discrete tasks - keep at one except for MPI
@@ -60,7 +60,7 @@ echo "Single Frequency Status: ${SF_STATUS}" >> $JOB_DETAILS
 echo "Fill Factor: ${FILL_FACTOR}" >> $JOB_DETAILS
 
 # Run the script to update the config
-apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $SLURM_ARRAY_TASK_ID $NORMALIZATION_METHOD
+apptainer exec --nv $IMAGE_PATH python $UPDATE_SCRIPT_PATH $BASE_CONFIG_PATH $DATASET_PATH $WORK_DIR $NORMALIZATION_METHOD
 
 # Run the training with the updated config
 apptainer exec --nv $IMAGE_PATH python /home/d86p233/Desktop/BMW-spec/mmdetection/tools/train.py $WORK_DIR/updated_config.py
