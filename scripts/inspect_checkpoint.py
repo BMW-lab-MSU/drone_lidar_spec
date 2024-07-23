@@ -43,7 +43,7 @@ def inspect_checkpoint(checkpoint_path):
         print(key)
 
     # Check if the checkpoint includes specific components
-    has_backbone = check_component(state_dict, 'conv1') or check_component(state_dict, 'layer1')
+    has_backbone = check_component(state_dict, 'backbone')
     has_neck = check_component(state_dict, 'neck')
     has_rpn_head = check_component(state_dict, 'rpn_head')
     has_roi_head = check_component(state_dict, 'roi_head')
