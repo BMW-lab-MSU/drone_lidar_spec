@@ -4,9 +4,10 @@ import os
 import json
 import numpy as np
 from mmengine.registry import DATASETS
-
-# Import the CocoDataset class
 from mmdet.datasets import CocoDataset
+
+# Register the CocoDataset with the registry
+DATASETS.register_module(CocoDataset)
 
 def check_annotations(dataset_path, phase):
     annotations_file = os.path.join(dataset_path, phase, 'annotations.json')
