@@ -1,3 +1,4 @@
+# Configuration for Faster R-CNN with ResNeXt-101 backbone
 _base_ = './faster-rcnn_r50_fpn_1x_coco.py'
 
 dataset_type = 'CocoDataset'
@@ -8,6 +9,7 @@ normalization_values = {
     'std': [52.56, 22.05, 31.79]
 }
 
+# DataLoader settings for training
 train_dataloader = dict(
     batch_size=8,
     num_workers=2,
@@ -27,6 +29,7 @@ train_dataloader = dict(
     )
 )
 
+# DataLoader settings for validation
 val_dataloader = dict(
     batch_size=8,
     num_workers=2,
@@ -46,6 +49,7 @@ val_dataloader = dict(
     )
 )
 
+# DataLoader settings for testing
 test_dataloader = dict(
     batch_size=8,
     num_workers=2,
@@ -65,16 +69,18 @@ test_dataloader = dict(
     )
 )
 
+# Evaluator settings
 val_evaluator = dict(ann_file='placeholder/val/annotations.json')  # Placeholder to be replaced by cfg-options
 test_evaluator = dict(ann_file='placeholder/test/annotations.json')  # Placeholder to be replaced by cfg-options
 
+# Model settings
 model = dict(
     backbone=dict(
         type='ResNeXt',
         depth=101,
         groups=32,
         base_width=8,
-        init_cfg=dict(type='Pretrained', checkpoint='/home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/resnext101_32x8d-110c445d.pth'),
+        init_cfg=dict(type='Pretrained', checkpoint='/home/d86p233/Desktop/BMW-spec/mmdetection/checkpoints/faster_rcnn_x101_32x8d_fpn_mstrain_3x_coco_20210604_182954-002e082a.pth'),
         out_indices=(0,)  # Only use the first level
     ),
     neck=dict(
@@ -116,6 +122,7 @@ model = dict(
     )
 )
 
+# Optimizer settings
 optimizer = dict(
     type='SGD',
     lr=0.01,
@@ -126,17 +133,19 @@ optimizer = dict(
     )
 )
 
-# Configuration without warmup
+# Learning rate configuration without warmup
 lr_config = dict(
     policy='step',
     step=[8, 11],
     gamma=0.1
 )
 
+# Checkpoint settings
 checkpoint_config = dict(
     interval=1
 )
 
+# Logging settings
 log_config = dict(
     interval=50,
     hooks=[
@@ -145,9 +154,11 @@ log_config = dict(
     ]
 )
 
+# Evaluation settings
 evaluation = dict(
     interval=1,
     metric='bbox'
 )
 
+# Workflow settings
 workflow = [('train', 1), ('val', 1)]
