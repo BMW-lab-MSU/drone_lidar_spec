@@ -1,106 +1,94 @@
 import sys
-import os
-import json
-import re
 from mmengine.config import Config
+import os
 
-def check_annotations(dataset_path, phase):
-    annotations_file = os.path.join(dataset_path, phase, 'annotations.json')
-    if not os.path.exists(annotations_file):
-        print(f"Error: {phase} annotations file not found at {annotations_file}")
-        return False
+# Get arguments from the command line
+config_path = sys.argv[1]
+dataset_path = sys.argv[2]
+work_dir = sys.argv[3]
+normalization_method = sys.argv[4]  # Get the normalization method
 
-    with open(annotations_file, 'r') as f:
-        data = json.load(f)
+# Load the config file
+config = Config.fromfile(config_path)
 
-    num_images = len(data.get('images', []))
-    num_annotations = len(data.get('annotations', []))
+# Update dataset paths in the data section
+for phase in ['train', 'val', 'test']:
+    if hasattr(config.data, phase):
+        phase_data = getattr(config.data, phase)
+        phase_data.data_root = dataset_path
+        phase_data.ann_file = os.path.join(dataset_path, phase, 'annotations.json')
+        phase_data.img_prefix = os.path.join(dataset_path, phase)
 
-    if num_images == 0 or num_annotations == 0:
-        print(f"Error: {phase} dataset is empty. Found {num_images} images and {num_annotations} annotations.")
-        return False
+# Update dataset paths in the dataloaders
+config.train_dataloader.dataset.data_root = dataset_path
+config.val_dataloader.dataset.data_root = dataset_path
+config.test_dataloader.dataset.data_root = dataset_path
+config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations.json'
+config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations.json'
+config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json'
+config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/'
+config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/'
+config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/'
+
+# Update evaluator paths
+config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
+config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
+
+# Update the work directory
+config.work_dir = work_dir
+
+# Remove any GPU settings to ensure flexibility for single or multiple GPUs
+if hasattr(config, 'gpu_ids'):
+    del config.gpu_ids
+
+# Ensure distributed training is properly configured
+config.dist_params = dict(backend='nccl')
+config.launcher = 'slurm'
+
+# Define normalization values based on the dataset path and method
+if normalization_method == 'standard':
+    if 'noboost' in dataset_path:
+        mean = [117.72, 201.1, 82.63]
+        std = [55.09, 24.4, 33.32]
     else:
-        print(f"Success: {phase} dataset contains {num_images} images and {num_annotations} annotations.")
-        return True
+        mean = [91.29, 159.0, 102.64]
+        std = [67.23, 63.18, 38.67]
+elif normalization_method == 'minmax':
+    mean = [0.0, 0.0, 0.0]
+    std = [255.0, 255.0, 255.0]
 
-def update_config(config_path, dataset_path, work_dir, normalization_method):
-    try:
-        # Load the config file
-        config = Config.fromfile(config_path)
-        print("Original configuration loaded successfully.")
-    except Exception as e:
-        print(f"Error loading configuration: {e}")
-        return
+# Update normalization values
+normalization_values = {
+    'mean': mean,
+    'std': std
+}
 
-    # Check annotations for train, val, and test datasets
-    for phase in ['train', 'val', 'test']:
-        if not check_annotations(dataset_path, phase):
-            print("Error: One or more datasets are invalid. Exiting...")
-            return
+# Update normalization in the data preprocessor
+config.model.data_preprocessor.mean = mean
+config.model.data_preprocessor.std = std
 
-    # Update dataset paths in the config
-    for phase in ['train', 'val', 'test']:
-        if hasattr(config.data, phase):
-            print(f"Updating {phase} dataset paths")
-            phase_data = getattr(config.data, phase)
-            phase_data.data_root = dataset_path
-            phase_data.ann_file = os.path.join(dataset_path, phase, 'annotations.json')
-            phase_data.img_prefix = os.path.join(dataset_path, phase)
-    
-    # Update the evaluators
-    if hasattr(config, 'val_evaluator'):
-        print("Updating val evaluator")
-        config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
-    
-    if hasattr(config, 'test_evaluator'):
-        print("Updating test evaluator")
-        config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
+# Update normalization in the training, validation, and test pipelines
+norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
+for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+    for step in pipeline:
+        if step['type'] == 'Normalize':
+            step.update(norm_values_pipeline)
 
-    # Update the work directory
-    print("Updating work directory")
-    config.work_dir = work_dir
+# Update normalization in the data section pipelines
+for phase in ['train', 'val', 'test']:
+    phase_data = getattr(config.data, phase)
+    for step in phase_data.pipeline:
+        if step['type'] == 'Normalize':
+            step.update(norm_values_pipeline)
 
-    # Ensure distributed training is properly configured
-    print("Updating distributed training configuration")
-    config.dist_params = dict(backend='nccl')
-    config.launcher = 'slurm'
+# Update normalization values in the config directly
+config.normalization_values = normalization_values
 
-    # Define normalization values based on the dataset path and method
-    if normalization_method == 'standard':
-        if 'noboost' in dataset_path:
-            mean = [117.72, 201.1, 82.63]
-            std = [55.09, 24.4, 33.32]
-        else:
-            mean = [91.29, 159.0, 102.64]
-            std = [67.23, 63.18, 38.67]
-    elif normalization_method == 'minmax':
-        mean = [0.0, 0.0, 0.0]
-        std = [255.0, 255.0, 255.0]
-    else:
-        # Default values if normalization_method is not recognized
-        mean = [0.0, 0.0, 0.0]
-        std = [1.0, 1.0, 1.0]
+# Ensure the work directory exists
+os.makedirs(work_dir, exist_ok=True)
 
-    # Regular expressions to find and replace the mean and std values
-    mean_pattern = re.compile(r'mean=\[.*?\]')
-    std_pattern = re.compile(r'std=\[.*?\]')
+# Print the final configuration for debugging
+print(config.pretty_text)
 
-    new_mean = f"mean={mean}"
-    new_std = f"std={std}"
-
-    config_text = config.pretty_text
-    config_text = mean_pattern.sub(new_mean, config_text)
-    config_text = std_pattern.sub(new_std, config_text)
-
-    # Write the updated config back to the file
-    updated_config_path = os.path.join(work_dir, 'updated_config.py')
-    with open(updated_config_path, 'w') as file:
-        file.write(config_text)
-
-    print(f"\nConfiguration update successful. Config file saved at: {updated_config_path}")
-
-if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python update_config.py <config_path> <dataset_path> <work_dir> <normalization_method>")
-    else:
-        update_config(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+# Save the updated config
+config.dump(f'{work_dir}/updated_config.py')
