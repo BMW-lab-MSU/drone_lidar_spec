@@ -34,6 +34,17 @@ import sys
 from mmengine.config import Config
 import os
 
+# Function to print contents of a directory
+def print_directory_contents(path):
+    print(f"Contents of {path}:")
+    for root, dirs, files in os.walk(path):
+        level = root.replace(path, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print(f"{indent}{os.path.basename(root)}/")
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            print(f"{subindent}{f}")
+
 # Get arguments from the command line
 config_path = sys.argv[1]
 dataset_path = sys.argv[2]
@@ -55,6 +66,11 @@ print(config.test_dataloader.dataset)
 train_dataset = config.train_dataloader.dataset
 if train_dataset.type == 'RepeatDataset':
     train_dataset = train_dataset.dataset
+
+# Print directory contents
+print_directory_contents(os.path.join(dataset_path, 'train'))
+print_directory_contents(os.path.join(dataset_path, 'val'))
+print_directory_contents(os.path.join(dataset_path, 'test'))
 
 # Update dataset paths in the config using os.path.join to avoid double slashes
 config.data_root = dataset_path
