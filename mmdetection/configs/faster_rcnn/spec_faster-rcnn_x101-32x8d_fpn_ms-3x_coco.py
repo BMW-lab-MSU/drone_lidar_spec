@@ -159,7 +159,6 @@ train_dataloader = dict(
                         ),
                     ],
                     type='RandomResize'),
-                dict(prob=0.5, type='RandomFlip'),
                 dict(type='PackDetInputs'),
             ],
             type='CocoDataset'),
@@ -184,7 +183,6 @@ train_pipeline = [
             ),
         ],
         type='RandomResize'),
-    dict(prob=0.5, type='RandomFlip'),
     dict(type='PackDetInputs'),
 ]
 val_cfg = dict(type='ValLoop')
