@@ -1,6 +1,26 @@
 import sys
 from mmengine.config import Config
 import os
+import json
+
+def check_annotations(dataset_path, phase):
+    annotations_file = os.path.join(dataset_path, phase, 'annotations.json')
+    if not os.path.exists(annotations_file):
+        print(f"Error: {phase} annotations file not found at {annotations_file}")
+        return False
+
+    with open(annotations_file, 'r') as f:
+        data = json.load(f)
+
+    num_images = len(data.get('images', []))
+    num_annotations = len(data.get('annotations', []))
+
+    if num_images == 0 or num_annotations == 0:
+        print(f"Error: {phase} dataset is empty. Found {num_images} images and {num_annotations} annotations.")
+        return False
+    else:
+        print(f"Success: {phase} dataset contains {num_images} images and {num_annotations} annotations.")
+        return True
 
 # Get arguments from the command line
 config_path = sys.argv[1]
@@ -18,6 +38,16 @@ for phase in ['train', 'val', 'test']:
         phase_data.data_root = dataset_path
         phase_data.ann_file = os.path.join(dataset_path, phase, 'annotations.json')
         phase_data.img_prefix = os.path.join(dataset_path, phase)
+        # Print statements for debugging
+        print(f"Updated {phase} dataset paths:")
+        print(f"  data_root: {phase_data.data_root}")
+        print(f"  ann_file: {phase_data.ann_file}")
+        print(f"  img_prefix: {phase_data.img_prefix}")
+
+# Ensure that the top-level data_root is also updated if it exists
+if hasattr(config, 'data_root'):
+    config.data_root = dataset_path
+    print(f"Updated top-level data_root: {config.data_root}")
 
 # Update dataset paths in the dataloaders
 config.train_dataloader.dataset.data_root = dataset_path
@@ -29,6 +59,20 @@ config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json
 config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/'
 config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/'
 config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/'
+
+# Print dataloader paths for debugging
+print(f"Updated train dataloader paths:")
+print(f"  data_root: {config.train_dataloader.dataset.data_root}")
+print(f"  ann_file: {config.train_dataloader.dataset.ann_file}")
+print(f"  data_prefix.img: {config.train_dataloader.dataset.data_prefix.img}")
+print(f"Updated val dataloader paths:")
+print(f"  data_root: {config.val_dataloader.dataset.data_root}")
+print(f"  ann_file: {config.val_dataloader.dataset.ann_file}")
+print(f"  data_prefix.img: {config.val_dataloader.dataset.data_prefix.img}")
+print(f"Updated test dataloader paths:")
+print(f"  data_root: {config.test_dataloader.dataset.data_root}")
+print(f"  ann_file: {config.test_dataloader.dataset.ann_file}")
+print(f"  data_prefix.img: {config.test_dataloader.dataset.data_prefix.img}")
 
 # Update evaluator paths
 config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
@@ -92,3 +136,25 @@ print(config.pretty_text)
 
 # Save the updated config
 config.dump(f'{work_dir}/updated_config.py')
+
+# Function to verify dataset content
+def verify_dataset_content(dataset_path, phase):
+    img_dir = os.path.join(dataset_path, phase)
+    annotations_file = os.path.join(img_dir, 'annotations.json')
+    if not os.path.exists(annotations_file):
+        print(f"Annotations file for {phase} not found: {annotations_file}")
+        return False
+    with open(annotations_file, 'r') as f:
+        data = json.load(f)
+    images = data.get('images', [])
+    if len(images) == 0:
+        print(f"No images found in the annotations for {phase}.")
+        return False
+    else:
+        print(f"Found {len(images)} images in the annotations for {phase}.")
+    return True
+
+# Verify the dataset content for train, val, and test
+for phase in ['train', 'val', 'test']:
+    if not verify_dataset_content(dataset_path, phase):
+        print(f"Error: {phase} dataset verification failed.")
