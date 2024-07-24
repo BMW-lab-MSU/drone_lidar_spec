@@ -72,6 +72,12 @@ test_dataloader = dict(
 val_evaluator = dict(ann_file='placeholder/val/annotations/annotations.json')  # Placeholder to be replaced by cfg-options
 test_evaluator = dict(ann_file='placeholder/test/annotations/annotations.json')  # Placeholder to be replaced by cfg-options
 
+# Validation configuration
+val_cfg = dict(type='ValLoop')
+
+# Test configuration
+test_cfg = dict(type='TestLoop')
+
 model = dict(
     data_preprocessor=dict(
         type='DetDataPreprocessor',
