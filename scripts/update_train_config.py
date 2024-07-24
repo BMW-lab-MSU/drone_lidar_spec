@@ -30,18 +30,19 @@ normalization_method = sys.argv[4]  # Get the normalization method
 # Load the config file
 config = Config.fromfile(config_path)
 
+# Function to update dataset paths
+def update_dataset_paths(dataloader):
+    dataloader.dataset.data_root = dataset_path
+    dataloader.dataset.ann_file = os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/annotations/annotations.json")
+    if 'data_prefix' in dataloader.dataset:
+        dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/images/")
+    else:
+        dataloader.dataset.data_prefix = dict(img=os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/images/"))
+
 # Update dataset paths in the config
-config.train_dataloader.dataset.data_root = dataset_path
-config.val_dataloader.dataset.data_root = dataset_path
-config.test_dataloader.dataset.data_root = dataset_path
-config.train_dataloader.dataset.ann_file = os.path.join(dataset_path, 'train/annotations/annotations.json')
-config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val/annotations/annotations.json')
-config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test/annotations/annotations.json')
-config.train_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'train/images/')
-config.val_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'val/images/')
-config.test_dataloader.dataset.data_prefix.img = os.path.join(dataset_path, 'test/images/')
-config.val_evaluator.ann_file = os.path.join(dataset_path, 'val/annotations/annotations.json')
-config.test_evaluator.ann_file = os.path.join(dataset_path, 'test/annotations/annotations.json')
+update_dataset_paths(config.train_dataloader)
+update_dataset_paths(config.val_dataloader)
+update_dataset_paths(config.test_dataloader)
 
 # Update the work directory
 config.work_dir = work_dir
