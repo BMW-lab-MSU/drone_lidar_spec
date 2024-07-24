@@ -1,4 +1,5 @@
 _base_ = ['../common/ms_3x_coco.py', '../_base_/models/faster-rcnn_r50_fpn.py']
+
 model = dict(
     data_preprocessor=dict(
         type='DetDataPreprocessor',
@@ -61,9 +62,11 @@ model = dict(
             loss_cls=dict(
                 type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
             loss_bbox=dict(type='L1Loss', loss_weight=1.0))))
+
 optim_wrapper = dict(
     optimizer=dict(lr=0.02, momentum=0.9, type='SGD', weight_decay=0.0001),
     type='OptimWrapper')
+
 param_scheduler = [
     dict(
         begin=0, by_epoch=False, end=500, start_factor=0.001, type='LinearLR'),
@@ -72,14 +75,14 @@ param_scheduler = [
         by_epoch=True,
         end=12,
         gamma=0.1,
-        milestones=[
-            9,
-            11,
-        ],
+        milestones=[9, 11],
         type='MultiStepLR'),
 ]
+
 resume = False
+
 test_cfg = dict(type='TestLoop')
+
 test_dataloader = dict(
     batch_size=1,
     dataset=dict(
@@ -89,10 +92,6 @@ test_dataloader = dict(
         data_root='data/coco/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                775,
-                462,
-            ), type='Resize'),
             dict(type='LoadAnnotations', with_bbox=True),
             dict(
                 meta_keys=(
@@ -110,29 +109,15 @@ test_dataloader = dict(
     num_workers=2,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
+
 test_evaluator = dict(
     ann_file='data/coco/annotations/instances_val2017.json',
     backend_args=None,
     metric='bbox',
     type='CocoMetric')
-test_pipeline = [
-    dict(backend_args=None, type='LoadImageFromFile'),
-    dict(keep_ratio=True, scale=(
-        775,
-        462,
-    ), type='Resize'),
-    dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        meta_keys=(
-            'img_id',
-            'img_path',
-            'ori_shape',
-            'img_shape',
-            'scale_factor',
-        ),
-        type='PackDetInputs'),
-]
+
 train_cfg = dict(max_epochs=12, type='EpochBasedTrainLoop', val_interval=1)
+
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=2,
@@ -146,19 +131,6 @@ train_dataloader = dict(
             pipeline=[
                 dict(backend_args=None, type='LoadImageFromFile'),
                 dict(type='LoadAnnotations', with_bbox=True),
-                dict(
-                    keep_ratio=True,
-                    scale=[
-                        (
-                            775,
-                            462,
-                        ),
-                        (
-                            775,
-                            462,
-                        ),
-                    ],
-                    type='RandomResize'),
                 dict(type='PackDetInputs'),
             ],
             type='CocoDataset'),
@@ -167,25 +139,15 @@ train_dataloader = dict(
     num_workers=2,
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
+
 train_pipeline = [
     dict(backend_args=None, type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        keep_ratio=True,
-        scale=[
-            (
-                775,
-                462,
-            ),
-            (
-                775,
-                462,
-            ),
-        ],
-        type='RandomResize'),
     dict(type='PackDetInputs'),
 ]
+
 val_cfg = dict(type='ValLoop')
+
 val_dataloader = dict(
     batch_size=1,
     dataset=dict(
@@ -195,10 +157,6 @@ val_dataloader = dict(
         data_root='data/coco/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                775,
-                462,
-            ), type='Resize'),
             dict(type='LoadAnnotations', with_bbox=True),
             dict(
                 meta_keys=(
@@ -216,17 +174,17 @@ val_dataloader = dict(
     num_workers=2,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
+
 val_evaluator = dict(
     ann_file='data/coco/annotations/instances_val2017.json',
     backend_args=None,
     metric='bbox',
     type='CocoMetric')
-vis_backends = [
-    dict(type='LocalVisBackend'),
-]
+
+vis_backends = [dict(type='LocalVisBackend')]
+
 visualizer = dict(
     name='visualizer',
     type='DetLocalVisualizer',
-    vis_backends=[
-        dict(type='LocalVisBackend'),
-    ])
+    vis_backends=[dict(type='LocalVisBackend')],
+)

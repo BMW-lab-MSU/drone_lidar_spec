@@ -3,10 +3,10 @@ from mmengine.registry import DATASETS
 from mmdet.datasets import CocoDataset
 
 # Explicitly register CocoDataset (if not already registered)
-DATASETS.register_module(CocoDataset)
+#DATASETS.register_module(CocoDataset)
 
 # Load the configuration file
-cfg = Config.fromfile('/home/d86p233/Desktop/BMW-spec/work_dirs/train_task_0/20240723_152240/vis_data/config.py')
+cfg = Config.fromfile('/home/d86p233/Desktop/BMW-spec/work_dirs/train_task_0/20240724_082412/vis_data/config.py')
 
 # Print all registered datasets in the mmengine dataset registry
 print("Registered datasets in mmengine::dataset registry:")
