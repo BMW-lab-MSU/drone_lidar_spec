@@ -51,8 +51,15 @@ update_dataset_paths(config.train_dataloader, 'train')
 update_dataset_paths(config.val_dataloader, 'val')
 update_dataset_paths(config.test_dataloader, 'test')
 
+# Update evaluator paths
+config.val_evaluator.ann_file = os.path.join(dataset_path, 'val/annotations/annotations.json')
+config.test_evaluator.ann_file = os.path.join(dataset_path, 'test/annotations/annotations.json')
+
 # Update the work directory
 config.work_dir = work_dir
+
+# Update the root directory for the dataset
+config.data_root = dataset_path
 
 # Remove any GPU settings to ensure flexibility for single or multiple GPUs
 if hasattr(config, 'gpu_ids'):
