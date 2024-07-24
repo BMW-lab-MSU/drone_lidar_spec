@@ -75,9 +75,9 @@ print_directory_contents(os.path.join(dataset_path, 'val'))
 print_directory_contents(os.path.join(dataset_path, 'test'))
 
 # Print annotations contents
-print_annotations_content(os.path.join(dataset_path, 'train', 'annotations.json'))
-print_annotations_content(os.path.join(dataset_path, 'val', 'annotations.json'))
-print_annotations_content(os.path.join(dataset_path, 'test', 'annotations.json'))
+print_annotations_content(os.path.join(dataset_path, 'train', 'annotations', 'annotations.json'))
+print_annotations_content(os.path.join(dataset_path, 'val', 'annotations', 'annotations.json'))
+print_annotations_content(os.path.join(dataset_path, 'test', 'annotations', 'annotations.json'))
 
 # Update dataset paths in the config using os.path.join to avoid double slashes
 config.data_root = dataset_path
@@ -85,31 +85,31 @@ train_dataset.data_root = dataset_path
 config.val_dataloader.dataset.data_root = dataset_path
 config.test_dataloader.dataset.data_root = dataset_path
 
-train_dataset.ann_file = os.path.join(dataset_path, 'train', 'annotations.json')
-config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
-config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
+train_dataset.ann_file = os.path.join(dataset_path, 'train', 'annotations', 'annotations.json')
+config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val', 'annotations', 'annotations.json')
+config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test', 'annotations', 'annotations.json')
 
 # Check and update data_prefix if it exists within the dataset dictionary
 if 'data_prefix' in train_dataset:
     logger.info("FOUND TRAIN DATA PREFIX")
-    train_dataset.data_prefix['img'] = os.path.join(dataset_path, 'train') + '/'
+    train_dataset.data_prefix['img'] = os.path.join(dataset_path, 'train', 'images') + '/'
 else:
     logger.info("TRAIN DATA PREFIX NOT FOUND")
 
 if 'data_prefix' in config.val_dataloader.dataset:
     logger.info("FOUND VAL DATA PREFIX")
-    config.val_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'val') + '/'
+    config.val_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'val', 'images') + '/'
 else:
     logger.info("VAL DATA PREFIX NOT FOUND")
 
 if 'data_prefix' in config.test_dataloader.dataset:
     logger.info("FOUND TEST DATA PREFIX")
-    config.test_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'test') + '/'
+    config.test_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'test', 'images') + '/'
 else:
     logger.info("TEST DATA PREFIX NOT FOUND")
 
-config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations.json')
-config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations.json')
+config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations', 'annotations.json')
+config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations', 'annotations.json')
 
 # Update the work directory
 config.work_dir = work_dir
