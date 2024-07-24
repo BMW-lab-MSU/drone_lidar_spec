@@ -1,3 +1,22 @@
+"""
+Script to update and modify MMDetection configuration files for object detection tasks.
+
+This script loads a configuration file, updates dataset paths, normalization methods, 
+and other parameters based on command line arguments, and saves the updated configuration.
+
+Usage:
+    python update_train_config.py <config_path> <dataset_path> <work_dir> <normalization_method>
+
+Arguments:
+    config_path: Path to the configuration file to be modified.
+    dataset_path: Root path to the dataset containing train, val, and test splits.
+    work_dir: Directory to save the updated configuration file and any output files.
+    normalization_method: Method to use for data normalization ('standard' or 'minmax').
+
+Example:
+    python update_train_config.py configs/my_config.py /data/my_dataset /output standard
+"""
+
 import sys
 from mmengine.config import Config
 import os
