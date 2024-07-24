@@ -79,37 +79,34 @@ print_annotations_content(os.path.join(dataset_path, 'train', 'annotations', 'an
 print_annotations_content(os.path.join(dataset_path, 'val', 'annotations', 'annotations.json'))
 print_annotations_content(os.path.join(dataset_path, 'test', 'annotations', 'annotations.json'))
 
-# Update dataset paths in the config using os.path.join to avoid double slashes
+# Update dataset paths in the config using relative paths
 config.data_root = dataset_path
-train_dataset.data_root = dataset_path
-config.val_dataloader.dataset.data_root = dataset_path
-config.test_dataloader.dataset.data_root = dataset_path
 
-train_dataset.ann_file = os.path.join(dataset_path, 'train', 'annotations', 'annotations.json')
-config.val_dataloader.dataset.ann_file = os.path.join(dataset_path, 'val', 'annotations', 'annotations.json')
-config.test_dataloader.dataset.ann_file = os.path.join(dataset_path, 'test', 'annotations', 'annotations.json')
+train_dataset.ann_file = 'train/annotations/annotations.json'
+config.val_dataloader.dataset.ann_file = 'val/annotations/annotations.json'
+config.test_dataloader.dataset.ann_file = 'test/annotations/annotations.json'
 
 # Check and update data_prefix if it exists within the dataset dictionary
 if 'data_prefix' in train_dataset:
     logger.info("FOUND TRAIN DATA PREFIX")
-    train_dataset.data_prefix['img'] = os.path.join(dataset_path, 'train', 'images') + '/'
+    train_dataset.data_prefix['img'] = 'train/images/'
 else:
     logger.info("TRAIN DATA PREFIX NOT FOUND")
 
 if 'data_prefix' in config.val_dataloader.dataset:
     logger.info("FOUND VAL DATA PREFIX")
-    config.val_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'val', 'images') + '/'
+    config.val_dataloader.dataset.data_prefix['img'] = 'val/images/'
 else:
     logger.info("VAL DATA PREFIX NOT FOUND")
 
 if 'data_prefix' in config.test_dataloader.dataset:
     logger.info("FOUND TEST DATA PREFIX")
-    config.test_dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, 'test', 'images') + '/'
+    config.test_dataloader.dataset.data_prefix['img'] = 'test/images/'
 else:
     logger.info("TEST DATA PREFIX NOT FOUND")
 
-config.val_evaluator.ann_file = os.path.join(dataset_path, 'val', 'annotations', 'annotations.json')
-config.test_evaluator.ann_file = os.path.join(dataset_path, 'test', 'annotations', 'annotations.json')
+config.val_evaluator.ann_file = 'val/annotations/annotations.json'
+config.test_evaluator.ann_file = 'test/annotations/annotations.json'
 
 # Update the work directory
 config.work_dir = work_dir
