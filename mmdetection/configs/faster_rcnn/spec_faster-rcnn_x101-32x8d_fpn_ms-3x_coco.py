@@ -16,8 +16,8 @@ train_dataloader = dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
-        ann_file='placeholder/train/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/train/'),  # Placeholder to be replaced by cfg-options
+        ann_file='placeholder/train/annotations/annotations.json',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/train/images/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -36,8 +36,8 @@ val_dataloader = dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
-        ann_file='placeholder/val/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/val/'),  # Placeholder to be replaced by cfg-options
+        ann_file='placeholder/val/annotations/annotations.json',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/val/images/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -56,8 +56,8 @@ test_dataloader = dict(
         type=dataset_type,
         metainfo=dict(classes=classes),
         data_root='placeholder',  # Placeholder to be replaced by cfg-options
-        ann_file='placeholder/test/annotations.json',  # Placeholder to be replaced by cfg-options
-        data_prefix=dict(img='placeholder/test/'),  # Placeholder to be replaced by cfg-options
+        ann_file='placeholder/test/annotations/annotations.json',  # Placeholder to be replaced by cfg-options
+        data_prefix=dict(img='placeholder/test/images/'),  # Placeholder to be replaced by cfg-options
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
@@ -69,8 +69,8 @@ test_dataloader = dict(
 )
 
 # Evaluator settings
-val_evaluator = dict(ann_file='placeholder/val/annotations.json')  # Placeholder to be replaced by cfg-options
-test_evaluator = dict(ann_file='placeholder/test/annotations.json')  # Placeholder to be replaced by cfg-options
+val_evaluator = dict(ann_file='placeholder/val/annotations/annotations.json')  # Placeholder to be replaced by cfg-options
+test_evaluator = dict(ann_file='placeholder/test/annotations/annotations.json')  # Placeholder to be replaced by cfg-options
 
 model = dict(
     data_preprocessor=dict(
@@ -125,7 +125,7 @@ model = dict(
             in_channels=256,
             fc_out_channels=1024,
             roi_feat_size=7,
-            num_classes=80,
+            num_classes=1,  # Adjusted to 1 class
             bbox_coder=dict(
                 type='DeltaXYWHBBoxCoder',
                 target_means=[0.0, 0.0, 0.0, 0.0],
@@ -135,14 +135,25 @@ model = dict(
                 type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
             loss_bbox=dict(type='L1Loss', loss_weight=1.0))))
 
-# Optimizer settings
-optimizer = dict(
-    type='SGD',
-    lr=0.01,
-    momentum=0.9,
-    weight_decay=0.0001,
-    paramwise_cfg=dict(
-        custom_keys={'backbone': dict(lr_mult=0.1)}
+# Training configuration
+train_cfg = dict(
+    type='EpochBasedTrainLoop',
+    max_epochs=12,
+    val_begin=1,
+    val_interval=1
+)
+
+# Optimization wrapper configuration
+optim_wrapper = dict(
+    type='OptimWrapper',
+    optimizer=dict(
+        type='SGD',
+        lr=0.01,
+        momentum=0.9,
+        weight_decay=0.0001,
+        paramwise_cfg=dict(
+            custom_keys={'backbone': dict(lr_mult=0.1)}
+        )
     )
 )
 
