@@ -81,6 +81,9 @@ print_annotations_content(os.path.join(dataset_path, 'test', 'annotations', 'ann
 
 # Update dataset paths in the config using relative paths
 config.data_root = dataset_path
+train_dataset.data_root = dataset_path
+config.val_dataloader.dataset.data_root = dataset_path
+config.test_dataloader.dataset.data_root = dataset_path
 
 train_dataset.ann_file = 'train/annotations/annotations.json'
 config.val_dataloader.dataset.ann_file = 'val/annotations/annotations.json'
