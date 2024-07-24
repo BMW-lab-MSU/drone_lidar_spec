@@ -34,14 +34,14 @@ config = Config.fromfile(config_path)
 config.train_dataloader.dataset.data_root = dataset_path
 config.val_dataloader.dataset.data_root = dataset_path
 config.test_dataloader.dataset.data_root = dataset_path
-config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations.json'
-config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations.json'
-config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/'
-config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/'
-config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/'
-config.val_evaluator.ann_file = f'{dataset_path}/val/annotations.json'
-config.test_evaluator.ann_file = f'{dataset_path}/test/annotations.json'
+config.train_dataloader.dataset.ann_file = f'{dataset_path}/train/annotations/annotations.json'
+config.val_dataloader.dataset.ann_file = f'{dataset_path}/val/annotations/annotations.json'
+config.test_dataloader.dataset.ann_file = f'{dataset_path}/test/annotations/annotations.json'
+config.train_dataloader.dataset.data_prefix.img = f'{dataset_path}/train/images/'
+config.val_dataloader.dataset.data_prefix.img = f'{dataset_path}/val/images/'
+config.test_dataloader.dataset.data_prefix.img = f'{dataset_path}/test/images/'
+config.val_evaluator.ann_file = f'{dataset_path}/val/annotations/annotations.json'
+config.test_evaluator.ann_file = f'{dataset_path}/test/annotations/annotations.json'
 
 # Update the work directory
 config.work_dir = work_dir
