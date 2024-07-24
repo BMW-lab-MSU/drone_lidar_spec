@@ -31,18 +31,25 @@ normalization_method = sys.argv[4]  # Get the normalization method
 config = Config.fromfile(config_path)
 
 # Function to update dataset paths
-def update_dataset_paths(dataloader):
-    dataloader.dataset.data_root = dataset_path
-    dataloader.dataset.ann_file = os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/annotations/annotations.json")
-    if 'data_prefix' in dataloader.dataset:
-        dataloader.dataset.data_prefix['img'] = os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/images/")
+def update_dataset_paths(dataloader, split):
+    # Navigate to the inner dataset if it exists
+    if 'dataset' in dataloader:
+        dataset = dataloader.dataset
+        while 'dataset' in dataset:
+            dataset = dataset.dataset
     else:
-        dataloader.dataset.data_prefix = dict(img=os.path.join(dataset_path, f"{dataloader.dataset.type.split('Dataset')[0].lower()}/images/"))
+        dataset = dataloader
+    dataset.data_root = dataset_path
+    dataset.ann_file = os.path.join(dataset_path, f"{split}/annotations/annotations.json")
+    if 'data_prefix' in dataset:
+        dataset.data_prefix['img'] = os.path.join(dataset_path, f"{split}/images/")
+    else:
+        dataset.data_prefix = dict(img=os.path.join(dataset_path, f"{split}/images/"))
 
 # Update dataset paths in the config
-update_dataset_paths(config.train_dataloader)
-update_dataset_paths(config.val_dataloader)
-update_dataset_paths(config.test_dataloader)
+update_dataset_paths(config.train_dataloader, 'train')
+update_dataset_paths(config.val_dataloader, 'val')
+update_dataset_paths(config.test_dataloader, 'test')
 
 # Update the work directory
 config.work_dir = work_dir
@@ -79,10 +86,21 @@ config.model.data_preprocessor.std = std
 
 # Update normalization in the training, validation, and test pipelines
 norm_values_pipeline = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
-for pipeline in [config.train_dataloader.dataset.pipeline, config.val_dataloader.dataset.pipeline, config.test_dataloader.dataset.pipeline]:
+
+def update_pipeline(pipeline):
     for step in pipeline:
         if step['type'] == 'Normalize':
             step.update(norm_values_pipeline)
+
+for dataloader in [config.train_dataloader, config.val_dataloader, config.test_dataloader]:
+    # Navigate to the inner dataset if it exists and update its pipeline
+    if 'dataset' in dataloader and 'pipeline' in dataloader.dataset:
+        dataset = dataloader.dataset
+        while 'dataset' in dataset:
+            dataset = dataset.dataset
+        update_pipeline(dataset.pipeline)
+    elif 'pipeline' in dataloader:
+        update_pipeline(dataloader.pipeline)
 
 # Update normalization values in the config directly
 config.normalization_values = normalization_values

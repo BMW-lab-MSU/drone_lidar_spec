@@ -45,7 +45,7 @@ WORK_DIR="/home/d86p233/Desktop/BMW-spec/work_dirs/train_task_${SLURM_ARRAY_TASK
 IMAGE_PATH="/home/d86p233/Desktop/BMW-spec/bmw_spec_img.sif"
 
 # Define the base config path and the script to update the config
-BASE_CONFIG_PATH="/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_r101_fpn_1x_spec2.py"
+BASE_CONFIG_PATH="/home/d86p233/Desktop/BMW-spec/mmdetection/configs/faster_rcnn/faster-rcnn_x101-32x8d_fpn_ms-3x_coco_local.py"
 UPDATE_SCRIPT_PATH="/home/d86p233/Desktop/BMW-spec/scripts/update_train_config.py"
 
 # Create the work directory if it doesn't exist
