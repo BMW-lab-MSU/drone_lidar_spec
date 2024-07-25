@@ -69,9 +69,9 @@ model = dict(
         type='StandardRoIHead'),
     rpn_head=dict(
         anchor_generator=dict(
-            ratios=[0.5, 1.0, 2.0],
-            scales=[8],
-            strides=[4, 8, 16, 32, 64],
+            ratios=[31, 31, 31],
+            scales=[5],
+            strides=[5, 5, 5, 5, 5],
             type='AnchorGenerator'),
         bbox_coder=dict(
             target_means=[0.0, 0.0, 0.0, 0.0],
@@ -153,16 +153,23 @@ param_scheduler = [
 resume = False
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
-    batch_size=1,
+    batch_size=8,
     dataset=dict(
         ann_file='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/test/annotations/annotations.json',
         backend_args=None,
         data_prefix=dict(
             img='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/test/images/'),
         data_root='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90',
+        metainfo=dict(classes=('drone_frequency', )),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
+            dict(scale=(775, 462), type='Resize'),
+            dict(
+                mean=[117.72, 201.1, 82.63],
+                std=[55.09, 24.4, 33.32],
+                to_rgb=True,
+                type='Normalize'),
             dict(type='PackDetInputs'),
         ],
         test_mode=True,
@@ -178,6 +185,7 @@ test_evaluator = dict(
     type='CocoMetric')
 test_pipeline = [
     dict(backend_args=None, type='LoadImageFromFile'),
+    dict(keep_ratio=True, scale=(1333, 800), type='Resize'),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         meta_keys=(
@@ -187,7 +195,7 @@ test_pipeline = [
 train_cfg = dict(max_epochs=12, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
-    batch_size=2,
+    batch_size=8,
     dataset=dict(
         ann_file='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/train/annotations/annotations.json',
         backend_args=None,
@@ -195,10 +203,16 @@ train_dataloader = dict(
             img='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/train/images/'),
         data_root='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90',
         filter_cfg=dict(filter_empty_gt=True, min_size=32),
+        metainfo=dict(classes=('drone_frequency', )),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='Resize', scale=(775, 462)),  # Ensure consistent size
+            dict(scale=(775, 462), type='Resize'),
+            dict(
+                mean=[117.72, 201.1, 82.63],
+                std=[55.09, 24.4, 33.32],
+                to_rgb=True,
+                type='Normalize'),
             dict(type='PackDetInputs'),
         ],
         type='CocoDataset'),
@@ -208,22 +222,29 @@ train_dataloader = dict(
 train_pipeline = [
     dict(backend_args=None, type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', scale=(775, 462)),  # Ensure consistent size
+    dict(keep_ratio=True, scale=(1333, 800), type='Resize'),
+    dict(prob=0.5, type='RandomFlip'),
     dict(type='PackDetInputs'),
 ]
 val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
-    batch_size=1,
+    batch_size=8,
     dataset=dict(
         ann_file='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/val/annotations/annotations.json',
         backend_args=None,
         data_prefix=dict(
             img='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90/val/images/'),
         data_root='/home/d86p233/Desktop/BMW-spec/data/noboost_prop-only-90',
+        metainfo=dict(classes=('drone_frequency', )),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='Resize', scale=(775, 462)),  # Ensure consistent size
+            dict(scale=(775, 462), type='Resize'),
+            dict(
+                mean=[117.72, 201.1, 82.63],
+                std=[55.09, 24.4, 33.32],
+                to_rgb=True,
+                type='Normalize'),
             dict(type='PackDetInputs'),
         ],
         test_mode=True,
