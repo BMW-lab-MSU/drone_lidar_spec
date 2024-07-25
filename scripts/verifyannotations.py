@@ -1,3 +1,41 @@
+"""
+This script verifies that the images and annotations match in the dataset folders.
+It checks for missing images in the annotations and missing annotations for the images.
+
+Usage:
+    python verify_annotations.py <dataset_path>
+
+Arguments:
+    dataset_path: Path to the dataset directory. The directory should contain subfolders
+                  'train', 'val', and 'test', each having 'images' and 'annotations' subfolders.
+                  The 'annotations' subfolder should contain a file named 'annotations.json'.
+
+Example:
+    python verify_annotations.py /path/to/dataset
+
+Output:
+    The script will print the list of images missing in the annotations and the list of annotations
+    missing corresponding images for each of the 'train', 'val', and 'test' folders.
+    If all annotations and images match, it will indicate that as well.
+
+Requirements:
+    - Python 3.x
+    - The dataset directory structure should be as follows:
+        dataset/
+        ├── train/
+        │   ├── images/
+        │   └── annotations/
+        │       └── annotations.json
+        ├── val/
+        │   ├── images/
+        │   └── annotations/
+        │       └── annotations.json
+        └── test/
+            ├── images/
+            └── annotations/
+                └── annotations.json
+"""
+
 import os
 import json
 import argparse
