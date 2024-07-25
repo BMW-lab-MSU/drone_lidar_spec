@@ -3,8 +3,8 @@
 # Variables
 SOURCE_ENDPOINT_ID="5485832e-723e-4b52-8472-0410e90902ad"                       # Blackmore
 DESTINATION_ENDPOINT_ID="0dc1297f-9868-4c68-8637-c9b6bd65d3aa"                  # Tempest
-SOURCE_DIRECTORY_PATH="/ece-bmw-lab/drone-lidar/summer2024/all_h5s/"            # Blackmore
-DESTINATION_DIRECTORY_PATH="/home/d86p233/Desktop/BMW-spec/all_h5s/"    # Tempest
+SOURCE_DIRECTORY_PATH="/ece-bmw-lab/drone-lidar/summer2024/all_h5s_single_freq/"            # Blackmore
+DESTINATION_DIRECTORY_PATH="/home/d86p233/Desktop/BMW-spec/all_h5s_single_freq/"    # Tempest
 TRANSFER_LABEL="Load_H5_blackmore->tempest"
 
 # Ensure Globus CLI is installed
@@ -41,11 +41,12 @@ else
 fi
 
 # Initiate the transfer
-TRANSFER_RESULT=$(globus transfer $SOURCE_ENDPOINT_ID:$SOURCE_DIRECTORY_PATH $DESTINATION_ENDPOINT_ID:$DESTINATION_DIRECTORY_PATH --recursive --label "$TRANSFER_LABEL")
+TRANSFER_RESULT=$(globus transfer $SOURCE_ENDPOINT_ID:$SOURCE_DIRECTORY_PATH $DESTINATION_ENDPOINT_ID:$DESTINATION_DIRECTORY_PATH --recursive --label "$TRANSFER_LABEL" 2>&1)
 
 # Check for errors in transfer initiation
 if [[ $? -ne 0 ]]; then
     echo "Failed to initiate transfer."
+    echo "Error details: $TRANSFER_RESULT"
     exit 1
 fi
 

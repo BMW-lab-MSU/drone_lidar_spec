@@ -14,20 +14,45 @@ Arguments:
     --dataset_path: Path to the dataset directory. The directory should contain `test`, `train`, and `val` subdirectories, each containing `annotations` and `images` subdirectories.
     --output_path: Path to the output JSON file where the results will be saved.
 
-Annotation JSON Structure:
-    Each annotation JSON file should contain:
+COCO Annotation JSON Structure:
+    Each annotation JSON file should follow the COCO format:
     {
-        "image": "image_filename.jpg",
-        "bboxes": [
-            [x, y, width, height],
+        "images": [
+            {"id": int, "file_name": str, ...},
             ...
-        ]
+        ],
+        "annotations": [
+            {"image_id": int, "bbox": [x, y, width, height], ...},
+            ...
+        ],
+        ...
     }
 """
 
 def extract_bbox_pixels(image, bbox):
     x, y, w, h = bbox
     return image[y:y+h, x:x+w]
+
+def process_annotations(annotations_file, images_dir):
+    all_pixels = []
+    
+    with open(annotations_file, 'r') as f:
+        coco_data = json.load(f)
+    
+    # Create a mapping from image ID to file name
+    image_id_to_filename = {image['id']: image['file_name'] for image in coco_data['images']}
+    
+    for annotation in coco_data['annotations']:
+        image_id = annotation['image_id']
+        bbox = annotation['bbox']
+        image_file = os.path.join(images_dir, image_id_to_filename[image_id])
+        image = cv2.imread(image_file)
+        
+        if image is not None:
+            bbox_pixels = extract_bbox_pixels(image, bbox)
+            all_pixels.append(bbox_pixels)
+    
+    return all_pixels
 
 def process_dataset(dataset_path):
     all_pixels = []
@@ -39,15 +64,8 @@ def process_dataset(dataset_path):
         
         for file in os.listdir(annotations_path):
             if file.endswith(".json"):
-                with open(os.path.join(annotations_path, file), 'r') as f:
-                    annotations = json.load(f)
-                
-                image_file = os.path.join(images_path, annotations['image'])
-                image = cv2.imread(image_file)
-                
-                for bbox in annotations['bboxes']:
-                    bbox_pixels = extract_bbox_pixels(image, bbox)
-                    all_pixels.append(bbox_pixels)
+                subset_pixels = process_annotations(os.path.join(annotations_path, file), images_path)
+                all_pixels.extend(subset_pixels)
     
     all_pixels = np.concatenate([pixels.reshape(-1, 3) for pixels in all_pixels], axis=0)
     mean_rgb = np.mean(all_pixels, axis=0)
