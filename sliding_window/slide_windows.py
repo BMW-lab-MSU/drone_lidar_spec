@@ -16,7 +16,7 @@ Arguments:
     --images_path: Path to the folder containing the images.
     --output_path: Path to the output JSON file where the results will be saved.
 
-The sliding window will have a size of 775x16 with a stride of 1.
+The sliding window will have a size of 775xWINDOW_HEIGHT with a stride of 1.
 """
 
 TARGET_MEAN_RGB = [71.59845682123655, 206.32637970430108, 147.64024529569892]
@@ -24,6 +24,7 @@ TARGET_STD_RGB = [41.225951891250425, 25.426265976364576, 81.55837833868854]
 
 FREQ_RANGE = 1952  # Frequency range from 0 to 1952 Hz
 IMG_HEIGHT = 462   # Height of the spectrogram image
+WINDOW_HEIGHT = 16 # Height of the sliding window
 
 def sliding_window(image, window_size, stride):
     windows = []
@@ -32,7 +33,7 @@ def sliding_window(image, window_size, stride):
     
     for y in range(0, h - win_h + 1, stride):
         for x in range(0, w - win_w + 1, stride):
-            window = image[y:y + win_h, x:x + win_w]
+            window = image[y:y + win_h, x + win_w]
             windows.append((x, y, window))
     
     return windows
@@ -51,12 +52,12 @@ def calculate_errors(mean_rgb, target_mean_rgb):
 
 def predict_frequency(y_coord):
     # Calculate the center y-coordinate of the window
-    y_center = y_coord + 8  # Since window height is 16, center is 8 pixels from top
+    y_center = y_coord + (WINDOW_HEIGHT / 2)
 
     # Reverse the scaling to get the frequency
     frequency = (y_center / IMG_HEIGHT) * FREQ_RANGE
 
-    return frequency
+    return FREQ_RANGE - frequency  # Adjust the prediction
 
 def extract_tilt_from_filename(filename):
     # Regex to extract tilt angle assuming the format contains "tilt-<angle>"
@@ -79,7 +80,7 @@ def extract_time_slice_from_filename(filename):
 
 def process_images(images_path):
     results = []
-    window_size = (775, 16)
+    window_size = (775, WINDOW_HEIGHT)
     stride = 1
     
     for file in os.listdir(images_path):
