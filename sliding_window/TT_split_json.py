@@ -1,6 +1,7 @@
 import json
 import random
 import argparse
+import os
 
 """
 This script splits a JSON array into two separate JSON files for training and testing datasets, with an 80/20 split.
@@ -42,9 +43,15 @@ def split_json(input_file, train_output_file, test_output_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Split a JSON array into training and testing datasets.")
     parser.add_argument('--input', type=str, required=True, help='Path to the input JSON file.')
-    parser.add_argument('--train_output', type=str, required=True, help='Path to the output JSON file for the training dataset.')
-    parser.add_argument('--test_output', type=str, required=True, help='Path to the output JSON file for the testing dataset.')
+    parser.add_argument('--train_output', type=str, help='Path to the output JSON file for the training dataset.')
+    parser.add_argument('--test_output', type=str, help='Path to the output JSON file for the testing dataset.')
 
     args = parser.parse_args()
+
+    # Generate default paths if not provided
+    if args.train_output is None:
+        args.train_output = os.path.splitext(args.input)[0] + '_train.json'
+    if args.test_output is None:
+        args.test_output = os.path.splitext(args.input)[0] + '_test.json'
 
     split_json(args.input, args.train_output, args.test_output)
