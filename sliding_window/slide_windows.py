@@ -7,7 +7,7 @@ import re
 
 """
 Script to run a sliding window across images and calculate the average RGB values and standard deviations for each window.
-Outputs the windows with the closest RGB values to a specified target for each image and predicts the frequency.
+Outputs the window with the closest RGB values to a specified target for each image and predicts the frequency.
 
 Usage:
     python sliding_window_rgb_stats.py --images_path path_to_images_folder --output_path output.json
@@ -16,7 +16,7 @@ Arguments:
     --images_path: Path to the folder containing the images.
     --output_path: Path to the output JSON file where the results will be saved.
 
-The sliding window will have a size of 775x20 with a stride of 1.
+The sliding window will have a size of 775x16 with a stride of 1.
 """
 
 TARGET_MEAN_RGB = [71.59845682123655, 206.32637970430108, 147.64024529569892]
@@ -51,7 +51,7 @@ def calculate_errors(mean_rgb, target_mean_rgb):
 
 def predict_frequency(y_coord):
     # Calculate the center y-coordinate of the window
-    y_center = y_coord + 10  # Since window height is 20, center is 10 pixels from top
+    y_center = y_coord + 8  # Since window height is 16, center is 8 pixels from top
 
     # Reverse the scaling to get the frequency
     frequency = (y_center / IMG_HEIGHT) * FREQ_RANGE
@@ -79,7 +79,7 @@ def extract_time_slice_from_filename(filename):
 
 def process_images(images_path):
     results = []
-    window_size = (775, 20)
+    window_size = (775, 16)
     stride = 1
     
     for file in os.listdir(images_path):
@@ -94,42 +94,25 @@ def process_images(images_path):
                 print(f"Processing image: {file}")
                 windows = sliding_window(image, window_size, stride)
                 
-                min_absolute_error = float('inf')
                 min_squared_error = float('inf')
-                best_window_absolute = None
-                best_window_squared = None
+                best_window = None
                 
                 for idx, (x, y, window) in enumerate(windows):
                     mean_rgb, std_rgb = calculate_rgb_stats(window)
                     total_absolute_error, total_squared_error, absolute_error, squared_error = calculate_errors(mean_rgb, TARGET_MEAN_RGB)
                     
-                    if total_absolute_error < min_absolute_error:
-                        min_absolute_error = total_absolute_error
-                        predicted_frequency = predict_frequency(y)
-                        best_window_absolute = {
-                            'window_position': (x, y),
-                            'window_dimensions': window_size,
-                            'mean_rgb': mean_rgb.tolist(),
-                            'std_rgb': std_rgb.tolist(),
-                            'absolute_error': absolute_error,
-                            'total_absolute_error': total_absolute_error,
-                            'squared_error': squared_error,
-                            'total_squared_error': total_squared_error,
-                            'predicted_frequency': predicted_frequency
-                        }
-                    
                     if total_squared_error < min_squared_error:
                         min_squared_error = total_squared_error
                         predicted_frequency = predict_frequency(y)
-                        best_window_squared = {
+                        best_window = {
                             'window_position': (x, y),
                             'window_dimensions': window_size,
                             'mean_rgb': mean_rgb.tolist(),
                             'std_rgb': std_rgb.tolist(),
                             'absolute_error': absolute_error,
                             'total_absolute_error': total_absolute_error,
-                            'squared_error': squared_error,
                             'total_squared_error': total_squared_error,
+                            'squared_error': squared_error,
                             'predicted_frequency': predicted_frequency
                         }
                     
@@ -141,8 +124,7 @@ def process_images(images_path):
                     'tilt_angle': tilt_angle,
                     'base_filename': base_filename,
                     'time_slice': time_slice,
-                    'LE': best_window_absolute,
-                    'LSE': best_window_squared
+                    'best_window': best_window
                 }
                 results.append(image_result)
     
