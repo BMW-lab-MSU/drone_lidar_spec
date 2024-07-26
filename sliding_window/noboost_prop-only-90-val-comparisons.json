@@ -3,540 +3,540 @@
         "image": "stan-fpv-17-33-50-tilt-90-fr-40_range_bin=121_time_slice=10.png",
         "tilt_angle": 90,
         "time_slice": 10,
-        "predicted_frequency": 1419.6363636363637,
+        "predicted_frequency": 532.3636363636363,
         "ground_truth_frequency": 548.2367647058823,
-        "absolute_error": 871.3995989304815,
-        "squared_error": 759337.261016204
+        "absolute_error": 15.873128342245991,
+        "squared_error": 251.95620336941298
     },
     {
         "image": "stan-fpv-17-33-50-tilt-90-fr-40_range_bin=121_time_slice=17.png",
         "tilt_angle": 90,
         "time_slice": 17,
-        "predicted_frequency": 1419.6363636363637,
+        "predicted_frequency": 532.3636363636363,
         "ground_truth_frequency": 548.4470588235293,
-        "absolute_error": 871.1893048128344,
-        "squared_error": 758970.8048202697
+        "absolute_error": 16.083422459893086,
+        "squared_error": 258.6764780233934
     },
     {
         "image": "stan-fpv-17-36-04-tilt-90-fr-80_range_bin=121_time_slice=2.png",
         "tilt_angle": 90,
         "time_slice": 2,
-        "predicted_frequency": 946.4242424242425,
+        "predicted_frequency": 1005.5757575757575,
         "ground_truth_frequency": 1021.87,
-        "absolute_error": 75.44575757575751,
-        "squared_error": 5692.062336179972
+        "absolute_error": 16.294242424242498,
+        "squared_error": 265.502336179984
     },
     {
         "image": "stan-fpv-17-35-34-tilt-90-fr-60_range_bin=121_time_slice=25.png",
         "tilt_angle": 90,
         "time_slice": 25,
-        "predicted_frequency": 1187.2554112554112,
+        "predicted_frequency": 764.7445887445888,
         "ground_truth_frequency": 773.7342857142856,
-        "absolute_error": 413.52112554112557,
-        "squared_error": 170999.72126879933
+        "absolute_error": 8.989696969696865,
+        "squared_error": 80.81465160697701
     },
     {
         "image": "stan-fpv-17-35-34-tilt-90-fr-60_range_bin=121_time_slice=22.png",
         "tilt_angle": 90,
         "time_slice": 22,
-        "predicted_frequency": 1199.9307359307359,
+        "predicted_frequency": 752.0692640692641,
         "ground_truth_frequency": 775.2057142857143,
-        "absolute_error": 424.72502164502157,
-        "squared_error": 180391.34401136404
+        "absolute_error": 23.136450216450157,
+        "squared_error": 535.2953286182766
     },
     {
         "image": "stan-fpv-17-36-34-tilt-90-fr-100_range_bin=121_time_slice=31.png",
         "tilt_angle": 90,
         "time_slice": 31,
-        "predicted_frequency": 722.4935064935065,
+        "predicted_frequency": 1229.5064935064934,
         "ground_truth_frequency": 1255.3457142857144,
-        "absolute_error": 532.8522077922079,
-        "squared_error": 283931.4753490303
+        "absolute_error": 25.839220779221023,
+        "squared_error": 667.6653304773275
     },
     {
         "image": "stan-fpv-17-36-34-tilt-90-fr-100_range_bin=121_time_slice=26.png",
         "tilt_angle": 90,
         "time_slice": 26,
-        "predicted_frequency": 726.7186147186147,
+        "predicted_frequency": 1225.2813852813852,
         "ground_truth_frequency": 1254.692857142857,
-        "absolute_error": 527.9742424242423,
-        "squared_error": 278756.8006634526
+        "absolute_error": 29.41147186147191,
+        "squared_error": 865.0346770581539
     },
     {
         "image": "stan-fpv-17-36-34-tilt-90-fr-100_range_bin=121_time_slice=21.png",
         "tilt_angle": 90,
         "time_slice": 21,
-        "predicted_frequency": 684.4675324675325,
+        "predicted_frequency": 1267.5324675324675,
         "ground_truth_frequency": 1253.5514285714285,
-        "absolute_error": 569.083896103896,
-        "squared_error": 323856.48080478987
+        "absolute_error": 13.981038961039076,
+        "squared_error": 195.4694504300926
     },
     {
         "image": "stan-fpv-17-36-34-tilt-90-fr-100_range_bin=121_time_slice=28.png",
         "tilt_angle": 90,
         "time_slice": 28,
-        "predicted_frequency": 730.943722943723,
+        "predicted_frequency": 1221.056277056277,
         "ground_truth_frequency": 1252.757142857143,
-        "absolute_error": 521.81341991342,
-        "squared_error": 272289.24520173925
+        "absolute_error": 31.70086580086604,
+        "squared_error": 1004.9448925245181
     },
     {
         "image": "stan-fpv-17-33-04-tilt-90-fr-10_range_bin=121_time_slice=18.png",
         "tilt_angle": 90,
         "time_slice": 18,
-        "predicted_frequency": 1761.8701298701299,
+        "predicted_frequency": 190.12987012987014,
         "ground_truth_frequency": 166.6,
-        "absolute_error": 1595.27012987013,
-        "squared_error": 2544886.7872558613
+        "absolute_error": 23.529870129870147,
+        "squared_error": 553.6547883285554
     },
     {
         "image": "stan-fpv-17-33-04-tilt-90-fr-10_range_bin=121_time_slice=3.png",
         "tilt_angle": 90,
         "time_slice": 3,
-        "predicted_frequency": 1757.6450216450216,
+        "predicted_frequency": 194.35497835497836,
         "ground_truth_frequency": 166.04142857142858,
-        "absolute_error": 1591.603593073593,
-        "squared_error": 2533201.997484771
+        "absolute_error": 28.313549783549774,
+        "squared_error": 801.6571013455515
     },
     {
         "image": "stan-fpv-17-33-04-tilt-90-fr-10_range_bin=121_time_slice=4.png",
         "tilt_angle": 90,
         "time_slice": 4,
-        "predicted_frequency": 1795.6709956709956,
+        "predicted_frequency": 156.32900432900442,
         "ground_truth_frequency": 166.57794117647057,
-        "absolute_error": 1629.093054494525,
-        "squared_error": 2653944.180202301
+        "absolute_error": 10.248936847466155,
+        "squared_error": 105.04070650334948
     },
     {
         "image": "stan-fpv-17-33-50-tilt-90-fr-40_range_bin=121_time_slice=16.png",
         "tilt_angle": 90,
         "time_slice": 16,
-        "predicted_frequency": 1419.6363636363637,
+        "predicted_frequency": 532.3636363636363,
         "ground_truth_frequency": 548.5528571428571,
-        "absolute_error": 871.0835064935067,
-        "squared_error": 758786.4752850231
+        "absolute_error": 16.18922077922082,
+        "squared_error": 262.0908694383551
     },
     {
         "image": "stan-fpv-17-33-04-tilt-90-fr-10_range_bin=121_time_slice=11.png",
         "tilt_angle": 90,
         "time_slice": 11,
-        "predicted_frequency": 1795.6709956709956,
+        "predicted_frequency": 156.32900432900442,
         "ground_truth_frequency": 166.75857142857143,
-        "absolute_error": 1628.912424242424,
-        "squared_error": 2653355.685851331
+        "absolute_error": 10.42956709956701,
+        "squared_error": 108.7758698843706
     },
     {
         "image": "stan-fpv-17-33-04-tilt-90-fr-10_range_bin=121_time_slice=16.png",
         "tilt_angle": 90,
         "time_slice": 16,
-        "predicted_frequency": 1749.1948051948052,
+        "predicted_frequency": 202.8051948051948,
         "ground_truth_frequency": 166.6235294117647,
-        "absolute_error": 1582.5712757830406,
-        "squared_error": 2504531.8429335607
+        "absolute_error": 36.18166539343008,
+        "squared_error": 1309.1129106421358
     },
     {
         "image": "stan-fpv-17-33-50-tilt-90-fr-40_range_bin=121_time_slice=11.png",
         "tilt_angle": 90,
         "time_slice": 11,
-        "predicted_frequency": 1419.6363636363637,
+        "predicted_frequency": 532.3636363636363,
         "ground_truth_frequency": 548.4328571428572,
-        "absolute_error": 871.2035064935066,
-        "squared_error": 758995.5497265813
+        "absolute_error": 16.069220779220927,
+        "squared_error": 258.2198564513456
     },
     {
         "image": "stan-fpv-17-33-19-tilt-90-fr-20_range_bin=121_time_slice=19.png",
         "tilt_angle": 90,
         "time_slice": 19,
-        "predicted_frequency": 1622.4415584415585,
+        "predicted_frequency": 329.5584415584415,
         "ground_truth_frequency": 307.1426470588235,
-        "absolute_error": 1315.298911382735,
-        "squared_error": 1730011.2262846078
+        "absolute_error": 22.41579449961796,
+        "squared_error": 502.4678430491028
     },
     {
         "image": "stan-fpv-17-35-04-tilt-90-fr-40_range_bin=121_time_slice=22.png",
         "tilt_angle": 90,
         "time_slice": 22,
-        "predicted_frequency": 1377.3852813852814,
+        "predicted_frequency": 574.6147186147186,
         "ground_truth_frequency": 548.9614285714287,
-        "absolute_error": 828.4238528138527,
-        "squared_error": 686286.0799109479
+        "absolute_error": 25.653290043289985,
+        "squared_error": 658.091290045161
     },
     {
         "image": "stan-fpv-17-33-19-tilt-90-fr-20_range_bin=121_time_slice=17.png",
         "tilt_angle": 90,
         "time_slice": 17,
-        "predicted_frequency": 1660.4675324675325,
+        "predicted_frequency": 291.53246753246754,
         "ground_truth_frequency": 307.1,
-        "absolute_error": 1353.3675324675323,
-        "squared_error": 1831603.677937257
+        "absolute_error": 15.567532467532487,
+        "squared_error": 242.34806712767812
     },
     {
         "image": "stan-fpv-17-35-34-tilt-90-fr-60_range_bin=121_time_slice=1.png",
         "tilt_angle": 90,
         "time_slice": 1,
-        "predicted_frequency": 1191.4805194805194,
+        "predicted_frequency": 760.5194805194806,
         "ground_truth_frequency": 773.4042857142857,
-        "absolute_error": 418.0762337662337,
-        "squared_error": 174787.7372401585
+        "absolute_error": 12.884805194805153,
+        "squared_error": 166.01820490807788
     },
     {
         "image": "stan-fpv-17-33-50-tilt-90-fr-40_range_bin=121_time_slice=8.png",
         "tilt_angle": 90,
         "time_slice": 8,
-        "predicted_frequency": 1381.6103896103896,
+        "predicted_frequency": 570.3896103896104,
         "ground_truth_frequency": 548.6955882352942,
-        "absolute_error": 832.9148013750954,
-        "squared_error": 693747.0663497146
+        "absolute_error": 21.694022154316258,
+        "squared_error": 470.6305972319646
     },
     {
         "image": "stan-fpv-17-35-34-tilt-90-fr-60_range_bin=121_time_slice=6.png",
         "tilt_angle": 90,
         "time_slice": 6,
-        "predicted_frequency": 1191.4805194805194,
+        "predicted_frequency": 760.5194805194806,
         "ground_truth_frequency": 774.3871428571427,
-        "absolute_error": 417.0933766233767,
-        "squared_error": 173966.88482308996
+        "absolute_error": 13.867662337662182,
+        "squared_error": 192.31205871141412
     },
     {
         "image": "stan-fpv-17-35-34-tilt-90-fr-60_range_bin=121_time_slice=8.png",
         "tilt_angle": 90,
         "time_slice": 8,
-        "predicted_frequency": 1145.0043290043288,
+        "predicted_frequency": 806.9956709956712,
         "ground_truth_frequency": 774.0228571428572,
-        "absolute_error": 370.9814718614716,
-        "squared_error": 137627.25246450386
+        "absolute_error": 32.97281385281394,
+        "squared_error": 1087.206453372319
     },
     {
         "image": "stan-fpv-17-36-34-tilt-90-fr-100_range_bin=121_time_slice=1.png",
         "tilt_angle": 90,
         "time_slice": 1,
-        "predicted_frequency": 680.2424242424242,
+        "predicted_frequency": 1271.7575757575758,
         "ground_truth_frequency": 1255.0600000000002,
-        "absolute_error": 574.8175757575759,
-        "squared_error": 330415.24539981654
+        "absolute_error": 16.697575757575578,
+        "squared_error": 278.80903617997564
     },
     {
         "image": "stan-fpv-17-36-04-tilt-90-fr-80_range_bin=121_time_slice=19.png",
         "tilt_angle": 90,
         "time_slice": 19,
-        "predicted_frequency": 950.6493506493506,
+        "predicted_frequency": 1001.3506493506494,
         "ground_truth_frequency": 1020.0914285714284,
-        "absolute_error": 69.44207792207783,
-        "squared_error": 4822.202186135929
+        "absolute_error": 18.740779220779018,
+        "squared_error": 351.2168058019826
     },
     {
         "image": "stan-fpv-17-35-04-tilt-90-fr-40_range_bin=121_time_slice=8.png",
         "tilt_angle": 90,
         "time_slice": 8,
-        "predicted_frequency": 1419.6363636363637,
+        "predicted_frequency": 532.3636363636363,
         "ground_truth_frequency": 549.1228571428571,
-        "absolute_error": 870.5135064935066,
-        "squared_error": 757793.7649876204
+        "absolute_error": 16.75922077922087,
+        "squared_error": 280.8714811266685
     },
     {
         "image": "stan-fpv-17-34-48-tilt-90-fr-30_range_bin=121_time_slice=32.png",
         "tilt_angle": 90,
         "time_slice": 32,
-        "predicted_frequency": 1487.2380952380952,
+        "predicted_frequency": 464.7619047619048,
         "ground_truth_frequency": 432.7914285714286,
-        "absolute_error": 1054.4466666666667,
-        "squared_error": 1111857.7728444445
+        "absolute_error": 31.970476190476234,
+        "squared_error": 1022.1113478458077
     },
     {
         "image": "stan-fpv-17-33-35-tilt-90-fr-30_range_bin=121_time_slice=15.png",
         "tilt_angle": 90,
         "time_slice": 15,
-        "predicted_frequency": 1546.3896103896104,
+        "predicted_frequency": 405.6103896103896,
         "ground_truth_frequency": 433.20882352941175,
-        "absolute_error": 1113.1807868601986,
-        "squared_error": 1239171.4642346909
+        "absolute_error": 27.59843391902217,
+        "squared_error": 761.6735547826335
     },
     {
         "image": "stan-fpv-17-33-35-tilt-90-fr-30_range_bin=121_time_slice=12.png",
         "tilt_angle": 90,
         "time_slice": 12,
-        "predicted_frequency": 1537.9393939393938,
+        "predicted_frequency": 414.06060606060623,
         "ground_truth_frequency": 433.44117647058823,
-        "absolute_error": 1104.4982174688055,
-        "squared_error": 1219916.3123917687
+        "absolute_error": 19.380570409982,
+        "squared_error": 375.60650941626983
     },
     {
         "image": "stan-fpv-17-36-19-tilt-90-fr-90_range_bin=121_time_slice=11.png",
         "tilt_angle": 90,
         "time_slice": 11,
-        "predicted_frequency": 823.8961038961038,
+        "predicted_frequency": 1128.1038961038962,
         "ground_truth_frequency": 1149.5728571428572,
-        "absolute_error": 325.6767532467534,
-        "squared_error": 106065.34760534669
+        "absolute_error": 21.46896103896097,
+        "squared_error": 460.91628809242405
     },
     {
         "image": "stan-fpv-17-36-04-tilt-90-fr-80_range_bin=121_time_slice=10.png",
         "tilt_angle": 90,
         "time_slice": 10,
-        "predicted_frequency": 916.8484848484849,
+        "predicted_frequency": 1035.151515151515,
         "ground_truth_frequency": 1019.6228571428571,
-        "absolute_error": 102.77437229437226,
-        "squared_error": 10562.571600502231
+        "absolute_error": 15.528658008657885,
+        "squared_error": 241.1392195498547
     },
     {
         "image": "stan-fpv-17-33-35-tilt-90-fr-30_range_bin=121_time_slice=6.png",
         "tilt_angle": 90,
         "time_slice": 6,
-        "predicted_frequency": 1529.4891774891776,
+        "predicted_frequency": 422.51082251082244,
         "ground_truth_frequency": 433.4632352941176,
-        "absolute_error": 1096.02594219506,
-        "squared_error": 1201272.865964569
+        "absolute_error": 10.952412783295188,
+        "squared_error": 119.95534577568785
     },
     {
         "image": "stan-fpv-17-35-49-tilt-90-fr-70_range_bin=121_time_slice=5.png",
         "tilt_angle": 90,
         "time_slice": 5,
-        "predicted_frequency": 1035.151515151515,
+        "predicted_frequency": 916.848484848485,
         "ground_truth_frequency": 894.3328571428572,
-        "absolute_error": 140.81865800865785,
-        "squared_error": 19829.89444335934
+        "absolute_error": 22.51562770562782,
+        "squared_error": 506.9534909784351
     },
     {
         "image": "stan-fpv-17-36-19-tilt-90-fr-90_range_bin=121_time_slice=24.png",
         "tilt_angle": 90,
         "time_slice": 24,
-        "predicted_frequency": 790.0952380952381,
+        "predicted_frequency": 1161.904761904762,
         "ground_truth_frequency": 1148.1857142857143,
-        "absolute_error": 358.09047619047624,
-        "squared_error": 128228.78913832203
+        "absolute_error": 13.719047619047615,
+        "squared_error": 188.21226757369604
     },
     {
         "image": "stan-fpv-17-35-49-tilt-90-fr-70_range_bin=121_time_slice=2.png",
         "tilt_angle": 90,
         "time_slice": 2,
-        "predicted_frequency": 1035.151515151515,
+        "predicted_frequency": 916.848484848485,
         "ground_truth_frequency": 893.2857142857142,
-        "absolute_error": 141.8658008658008,
-        "squared_error": 20125.905455295044
+        "absolute_error": 23.562770562770766,
+        "squared_error": 555.2041565937766
     },
     {
         "image": "stan-fpv-17-36-19-tilt-90-fr-90_range_bin=121_time_slice=23.png",
         "tilt_angle": 90,
         "time_slice": 23,
-        "predicted_frequency": 823.8961038961038,
+        "predicted_frequency": 1128.1038961038962,
         "ground_truth_frequency": 1148.8799999999999,
-        "absolute_error": 324.9838961038961,
-        "squared_error": 105614.53272686792
+        "absolute_error": 20.776103896103677,
+        "squared_error": 431.64649310169443
     },
     {
         "image": "stan-fpv-17-33-35-tilt-90-fr-30_range_bin=121_time_slice=1.png",
         "tilt_angle": 90,
         "time_slice": 1,
-        "predicted_frequency": 1533.7142857142858,
+        "predicted_frequency": 418.2857142857142,
         "ground_truth_frequency": 433.42571428571426,
-        "absolute_error": 1100.2885714285715,
-        "squared_error": 1210634.9404163265
+        "absolute_error": 15.140000000000043,
+        "squared_error": 229.21960000000132
     },
     {
         "image": "stan-fpv-17-35-49-tilt-90-fr-70_range_bin=121_time_slice=32.png",
         "tilt_angle": 90,
         "time_slice": 32,
-        "predicted_frequency": 1081.6277056277056,
+        "predicted_frequency": 870.3722943722944,
         "ground_truth_frequency": 892.2828571428571,
-        "absolute_error": 189.3448484848485,
-        "squared_error": 35851.47164775024
+        "absolute_error": 21.910562770562706,
+        "squared_error": 480.07276092276845
     },
     {
         "image": "stan-fpv-17-34-48-tilt-90-fr-30_range_bin=121_time_slice=4.png",
         "tilt_angle": 90,
         "time_slice": 4,
-        "predicted_frequency": 1537.9393939393938,
+        "predicted_frequency": 414.06060606060623,
         "ground_truth_frequency": 433.7857142857143,
-        "absolute_error": 1104.1536796536795,
-        "squared_error": 1219155.3482927603
+        "absolute_error": 19.725108225108045,
+        "squared_error": 389.07989449222504
     },
     {
         "image": "stan-fpv-17-35-19-tilt-90-fr-50_range_bin=121_time_slice=32.png",
         "tilt_angle": 90,
         "time_slice": 32,
-        "predicted_frequency": 1318.2337662337663,
+        "predicted_frequency": 633.7662337662337,
         "ground_truth_frequency": 660.7185714285714,
-        "absolute_error": 657.5151948051949,
-        "squared_error": 432326.23139971343
+        "absolute_error": 26.952337662337754,
+        "squared_error": 726.4285054646701
     },
     {
         "image": "stan-fpv-17-34-48-tilt-90-fr-30_range_bin=121_time_slice=3.png",
         "tilt_angle": 90,
         "time_slice": 3,
-        "predicted_frequency": 1533.7142857142858,
+        "predicted_frequency": 418.2857142857142,
         "ground_truth_frequency": 433.73,
-        "absolute_error": 1099.9842857142858,
-        "squared_error": 1209965.4288183674
+        "absolute_error": 15.444285714285797,
+        "squared_error": 238.52596122449236
     },
     {
         "image": "stan-fpv-17-35-04-tilt-90-fr-40_range_bin=121_time_slice=11.png",
         "tilt_angle": 90,
         "time_slice": 11,
-        "predicted_frequency": 1385.835497835498,
+        "predicted_frequency": 566.164502164502,
         "ground_truth_frequency": 549.4085714285715,
-        "absolute_error": 836.4269264069266,
-        "squared_error": 699610.0032185381
+        "absolute_error": 16.75593073593052,
+        "squared_error": 280.7612148273011
     },
     {
         "image": "stan-fpv-17-34-48-tilt-90-fr-30_range_bin=121_time_slice=22.png",
         "tilt_angle": 90,
         "time_slice": 22,
-        "predicted_frequency": 1546.3896103896104,
+        "predicted_frequency": 405.6103896103896,
         "ground_truth_frequency": 433.64571428571423,
-        "absolute_error": 1112.743896103896,
-        "squared_error": 1238198.9783164782
+        "absolute_error": 28.03532467532466,
+        "squared_error": 785.9794296508677
     },
     {
         "image": "stan-fpv-17-34-48-tilt-90-fr-30_range_bin=121_time_slice=25.png",
         "tilt_angle": 90,
         "time_slice": 25,
-        "predicted_frequency": 1491.4632034632036,
+        "predicted_frequency": 460.5367965367964,
         "ground_truth_frequency": 433.28749999999997,
-        "absolute_error": 1058.1757034632037,
-        "squared_error": 1119735.819399846
+        "absolute_error": 27.249296536796408,
+        "squared_error": 742.5241617502647
     },
     {
         "image": "stan-fpv-17-36-19-tilt-90-fr-90_range_bin=121_time_slice=2.png",
         "tilt_angle": 90,
         "time_slice": 2,
-        "predicted_frequency": 781.6450216450216,
+        "predicted_frequency": 1170.3549783549784,
         "ground_truth_frequency": 1152.4114285714286,
-        "absolute_error": 370.76640692640694,
-        "squared_error": 137467.728505118
+        "absolute_error": 17.94354978354977,
+        "squared_error": 321.970978834729
     },
     {
         "image": "stan-fpv-17-35-19-tilt-90-fr-50_range_bin=121_time_slice=3.png",
         "tilt_angle": 90,
         "time_slice": 3,
-        "predicted_frequency": 1322.4588744588743,
+        "predicted_frequency": 629.5411255411257,
         "ground_truth_frequency": 662.2085714285714,
-        "absolute_error": 660.2503030303029,
-        "squared_error": 435930.4626516068
+        "absolute_error": 32.66744588744575,
+        "squared_error": 1067.1620208091963
     },
     {
         "image": "stan-fpv-17-35-19-tilt-90-fr-50_range_bin=121_time_slice=4.png",
         "tilt_angle": 90,
         "time_slice": 4,
-        "predicted_frequency": 1263.3073593073593,
+        "predicted_frequency": 688.6926406926407,
         "ground_truth_frequency": 662.025,
-        "absolute_error": 601.2823593073593,
-        "squared_error": 361540.4756142244
+        "absolute_error": 26.667640692640703,
+        "squared_error": 711.1630601117863
     },
     {
         "image": "stan-fpv-17-33-35-tilt-90-fr-30_range_bin=121_time_slice=30.png",
         "tilt_angle": 90,
         "time_slice": 30,
-        "predicted_frequency": 1495.6883116883118,
+        "predicted_frequency": 456.31168831168816,
         "ground_truth_frequency": 433.4428571428571,
-        "absolute_error": 1062.2454545454548,
-        "squared_error": 1128365.4057024799
+        "absolute_error": 22.868831168831036,
+        "squared_error": 522.9834390284979
     },
     {
         "image": "stan-fpv-17-36-19-tilt-90-fr-90_range_bin=121_time_slice=5.png",
         "tilt_angle": 90,
         "time_slice": 5,
-        "predicted_frequency": 790.0952380952381,
+        "predicted_frequency": 1161.904761904762,
         "ground_truth_frequency": 1150.0014285714285,
-        "absolute_error": 359.90619047619043,
-        "squared_error": 129532.46594308387
+        "absolute_error": 11.903333333333421,
+        "squared_error": 141.68934444444653
     },
     {
         "image": "stan-fpv-17-35-49-tilt-90-fr-70_range_bin=121_time_slice=22.png",
         "tilt_angle": 90,
         "time_slice": 22,
-        "predicted_frequency": 1043.6017316017317,
+        "predicted_frequency": 908.3982683982683,
         "ground_truth_frequency": 892.3228571428572,
-        "absolute_error": 151.2788744588745,
-        "squared_error": 22885.297857543912
+        "absolute_error": 16.075411255411154,
+        "squared_error": 258.41884703059964
     },
     {
         "image": "stan-fpv-17-35-19-tilt-90-fr-50_range_bin=121_time_slice=25.png",
         "tilt_angle": 90,
         "time_slice": 25,
-        "predicted_frequency": 1309.78354978355,
+        "predicted_frequency": 642.2164502164501,
         "ground_truth_frequency": 661.7128571428572,
-        "absolute_error": 648.0706926406928,
-        "squared_error": 419995.62265978724
+        "absolute_error": 19.496406926407076,
+        "squared_error": 380.10988304005383
     },
     {
         "image": "stan-fpv-17-35-04-tilt-90-fr-40_range_bin=121_time_slice=24.png",
         "tilt_angle": 90,
         "time_slice": 24,
-        "predicted_frequency": 1373.1601731601731,
+        "predicted_frequency": 578.8398268398269,
         "ground_truth_frequency": 548.4513888888888,
-        "absolute_error": 824.7087842712843,
-        "squared_error": 680144.5788542199
+        "absolute_error": 30.388437950938055,
+        "squared_error": 923.4571610980123
     },
     {
         "image": "stan-fpv-17-35-19-tilt-90-fr-50_range_bin=121_time_slice=22.png",
         "tilt_angle": 90,
         "time_slice": 22,
-        "predicted_frequency": 1318.2337662337663,
+        "predicted_frequency": 633.7662337662337,
         "ground_truth_frequency": 660.9399999999999,
-        "absolute_error": 657.2937662337664,
-        "squared_error": 432035.0951297692
+        "absolute_error": 27.173766233766287,
+        "squared_error": 738.4135713273768
     },
     {
         "image": "stan-fpv-17-35-04-tilt-90-fr-40_range_bin=121_time_slice=23.png",
         "tilt_angle": 90,
         "time_slice": 23,
-        "predicted_frequency": 1415.4112554112555,
+        "predicted_frequency": 536.5887445887445,
         "ground_truth_frequency": 548.5542857142858,
-        "absolute_error": 866.8569696969697,
-        "squared_error": 751441.0059122131
+        "absolute_error": 11.965541125541336,
+        "squared_error": 143.174174427021
     },
     {
         "image": "stan-fpv-17-35-49-tilt-90-fr-70_range_bin=121_time_slice=25.png",
         "tilt_angle": 90,
         "time_slice": 25,
-        "predicted_frequency": 1035.151515151515,
+        "predicted_frequency": 916.848484848485,
         "ground_truth_frequency": 891.7971428571428,
-        "absolute_error": 143.35437229437218,
-        "squared_error": 20550.476055913463
+        "absolute_error": 25.051341991342156,
+        "squared_error": 627.5697355671828
     },
     {
         "image": "stan-fpv-17-33-19-tilt-90-fr-20_range_bin=121_time_slice=32.png",
         "tilt_angle": 90,
         "time_slice": 32,
-        "predicted_frequency": 1622.4415584415585,
+        "predicted_frequency": 329.5584415584415,
         "ground_truth_frequency": 306.89714285714285,
-        "absolute_error": 1315.5444155844157,
-        "squared_error": 1730657.1093753418
+        "absolute_error": 22.66129870129862,
+        "squared_error": 513.5344588294785
     },
     {
         "image": "stan-fpv-17-33-19-tilt-90-fr-20_range_bin=121_time_slice=5.png",
         "tilt_angle": 90,
         "time_slice": 5,
-        "predicted_frequency": 1618.21645021645,
+        "predicted_frequency": 333.7835497835499,
         "ground_truth_frequency": 306.9814285714286,
-        "absolute_error": 1311.2350216450216,
-        "squared_error": 1719337.28198842
+        "absolute_error": 26.802121212121335,
+        "squared_error": 718.3537014692445
     },
     {
         "image": "stan-fpv-17-36-04-tilt-90-fr-80_range_bin=121_time_slice=11.png",
         "tilt_angle": 90,
         "time_slice": 11,
-        "predicted_frequency": 950.6493506493506,
+        "predicted_frequency": 1001.3506493506494,
         "ground_truth_frequency": 1019.1328571428571,
-        "absolute_error": 68.48350649350652,
-        "squared_error": 4689.99066164615
+        "absolute_error": 17.782207792207714,
+        "squared_error": 316.20691396525274
     },
     {
         "image": "stan-fpv-17-33-19-tilt-90-fr-20_range_bin=121_time_slice=2.png",
         "tilt_angle": 90,
         "time_slice": 2,
-        "predicted_frequency": 1630.891774891775,
+        "predicted_frequency": 321.10822510822504,
         "ground_truth_frequency": 306.99264705882354,
-        "absolute_error": 1323.8991278329513,
-        "squared_error": 1752708.900676849
+        "absolute_error": 14.115578049401506,
+        "squared_error": 199.24954366874562
     },
     {
         "image": "stan-fpv-17-36-04-tilt-90-fr-80_range_bin=121_time_slice=18.png",
         "tilt_angle": 90,
         "time_slice": 18,
-        "predicted_frequency": 912.6233766233767,
+        "predicted_frequency": 1039.3766233766232,
         "ground_truth_frequency": 1019.5,
-        "absolute_error": 106.87662337662334,
-        "squared_error": 11422.612624388592
+        "absolute_error": 19.87662337662323,
+        "squared_error": 395.08015685612503
     }
 ]
