@@ -85,6 +85,21 @@ def create_and_evaluate_model(X_train, y_train, X_test, y_test, feature_name, lo
     plt.savefig(plot_filename)
     plt.close()
 
+def create_eda_plot(X_train, y_train, X_test, y_test, feature_name, log_transform, output_dir):
+    plt.figure(figsize=(14, 6))
+    plt.scatter(X_train, y_train, alpha=0.7, color='blue', label='Train')
+    plt.scatter(X_test, y_test, alpha=0.7, color='green', label='Test')
+    plt.title(f'EDA Scatter Plot ({feature_name}{" (Log)" if log_transform else ""})')
+    plt.xlabel(f'{feature_name}{" (Log)" if log_transform else ""}')
+    plt.ylabel('Tilt Angle')
+    plt.legend()
+    plt.grid(True)
+
+    plot_filename = os.path.join(output_dir, f"eda_{feature_name}_{'log' if log_transform else 'nonlog'}_plot.png")
+    plt.tight_layout()
+    plt.savefig(plot_filename)
+    plt.close()
+
 def main(train_file, test_file, output_dir):
     train_data = load_json(train_file)
     test_data = load_json(test_file)
@@ -106,6 +121,7 @@ def main(train_file, test_file, output_dir):
             y_test = np.array([item['tilt_angle'] for item in test_data])
 
             create_and_evaluate_model(X_train, y_train, X_test, y_test, feature, log_transform, single_pred_dir)
+            create_eda_plot(X_train, y_train, X_test, y_test, feature, log_transform, single_pred_dir)
 
     # Multi Predictor Models
     for log_transform in [False, True]:
@@ -118,6 +134,7 @@ def main(train_file, test_file, output_dir):
 
             feature_name = f"multi_pred_{'log_' if log_transform else ''}{'squared_' if squared else ''}features"
             create_and_evaluate_model(X_train, y_train, X_test, y_test, feature_name, False, multi_pred_dir)
+            create_eda_plot(X_train, y_train, X_test, y_test, feature_name, log_transform, multi_pred_dir)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Linear Regression to predict tilt angle from various features.")
