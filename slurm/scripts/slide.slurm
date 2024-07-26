@@ -8,8 +8,8 @@
 #SBATCH --cpus-per-task=2                  # Number of cores to allocate - do not allocate more than 16 cores per GPU
 #SBATCH --mem=16000                        # Memory allocated - do not allocate more than 128000 MB mem per GPU
 #SBATCH --time=11:00:00                    # Maximum job run time (d-hh:mm:ss)
-#SBATCH --output=/home/d86p233/Desktop/BMW-spec/work_dirs/slurm_out/%x_%j.out  # Store output files in slurm_out directory
-#SBATCH --error=/home/d86p233/Desktop/BMW-spec/work_dirs/slurm_err/%x_%j.err   # Store error files in slurm_err directory
+#SBATCH --output=/home/d86p233/Desktop/BMW-spec/slurm/out/%x_%j.out  # Store output files in slurm_out directory
+#SBATCH --error=/home/d86p233/Desktop/BMW-spec/slurm/err/%x_%j.err   # Store error files in slurm_err directory
 #SBATCH --mail-type=BEGIN,END,FAIL         # Notifications for job start, end, and failure
 #SBATCH --mail-user=zcrennen@mines.edu     # Email address for notifications
 
