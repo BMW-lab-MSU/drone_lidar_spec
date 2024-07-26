@@ -30,16 +30,26 @@ def calculate_metrics(data):
     rmse = np.sqrt(mse)
     rmspe = np.sqrt(np.mean(((np.array(predicted_frequencies) - np.array(actual_frequencies)) / np.array(actual_frequencies)) ** 2))
     percent_error = (mae / FREQ_RANGE) * 100
-    std_abs_error = np.std(absolute_errors)
     num_samples = len(data)
+    
+    # Calculate standard deviations for the metrics
+    sd_mae = np.std(absolute_errors)
+    sd_mse = np.std(squared_errors)
+    sd_rmse = np.std([np.sqrt(err) for err in squared_errors])
+    sd_rmspe = np.std(np.sqrt(((np.array(predicted_frequencies) - np.array(actual_frequencies)) / np.array(actual_frequencies)) ** 2))
+    sd_percent_error = (sd_mae / FREQ_RANGE) * 100
 
     metrics = {
         'MAE': mae,
+        'SD_MAE': sd_mae,
         'MSE': mse,
+        'SD_MSE': sd_mse,
         'RMSE': rmse,
+        'SD_RMSE': sd_rmse,
         'RMSPE': rmspe,
+        'SD_RMSPE': sd_rmspe,
         'Percent Error': percent_error,
-        'Standard Deviation of Absolute Errors': std_abs_error,
+        'SD_Percent Error': sd_percent_error,
         'Number of Samples': num_samples
     }
 
@@ -79,7 +89,7 @@ def main():
         all_metrics[angle] = metrics
         
         for metric, value in metrics.items():
-            if metric == 'Percent Error':
+            if metric == 'Percent Error' or metric == 'SD_Percent Error':
                 print(f"{metric}: {value}%")
             else:
                 print(f"{metric}: {value}")
