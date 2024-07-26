@@ -1,9 +1,11 @@
 {
-    "MAE": 15.250672445745957,
-    "MSE": 322.7157126462009,
-    "RMSE": 17.964289928806007,
-    "RMSPE": 0.04756318162496786,
-    "Percent Error": 0.7812844490648544,
-    "Standard Deviation of Absolute Errors": 9.493824445331077,
-    "Number of Samples": 60
+    "90": {
+        "MAE": 15.250672445745957,
+        "MSE": 322.7157126462009,
+        "RMSE": 17.964289928806007,
+        "RMSPE": 0.04756318162496786,
+        "Percent Error": 0.7812844490648544,
+        "Standard Deviation of Absolute Errors": 9.493824445331077,
+        "Number of Samples": 60
+    }
 }

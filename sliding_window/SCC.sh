@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Variables
-IMAGES_PATH="../data/noboost_prop-only-90/val/images"
-OUTPUT_PATH="noboost_prop-only-90-val.json"
+IMAGES_PATH="/home/d86p233/Desktop/BMW-spec/merged_data/noboost_prop-only/images"
+OUTPUT_PATH="noboost_prop-only.json"
 H5_JSON="SFh5s.json"
-IMAGE_JSON="noboost_prop-only-90-val.json"
-COMPARISON_OUTPUT="noboost_prop-only-90-val-comparisons.json"
-METRICS_JSON="noboost_prop-only-90-val-comparisons.json"
-RESULTS_JSON="noboost_prop-only-90-val-results.json"
+IMAGE_JSON="$OUTPUT_PATH"
+COMPARISON_OUTPUT="noboost_prop-only-comparisons.json"
+METRICS_JSON="$COMPARISON_OUTPUT"
+RESULTS_JSON="noboost_prop-only-results.json"
 
 # Run the sliding window script
 python slide_windows.py --images_path "$IMAGES_PATH" --output_path "$OUTPUT_PATH"
