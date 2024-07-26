@@ -24,7 +24,7 @@ TARGET_STD_RGB = [41.225951891250425, 25.426265976364576, 81.55837833868854]
 
 FREQ_RANGE = 1952  # Frequency range from 0 to 1952 Hz
 IMG_HEIGHT = 462   # Height of the spectrogram image
-WINDOW_HEIGHT = 16 # Height of the sliding window
+WINDOW_HEIGHT = 20 # Height of the sliding window
 
 def sliding_window(image, window_size, stride):
     windows = []
@@ -33,7 +33,7 @@ def sliding_window(image, window_size, stride):
     
     for y in range(0, h - win_h + 1, stride):
         for x in range(0, w - win_w + 1, stride):
-            window = image[y:y + win_h, x + win_w]
+            window = image[y:y + win_h, x:x + win_w]  # Fix here: Correct slicing for window
             windows.append((x, y, window))
     
     return windows
