@@ -1,12 +1,13 @@
 import json
 import matplotlib.pyplot as plt
 import sys
+import numpy as np
 
 """
 plot_results.py
 
 This script reads a JSON file containing metrics data and generates a plot with six subplots showing
-angle vs MAE, MSE, RMSE, RMSPE, Percent Error, and Standard Deviation of Absolute Errors.
+angle vs MAE, MSE, RMSE, RMSPE, Percent Error, and SD_MAE with error bars.
 
 Usage:
     python plot_results.py <json_file> <output_file>
@@ -24,11 +25,15 @@ JSON File Format:
 {
     "angle_1": {
         "MAE": value,
+        "SD_MAE": value,
         "MSE": value,
+        "SD_MSE": value,
         "RMSE": value,
+        "SD_RMSE": value,
         "RMSPE": value,
+        "SD_RMSPE": value,
         "Percent Error": value,
-        "Standard Deviation of Absolute Errors": value,
+        "SD_Percent Error": value,
         "Number of Samples": value
     },
     ...
@@ -42,53 +47,45 @@ def plot_metrics(json_file, output_file):
     angles = sorted(data.keys(), key=lambda x: int(x))
     metrics = {
         "MAE": [],
+        "SD_MAE": [],
         "MSE": [],
+        "SD_MSE": [],
         "RMSE": [],
+        "SD_RMSE": [],
         "RMSPE": [],
+        "SD_RMSPE": [],
         "Percent Error": [],
-        "Standard Deviation of Absolute Errors": []
+        "SD_Percent Error": []
     }
 
     for angle in angles:
         metrics["MAE"].append(data[angle]["MAE"])
+        metrics["SD_MAE"].append(data[angle]["SD_MAE"])
         metrics["MSE"].append(data[angle]["MSE"])
+        metrics["SD_MSE"].append(data[angle]["SD_MSE"])
         metrics["RMSE"].append(data[angle]["RMSE"])
+        metrics["SD_RMSE"].append(data[angle]["SD_RMSE"])
         metrics["RMSPE"].append(data[angle]["RMSPE"])
+        metrics["SD_RMSPE"].append(data[angle]["SD_RMSPE"])
         metrics["Percent Error"].append(data[angle]["Percent Error"])
-        metrics["Standard Deviation of Absolute Errors"].append(data[angle]["Standard Deviation of Absolute Errors"])
+        metrics["SD_Percent Error"].append(data[angle]["SD_Percent Error"])
 
     fig, axs = plt.subplots(3, 2, figsize=(15, 15))
     fig.suptitle('Metrics vs Angle')
 
-    axs[0, 0].plot(angles, metrics["MAE"], marker='o')
-    axs[0, 0].set_title('MAE vs Angle')
-    axs[0, 0].set_xlabel('Angle')
-    axs[0, 0].set_ylabel('MAE')
+    def plot_with_error_bars(ax, angles, values, errors, title, ylabel):
+        ax.errorbar(angles, values, yerr=errors, fmt='-o', capsize=5, ecolor='red', color='blue')
+        ax.fill_between(angles, np.array(values) - np.array(errors), np.array(values) + np.array(errors), color='red', alpha=0.2)
+        ax.set_title(title)
+        ax.set_xlabel('Angle')
+        ax.set_ylabel(ylabel)
 
-    axs[0, 1].plot(angles, metrics["MSE"], marker='o')
-    axs[0, 1].set_title('MSE vs Angle')
-    axs[0, 1].set_xlabel('Angle')
-    axs[0, 1].set_ylabel('MSE')
-
-    axs[1, 0].plot(angles, metrics["RMSE"], marker='o')
-    axs[1, 0].set_title('RMSE vs Angle')
-    axs[1, 0].set_xlabel('Angle')
-    axs[1, 0].set_ylabel('RMSE')
-
-    axs[1, 1].plot(angles, metrics["RMSPE"], marker='o')
-    axs[1, 1].set_title('RMSPE vs Angle')
-    axs[1, 1].set_xlabel('Angle')
-    axs[1, 1].set_ylabel('RMSPE')
-
-    axs[2, 0].plot(angles, metrics["Percent Error"], marker='o')
-    axs[2, 0].set_title('Percent Error vs Angle')
-    axs[2, 0].set_xlabel('Angle')
-    axs[2, 0].set_ylabel('Percent Error')
-
-    axs[2, 1].plot(angles, metrics["Standard Deviation of Absolute Errors"], marker='o')
-    axs[2, 1].set_title('Standard Deviation of Absolute Errors vs Angle')
-    axs[2, 1].set_xlabel('Angle')
-    axs[2, 1].set_ylabel('Standard Deviation of Absolute Errors')
+    plot_with_error_bars(axs[0, 0], angles, metrics["MAE"], metrics["SD_MAE"], 'MAE vs Angle', 'MAE')
+    plot_with_error_bars(axs[0, 1], angles, metrics["MSE"], metrics["SD_MSE"], 'MSE vs Angle', 'MSE')
+    plot_with_error_bars(axs[1, 0], angles, metrics["RMSE"], metrics["SD_RMSE"], 'RMSE vs Angle', 'RMSE')
+    plot_with_error_bars(axs[1, 1], angles, metrics["RMSPE"], metrics["SD_RMSPE"], 'RMSPE vs Angle', 'RMSPE')
+    plot_with_error_bars(axs[2, 0], angles, metrics["Percent Error"], metrics["SD_Percent Error"], 'Percent Error vs Angle', 'Percent Error')
+    plot_with_error_bars(axs[2, 1], angles, metrics["SD_MAE"], [0]*len(metrics["SD_MAE"]), 'SD_MAE vs Angle', 'SD_MAE')  # No error bars for SD_MAE itself
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.savefig(output_file)

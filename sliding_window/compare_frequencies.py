@@ -29,22 +29,29 @@ def match_frequencies(h5_data, image_data):
         time_slice = image_entry["time_slice"] - 1  # Adjust to 0-based index
         predicted_frequency = image_entry["best_window"]["predicted_frequency"]
 
-        matching_h5_entry = next((entry for entry in h5_data if entry["filename"].startswith(base_filename)), None)
+        # Try to find a matching H5 entry by filename
+        matching_h5_entry = next((entry for entry in h5_data if base_filename in entry["filename"]), None)
         if matching_h5_entry:
-            ground_truth_frequency = matching_h5_entry["prop_frequencies"][time_slice]
-            absolute_error = abs(predicted_frequency - ground_truth_frequency)
-            squared_error = (predicted_frequency - ground_truth_frequency) ** 2
+            try:
+                ground_truth_frequency = matching_h5_entry["prop_frequencies"][time_slice]
+                absolute_error = abs(predicted_frequency - ground_truth_frequency)
+                squared_error = (predicted_frequency - ground_truth_frequency) ** 2
 
-            result = {
-                "image": image_entry["image"],
-                "tilt_angle": image_entry["tilt_angle"],
-                "time_slice": time_slice + 1,  # Adjust back to 1-based index for reporting
-                "predicted_frequency": predicted_frequency,
-                "ground_truth_frequency": ground_truth_frequency,
-                "absolute_error": absolute_error,
-                "squared_error": squared_error
-            }
-            results.append(result)
+                result = {
+                    "image": image_entry["image"],
+                    "tilt_angle": image_entry["tilt_angle"],
+                    "time_slice": time_slice + 1,  # Adjust back to 1-based index for reporting
+                    "predicted_frequency": predicted_frequency,
+                    "ground_truth_frequency": ground_truth_frequency,
+                    "absolute_error": absolute_error,
+                    "squared_error": squared_error,
+                    "best_window": image_entry["best_window"]  # Include the entire best_window section
+                }
+                results.append(result)
+            except IndexError:
+                print(f"Time slice {time_slice} out of range for {matching_h5_entry['filename']}")
+        else:
+            print(f"No matching entry found for base filename: {base_filename}")
 
     return results
 

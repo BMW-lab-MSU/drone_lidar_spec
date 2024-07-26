@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --account=group-bradwhitaker       # Priority account to use
+#SBATCH --account=priority-bradwhitaker       # Priority account to use
 #SBATCH --job-name=slide_window            # Job name
-#SBATCH --partition=gpuunsafe              # Queue partition to run the job in
+#SBATCH --partition=priority              # Queue partition to run the job in
 #SBATCH --nodes=1                          # Number of nodes to allocate
 #SBATCH --ntasks-per-node=1                # Number of discrete tasks - keep at one except for MPI
 #SBATCH --cpus-per-task=2                  # Number of cores to allocate - do not allocate more than 16 cores per GPU
