@@ -33,7 +33,7 @@ def sliding_window(image, window_size, stride):
     
     for y in range(0, h - win_h + 1, stride):
         for x in range(0, w - win_w + 1, stride):
-            window = image[y:y + win_h, x:x + win_w]  # Fix here: Correct slicing for window
+            window = image[y:y + win_h, x:x + win_w]  # Extract window
             windows.append((x, y, window))
     
     return windows
@@ -95,15 +95,15 @@ def process_images(images_path):
                 print(f"Processing image: {file}")
                 windows = sliding_window(image, window_size, stride)
                 
-                min_squared_error = float('inf')
+                min_absolute_error = float('inf')
                 best_window = None
                 
                 for idx, (x, y, window) in enumerate(windows):
                     mean_rgb, std_rgb = calculate_rgb_stats(window)
                     total_absolute_error, total_squared_error, absolute_error, squared_error = calculate_errors(mean_rgb, TARGET_MEAN_RGB)
                     
-                    if total_squared_error < min_squared_error:
-                        min_squared_error = total_squared_error
+                    if total_absolute_error < min_absolute_error:
+                        min_absolute_error = total_absolute_error
                         predicted_frequency = predict_frequency(y)
                         best_window = {
                             'window_position': (x, y),
