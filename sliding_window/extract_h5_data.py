@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 
 """
-Script to extract tilt angle and prop frequencies from HDF5 files and output the results to a JSON file.
+Script to extract tilt angle, prop frequencies, and fill factor from HDF5 files and output the results to a JSON file.
 
 Usage:
     python extract_h5_data.py --directory_path path_to_h5_files --output_path output.json
@@ -17,20 +17,29 @@ Arguments:
 Example:
     python extract_h5_data.py --directory_path /path/to/h5_files --output_path output.json
 
-The script processes each HDF5 file in the specified directory, extracts the tilt angle and prop frequencies, and stores the results in a JSON file with the following structure:
+The script processes each HDF5 file in the specified directory, extracts the tilt angle, prop frequencies, and fill factor, and stores the results in a JSON file with the following structure:
 [
     {
         "filename": "file1.h5",
         "tilt_angle": 15,
-        "prop_frequencies": [693.0, 692.0, ..., 694.0]
+        "prop_frequencies": [693.0, 692.0, ..., 694.0],
+        "fill_factor": "0.8"
     },
     ...
 ]
 """
 
-def extract_data_from_h5(file_path):
-    """Extract tilt angle and prop frequencies from an HDF5 file."""
+def extract_data_from_h5(file_path, filename):
+    """Extract tilt angle, prop frequencies, and fill factor from an HDF5 file."""
     with h5py.File(file_path, 'r') as hdf5_file:
+        # Check if throttle back_right and throttle front_left are both null
+        if 'parameters/throttle/back_right' in hdf5_file and 'parameters/throttle/front_left' in hdf5_file:
+            back_right_throttle = hdf5_file['parameters/throttle/back_right'][()]
+            front_left_throttle = hdf5_file['parameters/throttle/front_left'][()]
+            
+            if not np.isnan(back_right_throttle) or not np.isnan(front_left_throttle):
+                return None, None, None, None
+
         if 'parameters/tilt' in hdf5_file:
             tilt_angle = hdf5_file['parameters/tilt'][()]
             tilt_angle = int(tilt_angle)  # Convert to native Python int
@@ -43,29 +52,36 @@ def extract_data_from_h5(file_path):
         else:
             prop_frequencies = []
 
-    return tilt_angle, prop_frequencies
+        if 'parameters/fill_factor' in hdf5_file:
+            fill_factor = hdf5_file['parameters/fill_factor'][()].decode('utf-8')  # Convert bytes to string
+        else:
+            fill_factor = None
+
+    return filename, tilt_angle, prop_frequencies, fill_factor
 
 def process_h5_files(directory_path, output_path):
     """Process all HDF5 files in a directory and save the results to a JSON file."""
     results = []
 
     for filename in os.listdir(directory_path):
-        if filename.endswith(('.h5', '.hdf5')):
+        if "stan" in filename and filename.endswith(('.h5', '.hdf5')):
             file_path = os.path.join(directory_path, filename)
-            tilt_angle, prop_frequencies = extract_data_from_h5(file_path)
+            filename, tilt_angle, prop_frequencies, fill_factor = extract_data_from_h5(file_path, filename)
             
-            result = {
-                'filename': filename,
-                'tilt_angle': tilt_angle,
-                'prop_frequencies': prop_frequencies
-            }
-            results.append(result)
+            if tilt_angle is not None and prop_frequencies is not None and fill_factor is not None:
+                result = {
+                    'filename': filename,
+                    'tilt_angle': tilt_angle,
+                    'prop_frequencies': prop_frequencies,
+                    'fill_factor': fill_factor
+                }
+                results.append(result)
     
     with open(output_path, 'w') as json_file:
         json.dump(results, json_file, indent=4)
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract tilt angle and prop frequencies from HDF5 files')
+    parser = argparse.ArgumentParser(description='Extract tilt angle, prop frequencies, and fill factor from HDF5 files')
     parser.add_argument('--directory_path', required=True, help='Path to the directory containing HDF5 files')
     parser.add_argument('--output_path', required=True, help='Path to the output JSON file')
     
