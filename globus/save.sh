@@ -3,8 +3,8 @@
 # Variables
 SOURCE_ENDPOINT_ID="0dc1297f-9868-4c68-8637-c9b6bd65d3aa"                          # Tempest
 DESTINATION_ENDPOINT_ID="5485832e-723e-4b52-8472-0410e90902ad"                     # Blackmore
-SOURCE_DIRECTORY_PATH="/home/d86p233/Desktop/BMW-spec/merged_data/"          # Tempest
-DESTINATION_DIRECTORY_PATH="/ece-bmw-lab/drone-lidar/summer2024/merged_spectrograms_datasets/" # Blackmore
+SOURCE_DIRECTORY_PATH="/home/d86p233/Desktop/BMW-spec/sliding_window/"          # Tempest
+DESTINATION_DIRECTORY_PATH="/ece-bmw-lab/drone-lidar/summer2024/sliding_window_MSE/" # Blackmore
 TRANSFER_LABEL="Save_spec:tempest->blackmore"
 
 # Ensure Globus CLI is installed

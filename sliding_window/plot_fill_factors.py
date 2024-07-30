@@ -47,7 +47,7 @@ def plot_metrics(json_files, output_file):
     labels = ["Prop-Only Fill Factor", "Partial Fill Factor", "Full Fill Factor", "All Fill Factors"]
     positions = [3, 2, 1, 0]  # Corresponding positions in the input files
     fig, axs = plt.subplots(2, 2, figsize=(15, 15))
-    fig.suptitle('Predicted Frequency MAE vs Angle for All Fill Factors')
+    fig.suptitle('Predicted Frequency MAE vs Angle for All Fill Factors', fontsize=20)
 
     for plot_idx, data_idx in enumerate(positions):
         json_file = json_files[data_idx]
@@ -76,9 +76,9 @@ def plot_metrics(json_files, output_file):
         ax.errorbar(angles, mae, yerr=[mae - mae_lower, mae_upper - mae], fmt='-o', capsize=5, ecolor='red', color='blue')
         ax.fill_between(angles, mae_lower, mae_upper, color='red', alpha=0.2)
         ax.set_ylim(bottom=0)  # Ensure y = 0 is the bottom line of the plot
-        ax.set_title(f'{label}: MAE vs Angle')
-        ax.set_xlabel('Angle')
-        ax.set_ylabel('MAE')
+        ax.set_title(f'{label}: MAE vs Angle', fontsize=16)
+        ax.set_xlabel('Angle', fontsize=14)
+        ax.set_ylabel('MAE', fontsize=14)
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.savefig(output_file)

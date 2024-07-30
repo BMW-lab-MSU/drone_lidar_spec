@@ -1,0 +1,773 @@
+{
+    "images": [
+        {
+            "id": 1,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=1.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 2,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=2.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 3,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=3.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 4,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=4.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 5,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=5.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 6,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=6.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 7,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=7.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 8,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=8.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 9,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=9.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 10,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=10.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 11,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=11.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 12,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=12.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 13,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=13.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 14,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=14.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 15,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=15.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 16,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=16.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 17,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=17.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 18,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=18.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 19,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=19.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 20,
+            "file_name": "stan-fpv-feather-15-17-22-tilt-90-fr-80_range_bin=121_time_slice=20.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 21,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=1.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 22,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=2.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 23,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=3.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 24,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=4.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 25,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=5.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 26,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=6.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 27,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=7.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 28,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=8.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 29,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=9.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 30,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=10.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 31,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=11.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 32,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=12.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 33,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=13.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 34,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=14.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 35,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=15.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 36,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=16.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 37,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=17.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 38,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=18.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 39,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=19.png",
+            "height": 462,
+            "width": 775
+        },
+        {
+            "id": 40,
+            "file_name": "stan-fpv-feather-15-16-01-tilt-90-fr-30_range_bin=121_time_slice=20.png",
+            "height": 462,
+            "width": 775
+        }
+    ],
+    "annotations": [
+        {
+            "id": 100001,
+            "image_id": 1,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100002,
+            "image_id": 2,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100003,
+            "image_id": 3,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100004,
+            "image_id": 4,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100005,
+            "image_id": 5,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100006,
+            "image_id": 6,
+            "category_id": 1,
+            "bbox": [
+                0,
+                209,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100007,
+            "image_id": 7,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100008,
+            "image_id": 8,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100009,
+            "image_id": 9,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100010,
+            "image_id": 10,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100011,
+            "image_id": 11,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100012,
+            "image_id": 12,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100013,
+            "image_id": 13,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100014,
+            "image_id": 14,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100015,
+            "image_id": 15,
+            "category_id": 1,
+            "bbox": [
+                0,
+                209,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100016,
+            "image_id": 16,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100017,
+            "image_id": 17,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100018,
+            "image_id": 18,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100019,
+            "image_id": 19,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100020,
+            "image_id": 20,
+            "category_id": 1,
+            "bbox": [
+                0,
+                210,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100021,
+            "image_id": 21,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100022,
+            "image_id": 22,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100023,
+            "image_id": 23,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100024,
+            "image_id": 24,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100025,
+            "image_id": 25,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100026,
+            "image_id": 26,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100027,
+            "image_id": 27,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100028,
+            "image_id": 28,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100029,
+            "image_id": 29,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100030,
+            "image_id": 30,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100031,
+            "image_id": 31,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100032,
+            "image_id": 32,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100033,
+            "image_id": 33,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100034,
+            "image_id": 34,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100035,
+            "image_id": 35,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100036,
+            "image_id": 36,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100037,
+            "image_id": 37,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100038,
+            "image_id": 38,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100039,
+            "image_id": 39,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        },
+        {
+            "id": 100040,
+            "image_id": 40,
+            "category_id": 1,
+            "bbox": [
+                0,
+                349,
+                775,
+                20
+            ],
+            "area": 15500,
+            "iscrowd": 0
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "drone_frequency",
+            "supercategory": "object"
+        }
+    ]
+}

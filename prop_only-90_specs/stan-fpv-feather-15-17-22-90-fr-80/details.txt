@@ -1,0 +1,8 @@
+drone_name: stan-fpv-feather
+time_stamp: 15-17-22
+tilt_angle: 90
+propeller: fr
+throttle: 80
+Range Bins: 121
+Fill Factor: b'full'
+Actual Frequency: 1022

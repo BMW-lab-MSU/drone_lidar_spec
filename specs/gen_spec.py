@@ -45,7 +45,7 @@ def high_pass_filter(data, cutoff, fs, order=1):
     y = filtfilt(b, a, data)
     return y
 
-def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order, time_slices, boost_colors):
+def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixels, coco_output, details, dimensions, image_id, filter_order, time_slices, boost_colors, ignore_high_pass_filter):
     file_extension = os.path.splitext(file_path)[1].lower()
     if file_extension == '.mat':
         mat_file = scipy.io.loadmat(file_path)
@@ -91,8 +91,8 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                 for time_slice in range(time_slices):
                     data_array_transposed = data_array[time_slice, range_bin, :]
                     
-                    # Apply high-pass filter if order is specified
-                    if filter_order:
+                    # Apply high-pass filter if order is specified and ignore_high_pass_filter is False
+                    if filter_order and not ignore_high_pass_filter:
                         data_array_transposed = high_pass_filter(data_array_transposed, cutoff_frequency, sampling_freq, filter_order)
 
                     plt.figure(figsize=(10, 6))
@@ -134,7 +134,7 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         bbox_y = max(0, 462 - (bbox_y_center + 10))
                         bbox_height = 20
 
-                        # Plot the labeled spectrogram with bounding box in orange
+                        # Add annotations for COCO output
                         if dimensions is None:
                             plt.savefig('/tmp/temp_spectrogram.png')
                             img = Image.open('/tmp/temp_spectrogram.png')
@@ -151,20 +151,20 @@ def create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, n_pixe
                         }
                         coco_output["annotations"].append(annotation)
                         
-                        plt.axhline(y=exp_freq_time_slice, color='r', linestyle='--')
-                        plt.gca().add_patch(plt.Rectangle((0, bbox_y), dimensions[0], bbox_height, linewidth=1, edgecolor='orange', facecolor='none'))
-                        text_str = (f"Drone Name: {details['drone_name']}\n"
-                                    f"Time Stamp: {details['time_stamp']}\n"
-                                    f"Tilt Angle: {details['tilt_angle']} degrees\n"
-                                    f"Propeller: {propeller}\n"
-                                    f"Throttle: {details['throttle']}\n"
-                                    f"Actual Frequency: {exp_freq_time_slice}\n"
-                                    f"Fill Factor: {fill_factor}\n"
-                                    f"Range Bin: {range_bin}\n"
-                                    f"Time Slice: {time_slice+1}")
-                        plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
                         details['actual_frequency'] = int(exp_freq_time_slice)
                         details['fill_factor'] = fill_factor  # Add fill factor to details
+                    
+                    text_str = (f"Drone Name: {details['drone_name']}\n"
+                                f"Time Stamp: {details['time_stamp']}\n"
+                                f"Tilt Angle: {details['tilt_angle']} degrees\n"
+                                f"Propeller: {propeller}\n"
+                                f"Throttle: {details['throttle']}\n"
+                                f"Actual Frequency: {exp_freq_time_slice}\n"
+                                f"Fill Factor: {fill_factor}\n"
+                                f"Range Bin: {range_bin}\n"
+                                f"Time Slice: {time_slice+1}")
+                    plt.gcf().text(0.98, 0.95, text_str, fontsize=10, verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.5))
+
                     output_image_path_labeled = os.path.join(labeled_folder, f"{base_name}_range_bin={range_bin}_time_slice={time_slice+1}.png")
                     plt.savefig(output_image_path_labeled)
                     plt.close()
@@ -208,6 +208,7 @@ def main():
     parser.add_argument('--filter_order', type=int, help="Order of the high-pass filter. If not specified, the filter will not be applied.")
     parser.add_argument('--time_slices', type=int, default=1, help="Number of time slices to process (1 to 32).")
     parser.add_argument('--boost_colors', action='store_true', help="Boost the color intensity in the spectrograms.")
+    parser.add_argument('--ignore_high_pass_filter', action='store_true', help="Ignore the high pass filter and crop the image at the bottom 20 pixels instead.")
 
     args = parser.parse_args()
     input_folder = args.input_folder
@@ -253,7 +254,7 @@ def main():
             os.makedirs(labeled_folder, exist_ok=True)
             os.makedirs(raw_folder, exist_ok=True)
 
-            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order, args.time_slices, args.boost_colors)
+            dimensions, image_id = create_spectrogram(file_path, labeled_folder, raw_folder, range_bins, args.n_pixels, all_annotations, details, dimensions, image_id, args.filter_order, args.time_slices, args.boost_colors, args.ignore_high_pass_filter)
 
             # Write details.txt
             details_file_path = os.path.join(drone_output_folder, 'details.txt')
