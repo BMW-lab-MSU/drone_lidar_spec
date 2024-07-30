@@ -5,12 +5,32 @@ import imageio
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-def calculate_rgb_brightness(window, target_rgb):
+def calculate_rgb_error(window, target_rgb):
     if window.shape[2] == 4:
         window = window[:, :, :3]
     mean_rgb = np.mean(window, axis=(0, 1))
-    brightness = np.sum(np.abs(mean_rgb - target_rgb))
-    return mean_rgb, brightness
+    color_error = np.sum(np.abs(mean_rgb - target_rgb))
+    return mean_rgb, color_error
+
+def add_axes_labels(image, img_width, img_height, border_width):
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.imshow(np.array(image))
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Frequency (Hz)')
+    ax.set_xticks([0, img_width // 2, img_width])
+    ax.set_xticklabels(['0', '0.125', '0.25'])
+    ax.set_yticks([0, img_height // 4, img_height // 2, 3 * img_height // 4, img_height])
+    ax.set_yticklabels(['1952', '1464', '976', '488', '0'])  # Reversed order
+    ax.set_xlim([0, img_width])
+    ax.set_ylim([img_height, 0])
+    fig.tight_layout(pad=3.0)  # Add padding to ensure labels are not cut off
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    labeled_img = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
+    labeled_img = labeled_img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    labeled_img = Image.fromarray(labeled_img)
+    plt.close(fig)
+    return labeled_img
 
 def create_sliding_window_gif(image_path, output_path, window_height=20, step_size=10, duration=0.1):
     # Load the spectrogram image
@@ -23,55 +43,58 @@ def create_sliding_window_gif(image_path, output_path, window_height=20, step_si
     img_width, img_height = img.size
     padded_img_width, padded_img_height = img_with_border.size
 
+    # Add time and frequency labels to the spectrogram
+    labeled_img_with_border = add_axes_labels(img, img_width, img_height, border_width)
+
     # Define target RGB values
-    target_rgb = [71.59845682123655, 206.32637970430108, 147.64024529569892]
+    target_rgb = [146.2918103158602, 205.90643800403225, 72.32910836693549]
 
     # Create a list to hold frames for the GIF
     frames = []
 
     # Prepare for plot
     y_positions = []
-    brightness_scores = []
+    color_error_scores = []
 
-    # Variable to keep track of the brightest window
-    max_brightness = float('-inf')
-    brightest_window = None
+    # Variable to keep track of the window with the lowest error
+    min_color_error = float('inf')
+    best_window = None
 
-    for start in range(border_width, border_width + img_height - window_height + 1, step_size):
+    for start in range(0, img_height - window_height + 1, step_size):
         # Create a copy of the image to draw the window
-        frame_img = img_with_border.copy()
+        frame_img = labeled_img_with_border.copy()
         draw = ImageDraw.Draw(frame_img)
         
         # Draw the sliding window (as a rectangle)
-        draw.rectangle([(border_width, start), (border_width + img_width, start + window_height)], outline="magenta", width=3)
+        draw.rectangle([(border_width + 82, start + border_width), (border_width + img_width + 92, start + window_height + border_width)], outline="magenta", width=3)
 
-        # Calculate the brightness score for the current window
-        window = np.array(img_with_border.crop((border_width, start, border_width + img_width, start + window_height)))
-        mean_rgb, brightness = calculate_rgb_brightness(window, target_rgb)
+        # Calculate the color error score for the current window
+        window = np.array(img.crop((0, start, img_width, start + window_height)))
+        mean_rgb, color_error = calculate_rgb_error(window, target_rgb)
 
-        # Draw the brightness score on the image
-        draw.text((10, 10), f"Brightness: {brightness:.2f}", fill="white")
+        # Draw the color error score on the image
+        #draw.text((border_width + 60, border_width + 10), f"Total Color Error: {color_error:.2f}", fill="white")  # Adjusted text position
 
         # Convert the frame to RGB
         frame_img = frame_img.convert("RGB")
 
         # Update plot data
-        y_positions.append(start - border_width)
-        brightness_scores.append(brightness)
+        y_positions.append(start)
+        color_error_scores.append(color_error)
 
-        # Check if this is the brightest window so far
-        if brightness > max_brightness:
-            max_brightness = brightness
-            brightest_window = (border_width, start, border_width + img_width, start + window_height)
+        # Check if this is the window with the lowest error so far
+        if color_error < min_color_error:
+            min_color_error = color_error
+            best_window = (border_width + 82, start + border_width, border_width + img_width + 92, start + window_height + border_width)
 
         # Create plot
         fig, ax = plt.subplots(figsize=(6, 6))  # Adjusted plot size to be in between
-        ax.plot(y_positions, brightness_scores, 'm-')  # Magenta plot line
+        ax.plot(y_positions, color_error_scores, 'm-')  # Magenta plot line
         ax.set_xlim(0, img_height)
-        ax.set_ylim(0, max(brightness_scores) + 100)  # Adjust based on expected brightness range
+        ax.set_ylim(0, max(color_error_scores) + 100)  # Adjust based on expected color error range
         ax.set_xlabel('Y-coordinate of Window')
-        ax.set_ylabel('Brightness')
-        ax.set_title('Brightness vs. Y-Position')
+        ax.set_ylabel('Total Color Error')
+        ax.set_title('Total Color Error vs. Y-Position')
         fig.tight_layout(pad=3.0)  # Add padding to ensure labels are not cut off
         canvas = FigureCanvas(fig)
         canvas.draw()
@@ -90,23 +113,23 @@ def create_sliding_window_gif(image_path, output_path, window_height=20, step_si
 
         plt.close(fig)  # Close the figure to prevent memory leaks
 
-    # Add frames to highlight the brightest window
+    # Add frames to highlight the window with the lowest error
     for _ in range(10):  # Repeat for a few frames to make the pause noticeable
-        frame_img = img_with_border.copy()
+        frame_img = labeled_img_with_border.copy()
         draw = ImageDraw.Draw(frame_img)
-        draw.rectangle(brightest_window, outline="red", width=3)  # Highlight the brightest window in red
-        draw.text((10, 10), f"Brightest: {max_brightness:.2f}", fill="white")
+        draw.rectangle(best_window, outline="red", width=3)  # Highlight the best window in red
+        #draw.text((border_width + 60, border_width + 10), f"Best: {min_color_error:.2f}", fill="white")  # Adjusted text position
         frame_img = frame_img.convert("RGB")
 
-        # Create plot with brightest window highlighted
+        # Create plot with the best window highlighted
         fig, ax = plt.subplots(figsize=(6, 6))  # Adjusted plot size to be in between
-        ax.plot(y_positions, brightness_scores, 'm-')  # Magenta plot line
+        ax.plot(y_positions, color_error_scores, 'm-')  # Magenta plot line
         ax.set_xlim(0, img_height)
-        ax.set_ylim(0, max(brightness_scores) + 100)  # Adjust based on expected brightness range
+        ax.set_ylim(0, max(color_error_scores) + 100)  # Adjust based on expected color error range
         ax.set_xlabel('Y-Position of Window')
-        ax.set_ylabel('Brightness')
-        ax.set_title('Brightness vs. Y-Position')
-        ax.axvline(x=brightest_window[1] - border_width, color='red', linestyle='--')  # Highlight the brightest window position
+        ax.set_ylabel('Total Color Error')
+        ax.set_title('Total Color Error vs. Y-Position')
+        ax.axvline(x=best_window[1] - border_width, color='red', linestyle='--')  # Highlight the best window position
         fig.tight_layout(pad=3.0)  # Add padding to ensure labels are not cut off
         canvas = FigureCanvas(fig)
         canvas.draw()
@@ -128,7 +151,7 @@ def create_sliding_window_gif(image_path, output_path, window_height=20, step_si
     frames[0].save(output_path, save_all=True, append_images=frames[1:], duration=duration * 1000, loop=0)
 
 def main():
-    parser = argparse.ArgumentParser(description='Create a GIF of a sliding window scanning across a spectrogram image, showing the brightness score for each window and a plot of brightness vs. y-position.')
+    parser = argparse.ArgumentParser(description='Create a GIF of a sliding window scanning across a spectrogram image, showing the color error score for each window and a plot of color error vs. y-position.')
     parser.add_argument('--image_path', type=str, required=True, help='Path to the input spectrogram image')
     parser.add_argument('--output_path', type=str, required=True, help='Path to save the output GIF')
     parser.add_argument('--window_height', type=int, default=20, help='Height of the sliding window (default: 20)')
