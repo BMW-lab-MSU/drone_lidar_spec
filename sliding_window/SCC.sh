@@ -3,7 +3,7 @@
 # Variables
 IMAGES_PATH="../data/noboost_prop-only-90/val/images"
 OUTPUT_PATH="noboost_prop-only-90-val.json"
-H5_JSON="SFh5s.json"
+H5_JSON="SFh5s3.json"
 IMAGE_JSON="noboost_prop-only-90-val.json"
 COMPARISON_OUTPUT="noboost_prop-only-90-val-comparisons.json"
 METRICS_JSON="noboost_prop-only-90-val-comparisons.json"

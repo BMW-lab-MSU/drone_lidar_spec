@@ -7,7 +7,7 @@ import re
 
 """
 Script to run a sliding window across images and calculate the average RGB values and standard deviations for each window.
-Outputs the window with the closest RGB values to a specified target for each image and predicts the frequency.
+Outputs the window with the farthest RGB values from a specified target for each image and predicts the frequency.
 
 Usage:
     python sliding_window_rgb_stats.py --images_path path_to_images_folder --output_path output.json
@@ -20,7 +20,6 @@ The sliding window will have a size of 775xWINDOW_HEIGHT with a stride of 1.
 """
 
 TARGET_MEAN_RGB = [146.2918103158602, 205.90643800403225, 72.32910836693549]
-TARGET_STD_RGB = [79.85343515262451, 24.03980836418265, 40.04823166712641]
 
 FREQ_RANGE = 1952  # Frequency range from 0 to 1952 Hz
 IMG_HEIGHT = 462   # Height of the spectrogram image
@@ -32,23 +31,17 @@ def sliding_window(image, window_size, stride):
     win_w, win_h = window_size
     
     for y in range(0, h - win_h + 1, stride):
-        for x in range(0, w - win_w + 1, stride):
-            window = image[y:y + win_h, x:x + win_w]  # Extract window
-            windows.append((x, y, window))
+        window = image[y:y + win_h, :win_w]  # Extract window
+        windows.append((0, y, window))
     
     return windows
 
-def calculate_rgb_stats(window):
+def calculate_rgb_error(window, target_rgb):
+    if window.shape[2] == 4:
+        window = window[:, :, :3]
     mean_rgb = np.mean(window, axis=(0, 1))
-    std_rgb = np.std(window, axis=(0, 1))
-    return mean_rgb, std_rgb
-
-def calculate_errors(mean_rgb, target_mean_rgb):
-    absolute_error = np.abs(mean_rgb - target_mean_rgb)
-    squared_error = (mean_rgb - target_mean_rgb) ** 2
-    total_absolute_error = np.sum(absolute_error)
-    total_squared_error = np.sum(squared_error)
-    return total_absolute_error, total_squared_error, absolute_error.tolist(), squared_error.tolist()
+    color_error = np.sum(np.abs(mean_rgb - target_rgb))
+    return mean_rgb, color_error
 
 def predict_frequency(y_coord):
     # Calculate the center y-coordinate of the window
@@ -95,25 +88,20 @@ def process_images(images_path):
                 print(f"Processing image: {file}")
                 windows = sliding_window(image, window_size, stride)
                 
-                min_absolute_error = float('inf')
+                max_color_error = float('-inf')
                 best_window = None
                 
                 for idx, (x, y, window) in enumerate(windows):
-                    mean_rgb, std_rgb = calculate_rgb_stats(window)
-                    total_absolute_error, total_squared_error, absolute_error, squared_error = calculate_errors(mean_rgb, TARGET_MEAN_RGB)
+                    mean_rgb, color_error = calculate_rgb_error(window, TARGET_MEAN_RGB)
                     
-                    if total_absolute_error < min_absolute_error:
-                        min_absolute_error = total_absolute_error
+                    if color_error > max_color_error:
+                        max_color_error = color_error
                         predicted_frequency = predict_frequency(y)
                         best_window = {
                             'window_position': (x, y),
                             'window_dimensions': window_size,
                             'mean_rgb': mean_rgb.tolist(),
-                            'std_rgb': std_rgb.tolist(),
-                            'absolute_error': absolute_error,
-                            'total_absolute_error': total_absolute_error,
-                            'total_squared_error': total_squared_error,
-                            'squared_error': squared_error,
+                            'color_error': color_error,
                             'predicted_frequency': predicted_frequency
                         }
                     
