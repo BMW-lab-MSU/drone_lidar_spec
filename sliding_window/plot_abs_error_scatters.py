@@ -4,14 +4,14 @@ import numpy as np
 import sys
 
 """
-plot_abs_error_scatters.py
+plot_color_difference.py
 
 This script reads four JSON files containing data entries and generates a 2x2 grid of scatter plots 
-showing tilt_angle vs total_absolute_error from the best_window for each JSON file. Each plot is labeled according to the filename,
+showing tilt_angle vs grayscale color_error from the best_window for each JSON file. Each plot is labeled according to the filename,
 and includes markers for the mean and error bars just to the right side of all the data points.
 
 Usage:
-    python plot_abs_error_scatters.py <json_file1> <json_file2> <json_file3> <json_file4> <output_file> [<offset>] [--show-counts]
+    python plot_color_difference.py <json_file1> <json_file2> <json_file3> <json_file4> <output_file> [<offset>] [--show-counts]
 
 Arguments:
     <json_file1>  : Path to the first JSON file containing the data entries.
@@ -23,7 +23,7 @@ Arguments:
     [--show-counts]: Optional. Include counts of data points for each angle.
 
 Example:
-    python plot_abs_error_scatters.py /home/d86p233/Desktop/BMW-spec/work_dirs/SLIDE_noboost_prop-only/noboost_prop-only-comparisons.json /home/d86p233/Desktop/BMW-spec/work_dirs/SLIDE_noboost_partial_SF/noboost_partial_SF-comparisons.json /home/d86p233/Desktop/BMW-spec/work_dirs/SLIDE_noboost_full_SF/noboost_full_SF-comparisons.json /home/d86p233/Desktop/BMW-spec/work_dirs/SLIDE_noboost_all_SF/noboost_all_SF-comparisons.json FF_scatters.png 2.0 --show-counts
+    python plot_color_difference.py /path/to/json1.json /path/to/json2.json /path/to/json3.json /path/to/json4.json output.png 2.0 --show-counts
 
 The script will generate a plot with a 2x2 grid of scatter plots and save it as specified by <output_file>.
 
@@ -61,7 +61,7 @@ JSON File Format:
                 3.3080073924731153,
                 3.638309811827952
             ],
-            "total_absolute_error": 11.978128864247296,
+            "color_error": 11.978128864247296,
             "total_squared_error": 49.49933977667114,
             "squared_error": [
                 25.31912858117082,
@@ -75,6 +75,9 @@ JSON File Format:
 ]
 """
 
+def rgb_to_grayscale(rgb):
+    return 0.2989 * rgb[0] + 0.5870 * rgb[1] + 0.1140 * rgb[2]
+
 def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False):
     labels = [
         "Prop-Only Fill Factor", 
@@ -83,7 +86,10 @@ def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False
         "All Fill Factors"
     ]
     fig, axs = plt.subplots(2, 2, figsize=(15, 15))
-    fig.suptitle('Tilt Angle vs Color Difference Scatterplots for All Fill Factors')
+    fig.suptitle('Tilt Angle vs Grayscale Color Difference Scatterplots for All Fill Factors')
+
+    target_rgb = [146.2918103158602, 205.90643800403225, 72.32910836693549]
+    target_grayscale = rgb_to_grayscale(target_rgb)
 
     plot_order = [0, 1, 2, 3]  # Order: top left, top right, bottom left, bottom right
     for idx in plot_order:
@@ -94,11 +100,11 @@ def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False
             data = json.load(f)
 
         tilt_angles = [entry['tilt_angle'] for entry in data]
-        color_differences = [entry['best_window']['total_absolute_error'] for entry in data]
+        grayscale_differences = [abs(rgb_to_grayscale(entry['best_window']['mean_rgb']) - target_grayscale) for entry in data]
 
         row, col = divmod(plot_order.index(idx), 2)
         ax = axs[row, col]
-        scatter = ax.scatter(tilt_angles, color_differences, label='Color Difference')
+        scatter = ax.scatter(tilt_angles, grayscale_differences, label='Grayscale Color Difference')
 
         unique_angles = sorted(set(tilt_angles))
         mean_differences = []
@@ -106,7 +112,7 @@ def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False
         num_points = []
 
         for angle in unique_angles:
-            differences_at_angle = [color_differences[i] for i in range(len(tilt_angles)) if tilt_angles[i] == angle]
+            differences_at_angle = [grayscale_differences[i] for i in range(len(tilt_angles)) if tilt_angles[i] == angle]
             mean_differences.append(np.mean(differences_at_angle))
             std_differences.append(np.std(differences_at_angle))
             num_points.append(len(differences_at_angle))
@@ -115,9 +121,9 @@ def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False
         offset_angles = [angle + offset for angle in unique_angles]
         errorbar = ax.errorbar(offset_angles, mean_differences, yerr=std_differences, fmt='o', color='red', capsize=5, label='Mean ± SD')
 
-        ax.set_title(f'{label}: Tilt Angle vs Color Difference')
+        ax.set_title(f'{label}: Tilt Angle vs Grayscale Color Difference')
         ax.set_xlabel('Tilt Angle')
-        ax.set_ylabel('Color Difference')
+        ax.set_ylabel('Grayscale Color Difference')
         ax.legend()
 
         # Set tick marks every 10 units on the x-axis
@@ -134,7 +140,7 @@ def plot_color_difference(json_files, output_file, offset=1.0, show_counts=False
 
 if __name__ == "__main__":
     if len(sys.argv) < 6 or len(sys.argv) > 8:
-        print("Usage: python plot_abs_error_scatters.py <json_file1> <json_file2> <json_file3> <json_file4> <output_file> [<offset>] [--show-counts]")
+        print("Usage: python plot_color_difference.py <json_file1> <json_file2> <json_file3> <json_file4> <output_file> [<offset>] [--show-counts]")
         sys.exit(1)
     
     json_files = sys.argv[1:5]
